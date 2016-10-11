@@ -1,0 +1,113 @@
+include("11_20_Global_Var");
+include("11_20_Utils");
+
+function initGameFunction(){
+	//debug("init game state");
+	setWeapon(WEAPON_DOUBLE_GUN); // Attention : coûte 1 PT
+	weaponID = getWeapon();
+	etat = INIT_TURN;
+	enemyID = getNearestEnemy();
+}
+
+function initTurnFunction(){
+	//debug("init turn state");
+	etat = STRATEGY_CHOICE;
+}
+
+function strategyChoiceFunction(){
+	debug("strategy choice");
+	
+	var weCanShootifMoving = canUseWeaponIfMoving(getLeek(), getCell(enemyID));
+	var weCanUseChipIfMoving = canUseSparkIfMoving(getLeek(), getCell(enemyID));
+	var enemyCanShootNextTurn = canUseWeaponIfMoving(enemyID, getCell());
+	var enemyCanUseChipNextTurn = canUseSparkIfMoving(enemyID, getCell());
+	//debug("weCanShootifMoving : " + weCanShootifMoving);
+	//debug("weCanUseChipIfMoving : " + weCanUseChipIfMoving);
+	//debug("enemyCanShootNextTurn : " + enemyCanShootNextTurn);
+	//debug("enemyCanUseChipNextTurn : " + enemyCanUseChipNextTurn);
+	
+	if (weCanUseChipIfMoving != -1 && weCanShootifMoving == -1){etat = STRATEGY_SHIELD_SPARK_SPARK;}
+	else if (enemyCanShootNextTurn != -1 && weCanShootifMoving ==-1){etat = STRATEGY_COWARD;}
+	else if (weCanShootifMoving != -1) {etat = STRATEGY_FACE;}
+	else {
+	debug("Strategie indeterminée");
+	debug("weCanShootifMoving : " + weCanShootifMoving);
+	debug("weCanUseChipIfMoving : " + weCanUseChipIfMoving);
+	debug("enemyCanShootNextTurn : " + enemyCanShootNextTurn);
+	debug("enemyCanUseChipNextTurn : " + enemyCanUseChipNextTurn);
+	etat = STRATEGY_MOVE_TO_LIMIT_RANGE;
+	}
+}
+
+function strategyMoveToLimitRange(){
+	var pathToEnemy = getPath(getCell(), getCell(enemyID));
+	while (getMP() > 0 && canUseSparkIfMoving(enemyID, pathToEnemy[0]) == -1){
+		moveToward(enemyID);
+	}
+	etat = END;
+}
+
+function strategyCowardFunction(){
+	debug ("strategy coward");
+	while (canUseWeaponIfMoving(enemyID, getCell()) && getMP() > 0){
+		moveAwayFrom(enemyID, 1);
+	}
+	etat = END;
+}
+
+//déplacer -> tir -> tir -> heal
+function strategyFaceFunction(){
+	debug("strategy face");
+	while(getDistance(getCell(), getCell(enemyID)) < getWeaponMinRange(weaponID) && getMP() > 0) {
+		moveAwayFrom(enemyID, 1);
+	}
+		
+	while (!canUseWeaponFromCellToCell(weaponID, getCell(), getCell(enemyID)) && getMP() > 0 && getCellDistance(getCell(), getCell(enemyID)) > getWeaponMinRange(weaponID)){
+		moveToward(enemyID, 1);
+	}
+	
+	while (getTP() >= getWeaponCost(weaponID) && canUseWeaponFromCellToCell(weaponID, getCell(), getCell(enemyID))){
+		useWeapon(enemyID);
+	}
+	if(getTP() >= getChipCost(CHIP_BANDAGE)) {
+		useChip(CHIP_BANDAGE, getLeek());
+	}
+	etat = END;
+}
+
+//kiting
+function strategyKitingFunction(){
+	debug("strategy Kiting");
+	while (!canUseChipFromCellToCell(CHIP_SPARK, getCell(), getCell(enemyID)) && getMP() > 0){
+		moveToward(enemyID, 1);
+	}
+	
+	while (getTP() >= getChipCost(CHIP_SPARK) && canUseChipFromCellToCell(CHIP_SPARK, getCell(), getCell(enemyID))){
+		useChip(CHIP_SPARK, enemyID);
+	}
+	
+	moveAwayFrom(enemyID, getMP());
+	
+	etat = END;
+}
+
+function strategyShieldSparkSpark(){
+	debug ("strategy shield spark spark");
+	while (!canUseChipFromCellToCell(CHIP_SPARK, getCell(), getCell(enemyID)) && getMP() > 0){
+		moveToward(enemyID, 1);
+	}
+	
+	if (getTP() >= getChipCost(CHIP_HELMET)) {
+		if (getCooldown(CHIP_HELMET) == 0){useChip(CHIP_HELMET, getLeek());}
+		else {debug ("chip helmet on cooldown");}
+	}
+	else {debug("Pas assez de TP pour lancer helmet");}
+	
+	while (getTP() >= getChipCost(CHIP_SPARK) && canUseChipFromCellToCell(CHIP_SPARK, getCell(), getCell(enemyID))){
+		useChip(CHIP_SPARK, enemyID);
+	}
+	
+	moveAwayFrom(enemyID, getMP());
+	
+	etat = END;
+}
