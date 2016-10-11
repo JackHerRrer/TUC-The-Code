@@ -1,0 +1,31 @@
+//-------------------------------------------------------------------
+//------- Définition des variables et constantes globales -----------
+//-------------------------------------------------------------------
+
+//-----Constantes d'état--------------
+global etat;
+global INIT_GAME = "INIT_GAME";
+global INIT_TURN = "INIT_TURN";
+global STRATEGY_CHOICE = "STRATEGY_CHOICE";
+
+global STRATEGY_FACE = "STRATEGY_FACE";
+global STRATEGY_KITING = "STRATEGY_KITING";
+global STRATEGY_COWARD = "STRATEGY_COWARD";
+global STRATEGY_SHIELD_SPARK_SPARK = "STRATEGY_SHIELD_SPARK_SPARK";
+global STRATEGY_MOVE_TO_LIMIT_RANGE = "STRATEGY_MOVE_TO_LIMIT_RANGE";
+
+global END = "END";
+
+
+//-----Constantes de déplacement--------------
+global GO = "GO";
+global BACK = "BACK";
+global STOP = "STOP";
+
+
+//----Variables globales---------------------
+global enemyID;
+global weaponID;
+
+//Booleen
+global initialisation;
