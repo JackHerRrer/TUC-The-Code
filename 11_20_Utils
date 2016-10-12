@@ -3,6 +3,49 @@
 //-------------------------------------------------------------
 include("11_20_Global_Var");
 
+function getDamage(ID, strength) {	
+	var damage = [];
+	
+	if(isChip(ID)) {
+	
+		var chipEffects = getChipEffects(ID);
+		
+		for (var chipEffect in chipEffects) {
+			if(chipEffect[0] == EFFECT_DAMAGE) {
+				var chipDamage = [];
+				chipDamage["MIN"] = chipEffect[1] * (1+strength/100);
+				chipDamage["MAX"] = chipEffect[2] * (1+strength/100);
+				push(damage, chipDamage);
+			}
+		}
+	} else if (isWeapon(ID)) {
+		var weaponEffects = getWeaponEffects(ID);
+		
+		for (var weaponEffect in weaponEffects) {
+			if(weaponEffect[0] == EFFECT_DAMAGE) {
+				var weaponDamage = [];
+				weaponDamage["MIN"] = weaponEffect[1] * (1+strength/100);
+				weaponDamage["MAX"] = weaponEffect[2] * (1+strength/100);
+				push(damage, weaponDamage);
+			}	
+		}
+	} else {
+		debug("Ni puce ni arme !!");
+	}
+	return damage;
+}
+
+function calculateDamageTaken(leekID, minDamage, maxDamage) {
+	
+	var calculateDamage = [];
+	
+	calculateDamage["MIN"] = minDamage * (1 - getRelativeShield(leekID) / 100) - getAbsoluteShield(leekID);
+	calculateDamage["MAX"] = maxDamage * (1 - getRelativeShield(leekID) / 100) - getAbsoluteShield(leekID);
+	
+	return calculateDamage;
+}
+
+
 //Determine si un poireau est capable d'utiliser son arme sur une cellule s'il se déplace
 // s'il ne peut pas : renvoi -1
 // s'il peut : renvoi le nombre de cellule qu'il doit parcourir pour attaquer

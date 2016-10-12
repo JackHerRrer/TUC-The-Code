@@ -13,6 +13,7 @@ function initTurnFunction(){
 	//debug("init turn state");
 	etat = STRATEGY_CHOICE;
 	enemyID = getNearestEnemy();
+	enemyAbsoluteShield = getAbsoluteShield(enemyID);
 }
 
 function strategyChoiceFunction(){

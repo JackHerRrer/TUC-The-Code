@@ -26,8 +26,12 @@ global STOP = "STOP";
 
 
 //----Variables globales---------------------
-global enemyID;
+//Variables globales alliés
 global weaponID;
+
+//Variables globales ennemies
+global enemyID;
+global enemyAbsoluteShield;
 
 //Booleen
 global initialisation;
