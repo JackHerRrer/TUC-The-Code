@@ -3,37 +3,14 @@
 //-------------------------------------------------------------
 include("11_20_Global_Var");
 
-
-// determine si le poireau doit avancer, reculer ou ne pas bouger pour utiliser l'arme en premier
-//function shouldMove (){
-	//if ((enemyCanShootNextTurn() && canShootThisTurnIfMoving()) || !enemyCanShootNextTurn())
-		//return GO;
-	//else if (enemyCanShootNextTurn()&& !canShootThisTurnIfMoving())
-		//return BACK;
-	//else
-		//return STOP;
-//}
-
-//determine si l'enemi le plus proche pourra tirer le prochain tour s'il se déplace
-//function enemyCanUseWeaponNextTurn() {
-
-	//var enemyMP = getMP(enemyID);
-	//var pathFromEnemy = getPath(getCell(enemyID), getCell());
-	//var enemyWeapon = getWeapon(enemyID);
-	//for (var i=0; i < enemyMP; i++){
-		//if (canUseWeaponFromCellToCell(enemyWeapon, pathFromEnemy[i], pathFromEnemy[count(pathFromEnemy)-1])){
-			//return true;
-		//}
-	//}	
-	
-	//return false;
-//}
-
 //Determine si un poireau est capable d'utiliser son arme sur une cellule s'il se déplace
 // s'il ne peut pas : renvoi -1
 // s'il peut : renvoi le nombre de cellule qu'il doit parcourir pour attaquer
 function canUseWeaponIfMoving(attackerLeek, targetCell) {
 	var pathToCell = getPath(getCell(attackerLeek), targetCell);
+
+	if(getCellDistance(getCell(attackerLeek), targetCell) == 1 && getMP() > 0) return 0;
+	
 	if (canUseWeaponFromCellToCell(getWeapon(attackerLeek), getCell(attackerLeek), targetCell)){
 			return 0;
 		}
