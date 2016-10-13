@@ -38,6 +38,7 @@ function stateMachine(){
 	else if (etat == STRATEGY_MOVE_TO_LIMIT_RANGE) { strategyMoveToLimitRange();}
 	else if (etat == STRATEGY_HELM_SPARK_WEAPON) { strategyHelmSparkWeaponFunction();}
 	else if (etat == STRATEGY_SHIELD_HEAL_WEAPON) { strategyShieldHealWeaponFunction();}
+	else if (etat == STRATEGY_HEAL) {strategyHealFunction();}
 	else if (etat == END) {debugC("ETAT END !!!",getColor(255, 0, 0));}
 	else {debugC("ETAT INDEFINI !!!",getColor(255, 0, 0));}
 }

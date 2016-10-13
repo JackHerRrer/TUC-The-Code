@@ -28,7 +28,8 @@ function strategyChoiceFunction(){
 	//debug("enemyCanShootNextTurn : " + enemyCanShootNextTurn);
 	//debug("enemyCanUseChipNextTurn : " + enemyCanUseChipNextTurn);
 	
-	if (weCanShootifMoving == -1 && weCanUseChipIfMoving == -1 && enemyCanShootNextTurn == -1 && enemyCanUseChipNextTurn == -1){etat = STRATEGY_MOVE_TO_LIMIT_RANGE;}
+	if((getCooldown(CHIP_BANDAGE)==0 || getCooldown(CHIP_CURE)==0) && getLife() < 100) {etat = STRATEGY_HEAL;}
+	else if (weCanShootifMoving == -1 && weCanUseChipIfMoving == -1 && enemyCanShootNextTurn == -1 && enemyCanUseChipNextTurn == -1){etat = STRATEGY_MOVE_TO_LIMIT_RANGE;}
 	else if (weCanUseChipIfMoving != -1 && weCanShootifMoving == -1){etat = STRATEGY_SHIELD_SPARK_SPARK;}
 	else if (enemyCanShootNextTurn != -1 && weCanShootifMoving ==-1){etat = STRATEGY_COWARD;}
 	else if (weCanShootifMoving != -1 && getCooldown(CHIP_SHIELD)==0) {etat = STRATEGY_SHIELD_HEAL_WEAPON;}
@@ -43,6 +44,19 @@ function strategyChoiceFunction(){
 	etat = STRATEGY_MOVE_TO_LIMIT_RANGE;
 	}
 }
+
+function strategyHealFunction() {
+	if(getCooldown(CHIP_CURE) == 0 && getTP() >= getChipCost(CHIP_CURE))
+		useChip(CHIP_CURE, getLeek());
+	if(getCooldown(CHIP_BANDAGE) == 0 && getTP() >= getChipCost(CHIP_BANDAGE))
+		useChip(CHIP_BANDAGE, getLeek());
+	if(getCooldown(CHIP_SHIELD) == 0 && getTP() >= getChipCost(CHIP_SHIELD))
+		useChip(CHIP_SHIELD, getLeek());
+	if(getCooldown(CHIP_HELMET) == 0 && getTP() >= getChipCost(CHIP_HELMET))
+		useChip(CHIP_HELMET, getLeek());
+	etat = STRATEGY_CHOICE;
+}
+		
 
 function strategyMoveToLimitRange(){
 	debug ("strategy move to limit range");
