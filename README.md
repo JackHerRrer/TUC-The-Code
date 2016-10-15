@@ -1,2 +1,13 @@
 # TUC-The-Code
-Tout est dit dans le titre
+
+tag : IA_11_18
+
+lvl :
+	- 11 à 18
+
+weapon : 
+	- double gun
+
+chip :
+	- etincelle
+	- casque
