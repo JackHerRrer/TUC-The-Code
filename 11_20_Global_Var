@@ -13,6 +13,9 @@ global STRATEGY_KITING = "STRATEGY_KITING";
 global STRATEGY_COWARD = "STRATEGY_COWARD";
 global STRATEGY_SHIELD_SPARK_SPARK = "STRATEGY_SHIELD_SPARK_SPARK";
 global STRATEGY_MOVE_TO_LIMIT_RANGE = "STRATEGY_MOVE_TO_LIMIT_RANGE";
+global STRATEGY_HELM_SPARK_WEAPON = "STRATEGY_HELM_SPARK_WEAPON";
+global STRATEGY_SHIELD_HEAL_WEAPON = "STRATEGY_SHIELD_HEAL_WEAPON";
+global STRATEGY_HEAL = "STRATEGY_HEAL";
 
 global END = "END";
 
@@ -24,8 +27,12 @@ global STOP = "STOP";
 
 
 //----Variables globales---------------------
-global enemyID;
+//Variables globales alliés
 global weaponID;
+
+//Variables globales ennemies
+global enemyID;
+global enemyAbsoluteShield;
 
 //Booleen
 global initialisation;

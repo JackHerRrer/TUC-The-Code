@@ -1,13 +1,12 @@
-# TUC-The-Code
+tag : IA_21_26
 
-tag : IA_11_18
+lvl : - 21_26
 
-lvl :
-	- 11 à 18
+weapon : - double gun
 
-weapon : 
-	- double gun
-
-chip :
-	- etincelle
+chip : 	- etincelle 
 	- casque
+	- armure
+	- guérison
+	- bandage
+
