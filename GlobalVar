@@ -36,6 +36,8 @@ global STOP = "STOP";
 //Variables globales alliés
 global weaponID;
 global vieMax;
+global weCanUseChipIfMoving;
+global weCanShootifMoving;
 
 //Variables globales ennemies
 global enemyID;
@@ -45,6 +47,7 @@ global maxDamageEnemy;
 global strengthEnemy;
 global enemyWeapon;
 global enemyMaxWeaponRange;
+global enemyCanShootNextTurn;
 
 //Booleen
 global initialisation;

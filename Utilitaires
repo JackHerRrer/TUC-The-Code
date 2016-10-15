@@ -46,18 +46,20 @@ function calculateDamage(leekID, damage) {
 function canUseWeaponIfMoving(attackerLeek, targetCell) {
 	var pathToCell = getPath(getCell(attackerLeek), targetCell);
 
-	if(getCellDistance(getCell(attackerLeek), targetCell) == 1 && getMP() >= getWeaponMinRange(weaponID)-1) 		return 0;
+	if(getCellDistance(getCell(attackerLeek), targetCell) == 1 && getMP() >= getWeaponMinRange(weaponID)-1) {
+		return true;
+	}
 	
 	if (canUseWeaponFromCellToCell(getWeapon(attackerLeek), getCell(attackerLeek), targetCell)){
-			return 0;
+			return true;
 		}
 	
 	for (var i=0; i < getMP(attackerLeek) && i < count(pathToCell); i++){
 		if (canUseWeaponFromCellToCell(getWeapon(attackerLeek), pathToCell[i], targetCell)){
-			return i;
+			return true;
 		}
 	}
-	return -1;
+	return false;
 }
 
 //Determine si un poireau est capable d'utiliser CHIP_SPARK sur une cellule s'il se déplace
@@ -65,15 +67,15 @@ function canUseWeaponIfMoving(attackerLeek, targetCell) {
 // s'il peut : renvoi le nombre de cellule qu'il doit parcourir pour attaquer
 function canUseChipIfMoving(chip, attackerLeek, targetCell) {
 	if (canUseChipFromCellToCell(chip, getCell(attackerLeek), targetCell)){
-		return 0;
+		return true;
 	}
 	var pathToCell = getPath(getCell(attackerLeek), targetCell);
 	for (var i=0; i < getMP(attackerLeek) && i < count(pathToCell); i++){
 		if (canUseChipFromCellToCell(chip, pathToCell[i], targetCell)){
-			return i+1;
+			return true;
 		}
 	}
-	return -1;
+	return true;
 }
 
 /*****************************
