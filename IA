@@ -1,7 +1,7 @@
 //gestion des autres fichiers
-include("11_20_Utils");
-include("11_20_Global_Var");
-include("11_20_Fonction_Etat");
+include("Utilitaires");
+include("GlobalVar");
+include("FonctionEtat");
 
 /***********************************/
 /*   Fonction principale de l'IA   */
@@ -17,7 +17,7 @@ else {
 }
 
 // Boucle appellant la fonction gérant les états
-while (etat != END){
+while (etat != ENDTURN){
 	stateMachine();
 }
 if (isDead(enemyID)){say ("Reviens gamin !! C'était pour rire ");}
@@ -28,7 +28,16 @@ else {say("ez maggeule");}
 /***********************************/
 
 function stateMachine(){
+	
 	if (etat == INIT_GAME) {initGameFunction();}
+	else if (etat == INIT_TURN) {initTurnFunction();}
+	else if (etat == BUFF) {buff();}
+	else if (etat == ATTACK) {attack();}
+	else if (etat == HEAL) {heal();}
+	else if (etat == MOVE) {move();}
+	else if (etat == END) {end();}
+	else {debugC("ETAT INDEFINI !!!",getColor(255, 0, 0));}
+	/*if (etat == INIT_GAME) {initGameFunction();}
 	else if (etat == INIT_TURN) {initTurnFunction();}
 	else if (etat == STRATEGY_CHOICE) {strategyChoiceFunction();}
 	else if (etat == STRATEGY_KITING) {strategyKitingFunction();}
@@ -40,5 +49,5 @@ function stateMachine(){
 	else if (etat == STRATEGY_SHIELD_HEAL_WEAPON) { strategyShieldHealWeaponFunction();}
 	else if (etat == STRATEGY_HEAL) {strategyHealFunction();}
 	else if (etat == END) {debugC("ETAT END !!!",getColor(255, 0, 0));}
-	else {debugC("ETAT INDEFINI !!!",getColor(255, 0, 0));}
+	else {debugC("ETAT INDEFINI !!!",getColor(255, 0, 0));}*/
 }

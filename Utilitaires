@@ -1,7 +1,7 @@
 //-------------------------------------------------------------
 //------------------Fonctions utilitaires----------------------
 //-------------------------------------------------------------
-include("11_20_Global_Var");
+include("GlobalVar");
 
 function getDamage(ID, strength) {	
 	var damage = [];
@@ -35,14 +35,8 @@ function getDamage(ID, strength) {
 	return damage;
 }
 
-function calculateDamageTaken(leekID, minDamage, maxDamage) {
-	
-	var calculateDamage = [];
-	
-	calculateDamage["MIN"] = minDamage * (1 - getRelativeShield(leekID) / 100) - getAbsoluteShield(leekID);
-	calculateDamage["MAX"] = maxDamage * (1 - getRelativeShield(leekID) / 100) - getAbsoluteShield(leekID);
-	
-	return calculateDamage;
+function calculateDamage(leekID, damage) {	
+	return damage * (1 - getRelativeShield(leekID) / 100) - getAbsoluteShield(leekID);
 }
 
 
@@ -52,7 +46,7 @@ function calculateDamageTaken(leekID, minDamage, maxDamage) {
 function canUseWeaponIfMoving(attackerLeek, targetCell) {
 	var pathToCell = getPath(getCell(attackerLeek), targetCell);
 
-	if(getCellDistance(getCell(attackerLeek), targetCell) == 1 && getMP() > 0) return 0;
+	if(getCellDistance(getCell(attackerLeek), targetCell) == 1 && getMP() >= getWeaponMinRange(weaponID)-1) 		return 0;
 	
 	if (canUseWeaponFromCellToCell(getWeapon(attackerLeek), getCell(attackerLeek), targetCell)){
 			return 0;
@@ -69,13 +63,13 @@ function canUseWeaponIfMoving(attackerLeek, targetCell) {
 //Determine si un poireau est capable d'utiliser CHIP_SPARK sur une cellule s'il se déplace
 // s'il ne peut pas : renvoi -1
 // s'il peut : renvoi le nombre de cellule qu'il doit parcourir pour attaquer
-function canUseSparkIfMoving(attackerLeek, targetCell) {
-	if (canUseChipFromCellToCell(CHIP_SPARK, getCell(attackerLeek), targetCell)){
+function canUseChipIfMoving(chip, attackerLeek, targetCell) {
+	if (canUseChipFromCellToCell(chip, getCell(attackerLeek), targetCell)){
 		return 0;
 	}
 	var pathToCell = getPath(getCell(attackerLeek), targetCell);
 	for (var i=0; i < getMP(attackerLeek) && i < count(pathToCell); i++){
-		if (canUseChipFromCellToCell(CHIP_SPARK, pathToCell[i], targetCell)){
+		if (canUseChipFromCellToCell(chip, pathToCell[i], targetCell)){
 			return i+1;
 		}
 	}

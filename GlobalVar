@@ -17,7 +17,13 @@ global STRATEGY_HELM_SPARK_WEAPON = "STRATEGY_HELM_SPARK_WEAPON";
 global STRATEGY_SHIELD_HEAL_WEAPON = "STRATEGY_SHIELD_HEAL_WEAPON";
 global STRATEGY_HEAL = "STRATEGY_HEAL";
 
+//--------IA V2------------------
+global ATTACK = "ATTACK";
+global BUFF = "BUFF";
+global HEAL = "HEAL";
+global MOVE = "MOVE";
 global END = "END";
+global ENDTURN = "ENDTURN";
 
 
 //-----Constantes de déplacement--------------
@@ -29,10 +35,16 @@ global STOP = "STOP";
 //----Variables globales---------------------
 //Variables globales alliés
 global weaponID;
+global vieMax;
 
 //Variables globales ennemies
 global enemyID;
 global enemyAbsoluteShield;
+global minDamageEnemy;
+global maxDamageEnemy;
+global strengthEnemy;
+global enemyWeapon;
+global enemyMaxWeaponRange;
 
 //Booleen
 global initialisation;
