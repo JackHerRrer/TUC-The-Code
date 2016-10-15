@@ -1,2 +1,11 @@
-# TUC-The-Code
-Tout est dit dans le titre
+tag : IA_21_26
+
+lvl : - 21_26
+
+weapon : - double gun
+
+chip : 	- etincelle 
+	- casque
+	- armure
+	- guérison
+	- bandage
