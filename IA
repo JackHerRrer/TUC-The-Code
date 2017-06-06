@@ -6,7 +6,15 @@ include("FonctionEtat");
 /***********************************/
 /*   Fonction principale de l'IA   */
 /***********************************/
+// l'IA est une fonction afin qu'elle puisse servir pour le poireau et pour le buble
+stateMachine();
 
+
+/***********************************/
+/* Fonction gérant les états     */
+/***********************************/
+
+function stateMachine(){
 // On défini si c'est la première fois ou pas que le script est lancé
 if (initialisation == null){
 initialisation = true;
@@ -16,39 +24,20 @@ else {
 etat = INIT_TURN;
 }
 
-// Boucle appellant la fonction gérant les états
-while (etat != ENDTURN){
-stateMachine();
-}
-if (isDead(enemyID)){say ("Reviens gamin !! C'était pour rire ");}
-else {say("ez maggeule");}
-
-/***********************************/
-/* Fonction gérant les états     */
-/***********************************/
-
-function stateMachine(){
-
+// Boucle appellant les fonctions de la machine état
+while (etat != END_TURN){
 if (etat == INIT_GAME) {initGameFunction();}
 else if (etat == INIT_TURN) {initTurnFunction();}
-else if (etat == BUFF) {buff();}
-else if (etat == ATTACK) {attack();}
-else if (etat == HEAL) {heal();}
-else if (etat == MOVE) {move();}
-else if (etat == END) {end();}
-else {debugC("ETAT INDEFINI !!!",getColor(255, 0, 0));}
-/*if (etat == INIT_GAME) {initGameFunction();}
-else if (etat == INIT_TURN) {initTurnFunction();}
 else if (etat == STRATEGY_CHOICE) {strategyChoiceFunction();}
-else if (etat == STRATEGY_KITING) {strategyKitingFunction();}
-else if (etat == STRATEGY_FACE) {strategyFaceFunction();}
-else if (etat == STRATEGY_COWARD) {strategyCowardFunction();}
-else if (etat == STRATEGY_SHIELD_SPARK_SPARK) {strategyShieldSparkSpark();}
-else if (etat == STRATEGY_MOVE_TO_LIMIT_RANGE) { strategyMoveToLimitRange();}
-else if (etat == STRATEGY_HELM_SPARK_WEAPON) { strategyHelmSparkWeaponFunction();}
-else if (etat == STRATEGY_SHIELD_HEAL_WEAPON) { strategyShieldHealWeaponFunction();}
-else if (etat == STRATEGY_HEAL) {strategyHealFunction();}
-else if (etat == END) {debugC("ETAT END !!!",getColor(255, 0, 0));}
-else {debugC("ETAT INDEFINI !!!",getColor(255, 0, 0));}*/
+else if (etat == ACTION_CHOICE){actionChoiceFunction();}
+else if (etat == EQUIP_SHOTGUN){equipShotgunFunction();} 
+else if (etat == MOVE_TOWARD_ENEMY){moveTowardEnemyFunction();} 
+else if (etat == USE_PUNNY_BULB_CHIP) {usePunnyBulbChipFunction();}
+else if (etat == MOVE_TOWARD_LEEK){moveTowardLeekFunction();}
+else if (etat == USE_SHOTGUN){useShotgunFunction();}
+else if (etat == USE_BANDAGE){useBandageFunction();}
+else if (etat == LAST_ACTION) {lastActionFunction();}
+else {debugC("ETAT INDEFINI !!!",getColor(255, 0, 0));}
+}
 }
 
