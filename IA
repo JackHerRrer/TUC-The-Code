@@ -1,4 +1,4 @@
-//gestion des autres fichiers
+	//gestion des autres fichiers
 include("Utilitaires");
 include("GlobalVar");
 include("FonctionEtat");
@@ -11,33 +11,38 @@ stateMachine();
 
 
 /***********************************/
-/* Fonction gérant les états     */
+/*	 Fonction gérant les états     */
 /***********************************/
 
 function stateMachine(){
 // On défini si c'est la première fois ou pas que le script est lancé
-if (initialisation == null){
-initialisation = true;
-etat = INIT_GAME;
-}
-else {
-etat = INIT_TURN;
-}
+	if (initialisation == null){
+		initialisation = true;
+		etat = INIT_GAME;
+	}
+	else {
+		etat = INIT_TURN;
+	}
 
 // Boucle appellant les fonctions de la machine état
-while (etat != END_TURN){
-if (etat == INIT_GAME) {initGameFunction();}
-else if (etat == INIT_TURN) {initTurnFunction();}
-else if (etat == STRATEGY_CHOICE) {strategyChoiceFunction();}
-else if (etat == ACTION_CHOICE){actionChoiceFunction();}
-else if (etat == EQUIP_SHOTGUN){equipShotgunFunction();} 
-else if (etat == MOVE_TOWARD_ENEMY){moveTowardEnemyFunction();} 
-else if (etat == USE_PUNNY_BULB_CHIP) {usePunnyBulbChipFunction();}
-else if (etat == MOVE_TOWARD_LEEK){moveTowardLeekFunction();}
-else if (etat == USE_SHOTGUN){useShotgunFunction();}
-else if (etat == USE_BANDAGE){useBandageFunction();}
-else if (etat == LAST_ACTION) {lastActionFunction();}
-else {debugC("ETAT INDEFINI !!!",getColor(255, 0, 0));}
+	while (etat != END_TURN){
+		if (etat == INIT_GAME) {initGameFunction();}
+		else if (etat == INIT_TURN) 		{initTurnFunction();}
+		else if (etat == STRATEGY_CHOICE) 	{strategyChoiceFunction();}
+		else if (etat == ACTION_CHOICE)		{actionChoiceFunction();}
+		else if (etat == EQUIP_SHOTGUN)		{equipShotgunFunction();}
+		else if (etat == EQUIP_MAGNUM)		{equipMagnumFunction();} 
+		else if (etat == MOVE_TOWARD_ENEMY)	{moveTowardEnemyFunction();} 
+		else if (etat == USE_PUNNY_BULB_CHIP) {usePunnyBulbChipFunction();}
+		else if (etat == MOVE_TOWARD_LEEK)	{moveTowardLeekFunction();}
+		else if (etat == USE_WEAPON)		{useWeaponFunction();}
+		else if (etat == USE_BANDAGE)		{useBandageFunction();}
+		else if (etat == USE_STALACTITE)	{useStalactiteFunction();}
+		else if (etat == USE_ROCK)			{useRockFunction();}	
+		else if (etat == USE_PEBBLE)		{usePebbleFunction();}
+		else if (etat == USE_HELMET)		{useHelmetFunction();}
+		else if (etat == USE_PROTEIN)		{useProteinFunction();}
+		else if (etat == LAST_ACTION) 		{lastActionFunction();}
+		else {debugC("ETAT INDEFINI !!!",getColor(255, 0, 0));}
+	}
 }
-}
-

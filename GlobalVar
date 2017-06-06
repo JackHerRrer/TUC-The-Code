@@ -4,18 +4,24 @@
 
 //-----Constantes d'état--------------
 global etat;
-global INIT_GAME = "INIT_GAME";
-global INIT_TURN = "INIT_TURN";
-global STRATEGY_CHOICE = "STRATEGY_CHOICE";
-global ACTION_CHOICE = "ACTION_CHOICE";
-global EQUIP_SHOTGUN = "EQUIP_SHOTGUN";
-global MOVE_TOWARD_ENEMY = "MOVE_TOWARD_ENEMY";
+global INIT_GAME = 			"INIT_GAME";
+global INIT_TURN = 			"INIT_TURN";
+global STRATEGY_CHOICE = 	"STRATEGY_CHOICE";
+global ACTION_CHOICE = 		"ACTION_CHOICE";
+global EQUIP_SHOTGUN = 		"EQUIP_SHOTGUN";
+global EQUIP_MAGNUM = 		"EQUIP_MAGNUM";
+global MOVE_TOWARD_ENEMY = 	"MOVE_TOWARD_ENEMY";
 global USE_PUNNY_BULB_CHIP = "USE_PUNNY_BULB_CHIP";
-global MOVE_TOWARD_LEEK= "MOVE_TOWARD_LEEK";
-global USE_SHOTGUN= "USE_SHOTGUN";
-global USE_BANDAGE= "USE_BANDAGE";
-global LAST_ACTION = "LAST_ACTION";
-global END_TURN = "END_TURN";
+global MOVE_TOWARD_LEEK= 	"MOVE_TOWARD_LEEK";
+global USE_WEAPON=	 		"USE_WEAPON";
+global USE_BANDAGE= 		"USE_BANDAGE";
+global USE_STALACTITE= 		"USE_STALACTITE";
+global USE_ROCK= 			"USE_ROCK";
+global USE_PEBBLE=			"USE_PEBBLE";
+global USE_HELMET=			"USE_HELMET";
+global USE_PROTEIN = 		"USE_PROTEIN";
+global LAST_ACTION = 		"LAST_ACTION";
+global END_TURN = 			"END_TURN";
 
 global actionSequence = [];//tableau contenant la liste des actions à effectuer pendant ce tour
 global currentAction = 0;//numéro de l'action actuel
