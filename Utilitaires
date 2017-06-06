@@ -3,40 +3,40 @@
 //-------------------------------------------------------------
 include("GlobalVar");
 
-function getDamage(ID, strength) {	
-	var damage = [];
-	
-	if(isChip(ID)) {
-	
-		var chipEffects = getChipEffects(ID);
-		
-		for (var chipEffect in chipEffects) {
-			if(chipEffect[0] == EFFECT_DAMAGE) {
-				var chipDamage = [];
-				chipDamage["MIN"] = chipEffect[1] * (1+strength/100);
-				chipDamage["MAX"] = chipEffect[2] * (1+strength/100);
-				push(damage, chipDamage);
-			}
-		}
-	} else if (isWeapon(ID)) {
-		var weaponEffects = getWeaponEffects(ID);
-		
-		for (var weaponEffect in weaponEffects) {
-			if(weaponEffect[0] == EFFECT_DAMAGE) {
-				var weaponDamage = [];
-				weaponDamage["MIN"] = weaponEffect[1] * (1+strength/100);
-				weaponDamage["MAX"] = weaponEffect[2] * (1+strength/100);
-				push(damage, weaponDamage);
-			}	
-		}
-	} else {
-		debug("Ni puce ni arme !!");
-	}
-	return damage;
+function getDamage(ID, strength) {
+var damage = [];
+
+if(isChip(ID)) {
+
+var chipEffects = getChipEffects(ID);
+
+for (var chipEffect in chipEffects) {
+if(chipEffect[0] == EFFECT_DAMAGE) {
+var chipDamage = [];
+chipDamage["MIN"] = chipEffect[1] * (1+strength/100);
+chipDamage["MAX"] = chipEffect[2] * (1+strength/100);
+push(damage, chipDamage);
+}
+}
+} else if (isWeapon(ID)) {
+var weaponEffects = getWeaponEffects(ID);
+
+for (var weaponEffect in weaponEffects) {
+if(weaponEffect[0] == EFFECT_DAMAGE) {
+var weaponDamage = [];
+weaponDamage["MIN"] = weaponEffect[1] * (1+strength/100);
+weaponDamage["MAX"] = weaponEffect[2] * (1+strength/100);
+push(damage, weaponDamage);
+}
+}
+} else {
+debug("Ni puce ni arme !!");
+}
+return damage;
 }
 
-function calculateDamage(leekID, damage) {	
-	return damage * (1 - getRelativeShield(leekID) / 100) - getAbsoluteShield(leekID);
+function calculateDamage(leekID, damage) {
+return damage * (1 - getRelativeShield(leekID) / 100) - getAbsoluteShield(leekID);
 }
 
 
@@ -44,36 +44,36 @@ function calculateDamage(leekID, damage) {
 // s'il ne peut pas : renvoi -1
 // s'il peut : renvoi le nombre de cellule qu'il doit parcourir pour attaquer
 function canUseWeaponIfMoving(attackerLeek, targetCell) {
-	var pathToCell = getPath(getCell(attackerLeek), targetCell);
+var pathToCell = getPath(getCell(attackerLeek), targetCell);
 
-	if(getCellDistance(getCell(attackerLeek), targetCell) == 1 && getMP() >= getWeaponMinRange(weaponID)-1) 		return 0;
-	
-	if (canUseWeaponFromCellToCell(getWeapon(attackerLeek), getCell(attackerLeek), targetCell)){
-			return 0;
-		}
-	
-	for (var i=0; i < getMP(attackerLeek) && i < count(pathToCell); i++){
-		if (canUseWeaponFromCellToCell(getWeapon(attackerLeek), pathToCell[i], targetCell)){
-			return i;
-		}
-	}
-	return -1;
+if(getCellDistance(getCell(attackerLeek), targetCell) == 1 && getMP() >= getWeaponMinRange(weaponID)-1) return 0;
+
+if (canUseWeaponFromCellToCell(getWeapon(attackerLeek), getCell(attackerLeek), targetCell)){
+return 0;
+}
+
+for (var i=0; i < getMP(attackerLeek) && i < count(pathToCell); i++){
+if (canUseWeaponFromCellToCell(getWeapon(attackerLeek), pathToCell[i], targetCell)){
+return i;
+}
+}
+return -1;
 }
 
 //Determine si un poireau est capable d'utiliser CHIP_SPARK sur une cellule s'il se déplace
 // s'il ne peut pas : renvoi -1
 // s'il peut : renvoi le nombre de cellule qu'il doit parcourir pour attaquer
 function canUseChipIfMoving(chip, attackerLeek, targetCell) {
-	if (canUseChipFromCellToCell(chip, getCell(attackerLeek), targetCell)){
-		return 0;
-	}
-	var pathToCell = getPath(getCell(attackerLeek), targetCell);
-	for (var i=0; i < getMP(attackerLeek) && i < count(pathToCell); i++){
-		if (canUseChipFromCellToCell(chip, pathToCell[i], targetCell)){
-			return i+1;
-		}
-	}
-	return -1;
+if (canUseChipFromCellToCell(chip, getCell(attackerLeek), targetCell)){
+return 0;
+}
+var pathToCell = getPath(getCell(attackerLeek), targetCell);
+for (var i=0; i < getMP(attackerLeek) && i < count(pathToCell); i++){
+if (canUseChipFromCellToCell(chip, pathToCell[i], targetCell)){
+return i+1;
+}
+}
+return -1;
 }
 
 /*****************************
@@ -87,56 +87,56 @@ function canUseChipIfMoving(chip, attackerLeek, targetCell) {
 *
 ******************************/
 function canUseChipFromCellToCell(chip, startCell, endCell) {
-	//Si la puce est en CD, il ne sert à rien de continuer
-	//if(getCooldown(chip) != 0) {return false;} 
-	
-	//Cas du selfcast, on renvoie vrai
-	if(startCell == endCell) {return true;}
-	
-	//Cas des puces qui nécessitent une ligne de vue
-	if (chipNeedLos(chip)) {
-		//On vérfie que la ligne de vue est dégagée
-		if(lineOfSight(startCell, endCell)) {
-			//Cas des puces à utiliser uniquement en ligne
-			if(isInlineChip(chip)) {
-			//On vérifie que les cellules sont alignées
-				if(isOnSameLine(startCell, endCell)) {
-					//On compare la distance entre les cellules avec les minRange et maxRange de la puce
-					if(getCellDistance(startCell, endCell) <= getChipMaxRange(chip) && getCellDistance(startCell, endCell) >= getChipMinRange(chip)) { return true; }
-					else { return false; }
-				}
-				//Si les cellules ne sont pas alignées, on renvoie faux
-				else { return false; }
-			}
-			//Cas des puces qui ne s'utilisent pas en ligne
-			else {
-				//On compare la distance entre les cellules avec les minRange et maxRange de la puce
-				if(getCellDistance(startCell, endCell) <= getChipMaxRange(chip) && getCellDistance(startCell, endCell) >= getChipMinRange(chip)) { return true; }
-				else { return false; }
-			}
-		}
-		else { return false; }
-	} 
-	//Cas des puces qui ne nécessitent pas de ligne de vue (CHIP_SPARK)
-	else {
-		//Cas des puces à utiliser uniquement en ligne
-		if(isInlineChip(chip)) {
-			//On vérifie que les cellules sont alignées
-			if(isOnSameLine(startCell, endCell)) {
-				//On compare la distance entre les cellules avec les minRange et maxRange de la puce
-				if(getCellDistance(startCell, endCell) <= getChipMaxRange(chip) && getCellDistance(startCell, endCell) >= getChipMinRange(chip)) { return true; }
-				else { return false; }
-			}
-			//Si les cellules ne sont pas alignées, on renvoie faux
-			else { return false; }
-		}
-		//Cas des puces qui ne s'utilisent pas en ligne
-		else {
-			//On compare la distance entre les cellules avec les minRange et maxRange de la puce
-			if(getCellDistance(startCell, endCell) <= getChipMaxRange(chip) && getCellDistance(startCell, endCell) >= getChipMinRange(chip)) { return true; }
-			else { return false; }
-		}
-	}
+//Si la puce est en CD, il ne sert à rien de continuer
+//if(getCooldown(chip) != 0) {return false;} 
+
+//Cas du selfcast, on renvoie vrai
+if(startCell == endCell) {return true;}
+
+//Cas des puces qui nécessitent une ligne de vue
+if (chipNeedLos(chip)) {
+//On vérfie que la ligne de vue est dégagée
+if(lineOfSight(startCell, endCell)) {
+//Cas des puces à utiliser uniquement en ligne
+if(isInlineChip(chip)) {
+//On vérifie que les cellules sont alignées
+if(isOnSameLine(startCell, endCell)) {
+//On compare la distance entre les cellules avec les minRange et maxRange de la puce
+if(getCellDistance(startCell, endCell) <= getChipMaxRange(chip) && getCellDistance(startCell, endCell) >= getChipMinRange(chip)) { return true; }
+else { return false; }
+}
+//Si les cellules ne sont pas alignées, on renvoie faux
+else { return false; }
+}
+//Cas des puces qui ne s'utilisent pas en ligne
+else {
+//On compare la distance entre les cellules avec les minRange et maxRange de la puce
+if(getCellDistance(startCell, endCell) <= getChipMaxRange(chip) && getCellDistance(startCell, endCell) >= getChipMinRange(chip)) { return true; }
+else { return false; }
+}
+}
+else { return false; }
+} 
+//Cas des puces qui ne nécessitent pas de ligne de vue (CHIP_SPARK)
+else {
+//Cas des puces à utiliser uniquement en ligne
+if(isInlineChip(chip)) {
+//On vérifie que les cellules sont alignées
+if(isOnSameLine(startCell, endCell)) {
+//On compare la distance entre les cellules avec les minRange et maxRange de la puce
+if(getCellDistance(startCell, endCell) <= getChipMaxRange(chip) && getCellDistance(startCell, endCell) >= getChipMinRange(chip)) { return true; }
+else { return false; }
+}
+//Si les cellules ne sont pas alignées, on renvoie faux
+else { return false; }
+}
+//Cas des puces qui ne s'utilisent pas en ligne
+else {
+//On compare la distance entre les cellules avec les minRange et maxRange de la puce
+if(getCellDistance(startCell, endCell) <= getChipMaxRange(chip) && getCellDistance(startCell, endCell) >= getChipMinRange(chip)) { return true; }
+else { return false; }
+}
+}
 }
 
 /*****************************
@@ -150,48 +150,49 @@ function canUseChipFromCellToCell(chip, startCell, endCell) {
 *
 ******************************/
 function canUseWeaponFromCellToCell(weaponUsed, startCell, endCell) {
-	//Cas des armes qui nécessitent une ligne de vue
-	if (weaponNeedLos(weaponUsed)) {
-		//On vérfie que la ligne de vue est dégagée
-		if(lineOfSight(startCell, endCell)) {
-			//Cas des armes à utiliser uniquement en ligne
-			if(isInlineWeapon(weaponUsed)) {
-			//On vérifie que les cellules sont alignées
-				if(isOnSameLine(startCell, endCell)) {
-					//On compare la distance entre les cellules avec les minRange et maxRange de l'arme
-					if(getCellDistance(startCell, endCell) <= getWeaponMaxRange(weaponUsed) && getCellDistance(startCell, endCell) >= getWeaponMinRange(weaponUsed)) { return true; }
-					else { return false; }
-				}
-				//Si les cellules ne sont pas alignées, on renvoie faux
-				else { return false; }
-			}
-			//Cas des armes qui ne s'utilisent pas en ligne
-			else {
-				//On compare la distance entre les cellules avec les minRange et maxRange de l'arme
-				if(getCellDistance(startCell, endCell) <= getWeaponMaxRange(weaponUsed) && getCellDistance(startCell, endCell) >= getWeaponMinRange(weaponUsed)) { return true; }
-				else { return false; }
-			}
-		}
-		else { return false; }
-	} 
-	//Cas des armes qui ne nécessitent pas de ligne de vue (CHIP_SPARK)
-	else {
-		//Cas des armes à utiliser uniquement en ligne
-		if(isInlineWeapon(weaponUsed)) {
-			//On vérifie que les cellules sont alignées
-			if(isOnSameLine(startCell, endCell)) {
-				//On compare la distance entre les cellules avec les minRange et maxRange de l'arme
-				if(getCellDistance(startCell, endCell) <= getWeaponMaxRange(weaponUsed) && getCellDistance(startCell, endCell) >= getWeaponMinRange(weaponUsed)) { return true; }
-				else { return false; }
-			}
-			//Si les cellules ne sont pas alignées, on renvoie faux
-			else { return false; }
-		}
-		//Cas des armes qui ne s'utilisent pas en ligne
-		else {
-			//On compare la distance entre les cellules avec les minRange et maxRange de l'arme
-			if(getCellDistance(startCell, endCell) <= getWeaponMaxRange(weaponUsed) && getCellDistance(startCell, endCell) >= getWeaponMinRange(weaponUsed)) { return true; }
-			else { return false; }
-		}
-	}
+//Cas des armes qui nécessitent une ligne de vue
+if (weaponNeedLos(weaponUsed)) {
+//On vérfie que la ligne de vue est dégagée
+if(lineOfSight(startCell, endCell)) {
+//Cas des armes à utiliser uniquement en ligne
+if(isInlineWeapon(weaponUsed)) {
+//On vérifie que les cellules sont alignées
+if(isOnSameLine(startCell, endCell)) {
+//On compare la distance entre les cellules avec les minRange et maxRange de l'arme
+if(getCellDistance(startCell, endCell) <= getWeaponMaxRange(weaponUsed) && getCellDistance(startCell, endCell) >= getWeaponMinRange(weaponUsed)) { return true; }
+else { return false; }
 }
+//Si les cellules ne sont pas alignées, on renvoie faux
+else { return false; }
+}
+//Cas des armes qui ne s'utilisent pas en ligne
+else {
+//On compare la distance entre les cellules avec les minRange et maxRange de l'arme
+if(getCellDistance(startCell, endCell) <= getWeaponMaxRange(weaponUsed) && getCellDistance(startCell, endCell) >= getWeaponMinRange(weaponUsed)) { return true; }
+else { return false; }
+}
+}
+else { return false; }
+} 
+//Cas des armes qui ne nécessitent pas de ligne de vue (CHIP_SPARK)
+else {
+//Cas des armes à utiliser uniquement en ligne
+if(isInlineWeapon(weaponUsed)) {
+//On vérifie que les cellules sont alignées
+if(isOnSameLine(startCell, endCell)) {
+//On compare la distance entre les cellules avec les minRange et maxRange de l'arme
+if(getCellDistance(startCell, endCell) <= getWeaponMaxRange(weaponUsed) && getCellDistance(startCell, endCell) >= getWeaponMinRange(weaponUsed)) { return true; }
+else { return false; }
+}
+//Si les cellules ne sont pas alignées, on renvoie faux
+else { return false; }
+}
+//Cas des armes qui ne s'utilisent pas en ligne
+else {
+//On compare la distance entre les cellules avec les minRange et maxRange de l'arme
+if(getCellDistance(startCell, endCell) <= getWeaponMaxRange(weaponUsed) && getCellDistance(startCell, endCell) >= getWeaponMinRange(weaponUsed)) { return true; }
+else { return false; }
+}
+}
+}
+

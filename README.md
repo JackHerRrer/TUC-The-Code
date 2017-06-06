@@ -1,11 +1,11 @@
-tag : IA_21_26
+tag : IA_LVL_UP
 
-lvl : - 21_26
+lvl : - 80 et +
 
-weapon : - double gun
+weapon : - A faire
 
-chip : 	- etincelle 
-	- casque
-	- armure
-	- guérison
-	- bandage
+chip : 	- A faire 
+	- 
+	- 
+	- 
+	- 

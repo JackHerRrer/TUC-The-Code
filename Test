@@ -1,4 +1,0 @@
-include("11_20_Utils");
-
-debug(getDamage(WEAPON_DOUBLE_GUN, getStrength(getLeek())));
-debug(getDamage(CHIP_SPARK, getStrength(getLeek())));

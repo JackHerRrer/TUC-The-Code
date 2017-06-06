@@ -9,45 +9,46 @@ include("FonctionEtat");
 
 // On défini si c'est la première fois ou pas que le script est lancé
 if (initialisation == null){
-	initialisation = true;
-	etat = INIT_GAME;
+initialisation = true;
+etat = INIT_GAME;
 }
 else {
-	etat = INIT_TURN;
+etat = INIT_TURN;
 }
 
 // Boucle appellant la fonction gérant les états
 while (etat != ENDTURN){
-	stateMachine();
+stateMachine();
 }
 if (isDead(enemyID)){say ("Reviens gamin !! C'était pour rire ");}
 else {say("ez maggeule");}
 
 /***********************************/
-/*	 Fonction gérant les états     */
+/* Fonction gérant les états     */
 /***********************************/
 
 function stateMachine(){
-	
-	if (etat == INIT_GAME) {initGameFunction();}
-	else if (etat == INIT_TURN) {initTurnFunction();}
-	else if (etat == BUFF) {buff();}
-	else if (etat == ATTACK) {attack();}
-	else if (etat == HEAL) {heal();}
-	else if (etat == MOVE) {move();}
-	else if (etat == END) {end();}
-	else {debugC("ETAT INDEFINI !!!",getColor(255, 0, 0));}
-	/*if (etat == INIT_GAME) {initGameFunction();}
-	else if (etat == INIT_TURN) {initTurnFunction();}
-	else if (etat == STRATEGY_CHOICE) {strategyChoiceFunction();}
-	else if (etat == STRATEGY_KITING) {strategyKitingFunction();}
-	else if (etat == STRATEGY_FACE) {strategyFaceFunction();}
-	else if (etat == STRATEGY_COWARD) {strategyCowardFunction();}
-	else if (etat == STRATEGY_SHIELD_SPARK_SPARK) {strategyShieldSparkSpark();}
-	else if (etat == STRATEGY_MOVE_TO_LIMIT_RANGE) { strategyMoveToLimitRange();}
-	else if (etat == STRATEGY_HELM_SPARK_WEAPON) { strategyHelmSparkWeaponFunction();}
-	else if (etat == STRATEGY_SHIELD_HEAL_WEAPON) { strategyShieldHealWeaponFunction();}
-	else if (etat == STRATEGY_HEAL) {strategyHealFunction();}
-	else if (etat == END) {debugC("ETAT END !!!",getColor(255, 0, 0));}
-	else {debugC("ETAT INDEFINI !!!",getColor(255, 0, 0));}*/
+
+if (etat == INIT_GAME) {initGameFunction();}
+else if (etat == INIT_TURN) {initTurnFunction();}
+else if (etat == BUFF) {buff();}
+else if (etat == ATTACK) {attack();}
+else if (etat == HEAL) {heal();}
+else if (etat == MOVE) {move();}
+else if (etat == END) {end();}
+else {debugC("ETAT INDEFINI !!!",getColor(255, 0, 0));}
+/*if (etat == INIT_GAME) {initGameFunction();}
+else if (etat == INIT_TURN) {initTurnFunction();}
+else if (etat == STRATEGY_CHOICE) {strategyChoiceFunction();}
+else if (etat == STRATEGY_KITING) {strategyKitingFunction();}
+else if (etat == STRATEGY_FACE) {strategyFaceFunction();}
+else if (etat == STRATEGY_COWARD) {strategyCowardFunction();}
+else if (etat == STRATEGY_SHIELD_SPARK_SPARK) {strategyShieldSparkSpark();}
+else if (etat == STRATEGY_MOVE_TO_LIMIT_RANGE) { strategyMoveToLimitRange();}
+else if (etat == STRATEGY_HELM_SPARK_WEAPON) { strategyHelmSparkWeaponFunction();}
+else if (etat == STRATEGY_SHIELD_HEAL_WEAPON) { strategyShieldHealWeaponFunction();}
+else if (etat == STRATEGY_HEAL) {strategyHealFunction();}
+else if (etat == END) {debugC("ETAT END !!!",getColor(255, 0, 0));}
+else {debugC("ETAT INDEFINI !!!",getColor(255, 0, 0));}*/
 }
+
