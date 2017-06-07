@@ -110,16 +110,35 @@ function strategyChoiceFunction(){
 			actionTotal++;
 		}
 
-		if (getCooldown(CHIP_PUNY_BULB) == 0){
+		//on vérifie qu'on est pas en cooldown et qu'on a pas déjà invoqué deux bulbes
+		if (getCooldown(CHIP_PUNY_BULB) == 0 && getTurn() < 6){
 			actionSequence[actionTotal] = USE_PUNNY_BULB_CHIP; 	// 6 TP	+ 1 MP
 			actionTotal++;
 		}
 
-		actionSequence[actionTotal] = MOVE_TOWARD_ENEMY; 		// 0-3 MP
-		actionTotal++;
+		if (canUseWeaponOnEnemyIfMoving(weaponID, getCell(enemyID)) != -1){
+		//if (getCellToUseWeapon(weaponID, enemyID) != null){			
+			actionSequence[actionTotal] = MOVE_TO_WEAPON_RANGE; 		// 0-4 MP
+			actionTotal++;
+		}
+		else if (getTurn() > 4){
+			actionSequence[actionTotal] = MOVE_TOWARD_ENEMY; 		// 0-4 MP
+			actionTotal++;
+		}
+
+		if (getTurn() == 2){
+			actionSequence[actionTotal] = MOVE_AWAY_FROM_ENEMY; 		// 0-3 MP
+			actionTotal++;
+		}
 
 		actionSequence[actionTotal] = USE_STALACTITE;			// 6 TP
 		actionTotal++;		
+
+		//condition approximative servant à ne pas lancer le shield si on a le lethal
+		if ((getLife(enemyID) + getAbsoluteShield(enemyID)) > 215){
+			actionSequence[actionTotal] = USE_SHIELD;			//4 TP
+			actionTotal++;
+		}
 
 		actionSequence[actionTotal] = USE_WEAPON;			// 5 TP
 		actionTotal++;
@@ -132,6 +151,18 @@ function strategyChoiceFunction(){
 
 		actionSequence[actionTotal] = USE_ROCK;			//5 TP
 		actionTotal++;
+
+		actionSequence[actionTotal] = USE_SPARK;			//3 TP
+		actionTotal++;
+
+		actionSequence[actionTotal] = USE_SPARK;			//3 TP
+		actionTotal++;
+
+		actionSequence[actionTotal] = USE_SPARK;			//3 TP
+		actionTotal++;
+
+		actionSequence[actionTotal] = USE_SPARK;			//3 TP
+		actionTotal++;
 	}
 	else 
 	{
@@ -139,16 +170,16 @@ function strategyChoiceFunction(){
 		actionSequence[actionTotal] = MOVE_TOWARD_ENEMY; 
 		actionTotal++;
 
-		actionSequence[actionTotal] = USE_BANDAGE; 
-		actionTotal++;
-
 		actionSequence[actionTotal] = USE_HELMET; 
 		actionTotal++;
 
-		actionSequence[actionTotal] = USE_PROTEIN; 
+		actionSequence[actionTotal] = USE_PEBBLE; 
 		actionTotal++;
 
-		actionSequence[actionTotal] = USE_PEBBLE; 
+		actionSequence[actionTotal] = USE_BANDAGE; 
+		actionTotal++;
+
+		actionSequence[actionTotal] = USE_PROTEIN; 
 		actionTotal++;
 	}
 
@@ -192,6 +223,13 @@ function moveTowardEnemyFunction (){
 	etat = ACTION_CHOICE;
 }
 
+function moveAwayFromEnemyFunction(){
+	debug("move away from enemy state"); 	
+	moveAwayFrom(enemyID);
+
+	etat = ACTION_CHOICE;
+}
+
 function usePunnyBulbChipFunction(){
 	debug("use punny bulb chip state"); 	
 	
@@ -208,6 +246,14 @@ function moveTowardLeekFunction(){
 	moveToward(ourLeekID);
 
 	etat = ACTION_CHOICE;	
+}
+
+function moveToWeaponRangeFunction(){
+	debug("move to weapon range state"); 	
+
+	moveTowardCell(canUseWeaponOnEnemyIfMoving(weaponID, enemyID));
+
+	etat = ACTION_CHOICE;
 }
 
 function useWeaponFunction(){
@@ -255,6 +301,16 @@ function useHelmetFunction(){
 	debug("use helemt state");
 
 	useChip(CHIP_HELMET, ourLeekID);
+	debug("absolute shield : " + getAbsoluteShield(ourLeekID));
+
+	etat = ACTION_CHOICE;
+}
+
+function useShieldFunction(){
+	debug("use SHIELD state");
+
+	useChip(CHIP_SHIELD, ourLeekID);
+	debug("absolute shield : " + getAbsoluteShield(ourLeekID));
 
 	etat = ACTION_CHOICE;
 }
@@ -263,6 +319,14 @@ function useProteinFunction(){
 	debug("use protein state");
 
 	useChip(CHIP_PROTEIN, ourLeekID);
+
+	etat = ACTION_CHOICE;
+}
+
+function useSparkFunction(){
+	debug("use spark state");
+
+	useChip(CHIP_SPARK, enemyID);
 
 	etat = ACTION_CHOICE;
 }

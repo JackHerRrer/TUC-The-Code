@@ -33,6 +33,8 @@ function stateMachine(){
 		else if (etat == EQUIP_SHOTGUN)		{equipShotgunFunction();}
 		else if (etat == EQUIP_MAGNUM)		{equipMagnumFunction();} 
 		else if (etat == MOVE_TOWARD_ENEMY)	{moveTowardEnemyFunction();} 
+		else if (etat == MOVE_AWAY_FROM_ENEMY){moveAwayFromEnemyFunction();}
+		else if (etat == MOVE_TO_WEAPON_RANGE){moveToWeaponRangeFunction();}
 		else if (etat == USE_PUNNY_BULB_CHIP) {usePunnyBulbChipFunction();}
 		else if (etat == MOVE_TOWARD_LEEK)	{moveTowardLeekFunction();}
 		else if (etat == USE_WEAPON)		{useWeaponFunction();}
@@ -41,7 +43,9 @@ function stateMachine(){
 		else if (etat == USE_ROCK)			{useRockFunction();}	
 		else if (etat == USE_PEBBLE)		{usePebbleFunction();}
 		else if (etat == USE_HELMET)		{useHelmetFunction();}
+		else if (etat == USE_SHIELD)		{useShieldFunction();}		
 		else if (etat == USE_PROTEIN)		{useProteinFunction();}
+		else if (etat == USE_SPARK)			{useSparkFunction();}		
 		else if (etat == LAST_ACTION) 		{lastActionFunction();}
 		else {debugC("ETAT INDEFINI !!!",getColor(255, 0, 0));}
 	}

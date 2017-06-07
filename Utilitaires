@@ -3,6 +3,7 @@
 //-------------------------------------------------------------
 include("GlobalVar");
 
+
 function getDamage(ID, strength) {	
 	var damage = [];
 	
@@ -43,6 +44,7 @@ function calculateDamage(leekID, damage) {
 //Determine si un poireau est capable d'utiliser son arme sur une cellule s'il se déplace
 // s'il ne peut pas : renvoi -1
 // s'il peut : renvoi le nombre de cellule qu'il doit parcourir pour attaquer
+/*
 function canUseWeaponIfMoving(attackerLeek, targetCell) {
 	var pathToCell = getPath(getCell(attackerLeek), targetCell);
 
@@ -59,6 +61,22 @@ function canUseWeaponIfMoving(attackerLeek, targetCell) {
 	}
 	return -1;
 }
+*/
+
+function canUseWeaponOnEnemyIfMoving(weapon, targetCell) {
+	
+	var cellsToUseWeaponOnEnemy = getCellsToUseWeapon(weapon, targetCell);
+	var MPAvailable = getMP();
+
+	for (var i = 0; i < count(cellsToUseWeaponOnEnemy); i++){
+		var pathLength = getPathLength(getCell(), cellsToUseWeaponOnEnemy[i]);
+		if (pathLength <= MPAvailable){
+			return cellsToUseWeaponOnEnemy[i];
+		}
+	}
+	return -1;
+}
+
 
 //Determine si un poireau est capable d'utiliser CHIP_SPARK sur une cellule s'il se déplace
 // s'il ne peut pas : renvoi -1
