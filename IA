@@ -32,6 +32,7 @@ function stateMachine(){
 		else if (etat == ACTION_CHOICE)		{actionChoiceFunction();}
 		else if (etat == EQUIP_SHOTGUN)		{equipShotgunFunction();}
 		else if (etat == EQUIP_MAGNUM)		{equipMagnumFunction();} 
+		else if (etat == EQUIP_GRENADE_LAUNCHER){equipGrenadeLauncherFunction();} 
 		else if (etat == MOVE_TOWARD_ENEMY)	{moveTowardEnemyFunction();} 
 		else if (etat == MOVE_AWAY_FROM_ENEMY){moveAwayFromEnemyFunction();}
 		else if (etat == MOVE_TO_WEAPON_RANGE){moveToWeaponRangeFunction();}

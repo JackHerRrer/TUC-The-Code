@@ -106,7 +106,7 @@ function strategyChoiceFunction(){
 	if (getType() == ENTITY_LEEK){
 		//IA du poireau
 		if (weaponID == null){
-			actionSequence[actionTotal] = EQUIP_MAGNUM; 			// 1 TP
+			actionSequence[actionTotal] = EQUIP_GRENADE_LAUNCHER; 			// 1 TP
 			actionTotal++;
 		}
 
@@ -167,8 +167,11 @@ function strategyChoiceFunction(){
 	else 
 	{
 		//IA du buble
-		actionSequence[actionTotal] = MOVE_TOWARD_ENEMY; 
-		actionTotal++;
+
+		if (getTurn() < 2 || getTurn() > 4 ){
+			actionSequence[actionTotal] = MOVE_TOWARD_ENEMY; 
+			actionTotal++;
+		}
 
 		actionSequence[actionTotal] = USE_HELMET; 
 		actionTotal++;
@@ -211,6 +214,15 @@ function equipShotgunFunction(){
 function equipMagnumFunction(){
 	debug("equip magnum state"); 	
 	setWeapon(WEAPON_MAGNUM); // Attention : coûte 1 PT
+	weaponID = getWeapon();
+
+	etat = ACTION_CHOICE;
+}
+
+
+function equipGrenadeLauncherFunction(){
+	debug("equip grenadeLauncher state"); 	
+	setWeapon(WEAPON_GRENADE_LAUNCHER); // Attention : coûte 1 PT
 	weaponID = getWeapon();
 
 	etat = ACTION_CHOICE;
