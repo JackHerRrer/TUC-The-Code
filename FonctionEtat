@@ -116,7 +116,7 @@ function strategyChoiceFunction(){
 			actionTotal++;
 		}
 
-		if (canUseWeaponOnEnemyIfMoving(weaponID, getCell(enemyID)) != -1){
+		if (canUseWeaponOnEnemyIfMoving(weaponID, enemyID) != -1){
 		//if (getCellToUseWeapon(weaponID, enemyID) != null){			
 			actionSequence[actionTotal] = MOVE_TO_WEAPON_RANGE; 		// 0-4 MP
 			actionTotal++;

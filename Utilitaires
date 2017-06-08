@@ -67,12 +67,16 @@ function canUseWeaponOnEnemyIfMoving(weapon, targetCell) {
 	
 	var cellsToUseWeaponOnEnemy = getCellsToUseWeapon(weapon, targetCell);
 	var MPAvailable = getMP();
-
-	for (var i = 0; i < count(cellsToUseWeaponOnEnemy); i++){
-		var pathLength = getPathLength(getCell(), cellsToUseWeaponOnEnemy[i]);
-		if (pathLength <= MPAvailable){
-			return cellsToUseWeaponOnEnemy[i];
+	if (cellsToUseWeaponOnEnemy != null){ 
+		for (var i = 0; i < count(cellsToUseWeaponOnEnemy); i++){
+			var pathLength = getPathLength(getCell(), cellsToUseWeaponOnEnemy[i]);
+			if (pathLength <= MPAvailable){
+				return cellsToUseWeaponOnEnemy[i];
+			}
 		}
+	}
+	else { 
+		debug("cellsToUseWeaponOnEnemy is null");
 	}
 	return -1;
 }
