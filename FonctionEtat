@@ -110,59 +110,74 @@ function strategyChoiceFunction(){
 			actionTotal++;
 		}
 
-		//on vérifie qu'on est pas en cooldown et qu'on a pas déjà invoqué deux bulbes
-		if (getCooldown(CHIP_PUNY_BULB) == 0 && getTurn() < 6){
-			actionSequence[actionTotal] = USE_PUNNY_BULB_CHIP; 	// 6 TP	+ 1 MP
-			actionTotal++;
-		}
-
-		if (canUseWeaponOnEnemyIfMoving(weaponID, enemyID) != -1){
+		if (canUseChipOnEnemyIfMoving(CHIP_LIGHTNING, enemyID) != -1){
 		//if (getCellToUseWeapon(weaponID, enemyID) != null){			
-			actionSequence[actionTotal] = MOVE_TO_WEAPON_RANGE; 		// 0-4 MP
+			actionSequence[actionTotal] = MOVE_TO_LIGHTNING_RANGE; 		// 0-4 MP
+			actionTotal++;
+
+			actionSequence[actionTotal] = USE_LIGHTNING; 		// 4 TP
+			actionTotal++;
+
+			actionSequence[actionTotal] = USE_LIGHTNING; 		// 4 TP
+			actionTotal++;
+
+			actionSequence[actionTotal] = USE_LIGHTNING; 		// 4 TP
 			actionTotal++;
 		}
-		else if (getTurn() > 4){
-			actionSequence[actionTotal] = MOVE_TOWARD_ENEMY; 		// 0-4 MP
+		else {
+			if (getCooldown(CHIP_PUNY_BULB) == 0 && getTurn() < 2){ 		// 6 on vérifie qu'on est pas en cooldown et qu'on a pas déjà invoqué un bulbes
+				actionSequence[actionTotal] = USE_PUNNY_BULB_CHIP; 	// 6 TP	+ 1 MP
+				actionTotal++;
+			}
+
+			if (canUseWeaponOnEnemyIfMoving(weaponID, enemyID) != -1){
+			//if (getCellToUseWeapon(weaponID, enemyID) != null){			
+				actionSequence[actionTotal] = MOVE_TO_WEAPON_RANGE; 		// 0-4 MP
+				actionTotal++;
+			}
+			else if (getTurn() > 4){
+				actionSequence[actionTotal] = MOVE_TOWARD_ENEMY; 		// 0-4 MP
+				actionTotal++;
+			}
+
+			if (getTurn() == 2){
+				actionSequence[actionTotal] = MOVE_AWAY_FROM_ENEMY; 		// 0-3 MP
+				actionTotal++;
+			}
+
+			actionSequence[actionTotal] = USE_STALACTITE;			// 6 TP
+			actionTotal++;		
+
+			//condition approximative servant à ne pas lancer le shield si on a le lethal
+			if ((getLife(enemyID) + getAbsoluteShield(enemyID)) > 215){
+				actionSequence[actionTotal] = USE_SHIELD;			//4 TP
+				actionTotal++;
+			}
+
+			actionSequence[actionTotal] = USE_WEAPON;			// 5 TP
+			actionTotal++;
+
+			actionSequence[actionTotal] = USE_WEAPON;			//5 TP
+			actionTotal++;
+
+			actionSequence[actionTotal] = USE_ROCK;			//5 TP
+			actionTotal++;
+
+			actionSequence[actionTotal] = USE_ROCK;			//5 TP
+			actionTotal++;
+
+			actionSequence[actionTotal] = USE_SPARK;			//3 TP
+			actionTotal++;
+
+			actionSequence[actionTotal] = USE_SPARK;			//3 TP
+			actionTotal++;
+
+			actionSequence[actionTotal] = USE_SPARK;			//3 TP
+			actionTotal++;
+
+			actionSequence[actionTotal] = USE_SPARK;			//3 TP
 			actionTotal++;
 		}
-
-		if (getTurn() == 2){
-			actionSequence[actionTotal] = MOVE_AWAY_FROM_ENEMY; 		// 0-3 MP
-			actionTotal++;
-		}
-
-		actionSequence[actionTotal] = USE_STALACTITE;			// 6 TP
-		actionTotal++;		
-
-		//condition approximative servant à ne pas lancer le shield si on a le lethal
-		if ((getLife(enemyID) + getAbsoluteShield(enemyID)) > 215){
-			actionSequence[actionTotal] = USE_SHIELD;			//4 TP
-			actionTotal++;
-		}
-
-		actionSequence[actionTotal] = USE_WEAPON;			// 5 TP
-		actionTotal++;
-
-		actionSequence[actionTotal] = USE_WEAPON;			//5 TP
-		actionTotal++;
-
-		actionSequence[actionTotal] = USE_ROCK;			//5 TP
-		actionTotal++;
-
-		actionSequence[actionTotal] = USE_ROCK;			//5 TP
-		actionTotal++;
-
-		actionSequence[actionTotal] = USE_SPARK;			//3 TP
-		actionTotal++;
-
-		actionSequence[actionTotal] = USE_SPARK;			//3 TP
-		actionTotal++;
-
-		actionSequence[actionTotal] = USE_SPARK;			//3 TP
-		actionTotal++;
-
-		actionSequence[actionTotal] = USE_SPARK;			//3 TP
-		actionTotal++;
 	}
 	else 
 	{
@@ -268,6 +283,14 @@ function moveToWeaponRangeFunction(){
 	etat = ACTION_CHOICE;
 }
 
+function moveToLightningRangeFunction(){
+	debug("move to lightning range state"); 	
+
+	moveTowardCell(canUseChipOnEnemyIfMoving(CHIP_LIGHTNING, enemyID));
+
+	etat = ACTION_CHOICE;
+}
+
 function useWeaponFunction(){
 	debug("use weapon state"); 	
 
@@ -343,6 +366,13 @@ function useSparkFunction(){
 	etat = ACTION_CHOICE;
 }
 
+function useLightningFunction(){
+	debug("use lightning state");
+
+	useChip(CHIP_LIGHTNING, enemyID);
+
+	etat = ACTION_CHOICE;
+}
 /*
 function strategyHealFunction() {
 	if(getCooldown(CHIP_CURE) == 0 && getTP() >= getChipCost(CHIP_CURE))

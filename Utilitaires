@@ -81,6 +81,25 @@ function canUseWeaponOnEnemyIfMoving(weapon, targetCell) {
 	return -1;
 }
 
+function canUseChipOnEnemyIfMoving(chip, targetCell) {
+	
+	var cellsToUseChipOnEnemy = getCellsToUseChip(chip, targetCell);
+	var MPAvailable = getMP();
+	if (cellsToUseChipOnEnemy != null){ 
+		for (var i = 0; i < count(cellsToUseChipOnEnemy); i++){
+			var pathLength = getPathLength(getCell(), cellsToUseChipOnEnemy[i]);
+			if (pathLength <= MPAvailable){
+				return cellsToUseChipOnEnemy[i];
+			}
+		}
+	}
+	else { 
+		debug("cellsToUseChipOnEnemy is null");
+	}
+	return -1;
+}
+
+
 
 //Determine si un poireau est capable d'utiliser CHIP_SPARK sur une cellule s'il se déplace
 // s'il ne peut pas : renvoi -1
