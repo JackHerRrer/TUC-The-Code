@@ -2,6 +2,7 @@
 include("Utilitaires");
 include("GlobalVar");
 include("FonctionEtat");
+include("Strategy");
 
 /***********************************/
 /*   Fonction principale de l'IA   */

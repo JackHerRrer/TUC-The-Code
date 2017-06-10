@@ -1,6 +1,7 @@
 include("GlobalVar");
 include("Utilitaires");
-
+include("Strategy");
+include("IA");
 
 function initGameFunction(){
 	//debug("init game state");
