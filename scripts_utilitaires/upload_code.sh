@@ -3,7 +3,7 @@ set +x
 
 LEEK_NAME=JeanFile
 
-FOLDER=TUC-The-Code
+FOLDER=/home/Max/TUC-The-Code/
 IA_NAME_1=GlobalVar
 IA_FILE_NAME_1="${FOLDER}/${IA_NAME_1}"
 
@@ -59,16 +59,15 @@ echo IA_ID $IA_ID
 
 echo Charge code 
 
-RESULT_UPLOAD=$(curl -i "https://leekwars.com/api/ai/save/" -H "Cookie: ${TOKEN}"  \
+RESULT_UPLOAD=$(curl "https://leekwars.com/api/ai/save/" -H "Cookie: ${TOKEN}"  \
 					--data "ai_id=${IA_ID}" \
 					--data "token="%"24" \
 					--data-urlencode "code@$2"\
 					2>/dev/null)
 
-if [[ ${RESULT_UPLOAD} == *success* ]]; then
+if [[ -z $(echo ${RESULT_UPLOAD} | jq 'select(.result[][2] != 1)' ) ]]; then
         echo -e "\033[32msuccess\033[0m"
 else
-	echo ${RESULT_UPLOAD}
         echo -e "\033[31m${RESULT_UPLOAD}\033[0m"
 fi
 

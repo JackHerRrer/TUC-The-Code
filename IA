@@ -40,8 +40,10 @@ function stateMachine(){
 		else if (etat == MOVE_AWAY_FROM_ENEMY)	{moveAwayFromEnemyFunction();}
 		else if (etat == MOVE_TO_WEAPON_RANGE)	{moveToWeaponRangeFunction();}
 		else if (etat == MOVE_TO_LIGHTNING_RANGE){moveToLightningRangeFunction();}
+		else if (etat == MOVE_TO_STALACTITE_RANGE){moveToStalactiteRangeFunction();}
+		else if (etat == MOVE_TO_SPARK_RANGE)	{moveToSparkRangeFunction();}
 
-		else if (etat == USE_PUNNY_BULB_CHIP) {usePunnyBulbChipFunction();}
+		else if (etat == SUMMON_PUNNY_BULB) {summonPunnyBulbFunction();}
 		else if (etat == MOVE_TOWARD_LEEK)	{moveTowardLeekFunction();}
 		else if (etat == USE_WEAPON)		{useWeaponFunction();}
 		else if (etat == USE_BANDAGE)		{useBandageFunction();}

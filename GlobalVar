@@ -3,9 +3,10 @@
 //-------------------------------------------------------------------
 
 //-----Constantes d'état--------------
-global actionSequence = [];//tableau contenant la liste des actions à effectuer pendant ce tour
-global currentAction = 0;//numéro de l'action actuel
-global actionTotal = 0;//nomhbre total d'action dans ce tour
+global actionSequence = [];	//tableau contenant la liste des actions à effectuer pendant ce tour
+global currentAction = 0;	//numéro de l'action actuel
+global actionTotal = 0;		//nombre total d'action dans ce tour
+global TPTotal = 0;			//nombre de point d'action utilisé ce tour ci
 
 global etat;
 global INIT_GAME = 			"INIT_GAME";
@@ -15,17 +16,19 @@ global ACTION_CHOICE = 		"ACTION_CHOICE";
 global LAST_ACTION = 		"LAST_ACTION";
 global END_TURN = 			"END_TURN";
 
-global MOVE_TOWARD_ENEMY = 	"MOVE_TOWARD_ENEMY";
-global MOVE_AWAY_FROM_ENEMY="MOVE_AWAY_FROM_ENEMY";
-global MOVE_TO_WEAPON_RANGE="MOVE_TO_WEAPON_RANGE";
-global MOVE_TO_LIGHTNING_RANGE="MOVE_TO_LIGHTNING_RANGE";
+global MOVE_TOWARD_ENEMY = 		"MOVE_TOWARD_ENEMY";
+global MOVE_AWAY_FROM_ENEMY=	"MOVE_AWAY_FROM_ENEMY";
+global MOVE_TO_WEAPON_RANGE=	"MOVE_TO_WEAPON_RANGE";
+global MOVE_TO_LIGHTNING_RANGE=	"MOVE_TO_LIGHTNING_RANGE";
+global MOVE_TO_STALACTITE_RANGE="MOVE_TO_STALACTITE_RANGE";
+global MOVE_TO_SPARK_RANGE=		"MOVE_TO_SPARK_RANGE";
 
 global EQUIP_SHOTGUN = 		"EQUIP_SHOTGUN";
 global EQUIP_MAGNUM = 		"EQUIP_MAGNUM";
 global EQUIP_GRENADE_LAUNCHER="EQUIP_GRENADE_LAUNCHER";
 global USE_WEAPON=	 		"USE_WEAPON";
 
-global USE_PUNNY_BULB_CHIP = "USE_PUNNY_BULB_CHIP";
+global SUMMON_PUNNY_BULB =  "SUMMON_PUNNY_BULB";
 global MOVE_TOWARD_LEEK= 	"MOVE_TOWARD_LEEK";
 global USE_BANDAGE= 		"USE_BANDAGE";
 global USE_STALACTITE= 		"USE_STALACTITE";
@@ -61,11 +64,6 @@ global MOVE = "MOVE";
 global END = "END";
 global ENDTURN = "ENDTURN";
 */
-
-//-----Constantes de déplacement--------------
-global GO = "GO";
-global BACK = "BACK";
-global STOP = "STOP";
 
 
 //----Variables globales---------------------

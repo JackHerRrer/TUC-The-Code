@@ -1,3 +1,245 @@
 include("GlobalVar");
 include("Utilitaires");
 include("FonctionEtat");
+
+function leekStrategyChoice(){
+
+	
+	if (getTurn() == 1){
+		first_turn_strategy();
+	}
+
+	else if (getTurn() > 1 && getTurn() < 5){
+		running_away_strategy();
+	}
+	
+	else if (getTurn() >= 4){
+		fight_strategy();
+	}
+	//complete_strategy();
+
+	debug("******************************");
+	for (var i = 0; i < actionTotal; i++){
+		debug(actionSequence[i]);
+	}
+	debug("TP total : "+ TPTotal);
+	debug("******************************\n");
+}
+
+function punnyBulbStrategyChoice(){
+
+	if (getTurn() < 2 || getTurn() > 5){
+		actionSequence[actionTotal] = MOVE_TOWARD_ENEMY; 
+		actionTotal++;
+	}
+
+	actionSequence[actionTotal] = USE_HELMET; 
+	actionTotal++;
+
+	actionSequence[actionTotal] = USE_PEBBLE; 
+	actionTotal++;
+
+	actionSequence[actionTotal] = USE_BANDAGE; 
+	actionTotal++;
+
+	actionSequence[actionTotal] = USE_PROTEIN; 
+	actionTotal++;
+
+}
+
+/*
+function complete_strategy(){
+	if (weaponID == null){
+			actionSequence[actionTotal] = EQUIP_GRENADE_LAUNCHER; 			// 1 TP
+			actionTotal++;
+		}
+
+	if (canUseChipOnEnemyIfMoving(CHIP_LIGHTNING, enemyID) != -1){
+	//if (getCellToUseWeapon(weaponID, enemyID) != null){			
+		actionSequence[actionTotal] = MOVE_TO_LIGHTNING_RANGE; 		// 0-4 MP
+		actionTotal++;
+
+		actionSequence[actionTotal] = USE_LIGHTNING; 		// 4 TP
+		actionTotal++;
+
+		actionSequence[actionTotal] = USE_LIGHTNING; 		// 4 TP
+		actionTotal++;
+
+		actionSequence[actionTotal] = USE_LIGHTNING; 		// 4 TP
+		actionTotal++;
+	}
+	else {
+		if (getCooldown(CHIP_PUNY_BULB) == 0 && getTurn() < 2){ 		// 6 on vérifie qu'on est pas en cooldown et qu'on a pas déjà invoqué un bulbes
+			actionSequence[actionTotal] = SUMMON_PUNNY_BULB; 	// 6 TP	+ 1 MP
+			actionTotal++;
+		}
+
+		if (canUseWeaponOnEnemyIfMoving(weaponID, enemyID) != -1){
+		//if (getCellToUseWeapon(weaponID, enemyID) != null){			
+			actionSequence[actionTotal] = MOVE_TO_WEAPON_RANGE; 		// 0-4 MP
+			actionTotal++;
+		}
+		else if (getTurn() > 4){
+			actionSequence[actionTotal] = MOVE_TOWARD_ENEMY; 		// 0-4 MP
+			actionTotal++;
+		}
+
+		if (getTurn() == 2){
+			actionSequence[actionTotal] = MOVE_AWAY_FROM_ENEMY; 		// 0-3 MP
+			actionTotal++;
+		}
+
+		actionSequence[actionTotal] = USE_STALACTITE;			// 6 TP
+		actionTotal++;		
+
+		//condition approximative servant à ne pas lancer le shield si on a le lethal
+		if ((getLife(enemyID) + getAbsoluteShield(enemyID)) > 215){
+			actionSequence[actionTotal] = USE_SHIELD;			//4 TP
+			actionTotal++;
+		}
+
+		actionSequence[actionTotal] = USE_WEAPON;			// 5 TP
+		actionTotal++;
+
+		actionSequence[actionTotal] = USE_WEAPON;			//5 TP
+		actionTotal++;
+
+		actionSequence[actionTotal] = USE_ROCK;				//5 TP
+		actionTotal++;
+
+		actionSequence[actionTotal] = USE_ROCK;				//5 TP
+		actionTotal++;
+
+		actionSequence[actionTotal] = USE_SPARK;			//3 TP
+		actionTotal++;
+
+		actionSequence[actionTotal] = USE_SPARK;			//3 TP
+		actionTotal++;
+
+		actionSequence[actionTotal] = USE_SPARK;			//3 TP
+		actionTotal++;
+
+		actionSequence[actionTotal] = USE_SPARK;			//3 TP
+		actionTotal++;
+	}
+
+}
+*/
+
+function first_turn_strategy(){
+
+	actionSequence[actionTotal] = EQUIP_GRENADE_LAUNCHER; 			// 1 TP
+	actionTotal++;
+
+	actionSequence[actionTotal] = SUMMON_PUNNY_BULB; 	// 6 TP	+ 1 MP
+	actionTotal++;
+
+	actionSequence[actionTotal] = MOVE_AWAY_FROM_ENEMY; 		// 0-3 MP
+	actionTotal++;
+
+}
+
+function running_away_strategy(){
+	actionSequence[actionTotal] = MOVE_AWAY_FROM_ENEMY; 		// 0-3 MP
+	actionTotal++;
+
+	if (getCooldown(CHIP_PUNY_BULB) == 0 ){ 		// 6 on vérifie qu'on est pas en cooldown et qu'on a pas déjà invoqué un bulbes
+			actionSequence[actionTotal] = SUMMON_PUNNY_BULB; 	// 6 TP	+ 1 MP
+			actionTotal++;
+		}
+
+
+}
+
+function fight_strategy(){
+	var canUseLightning = canUseChipOnEnemyIfMoving(CHIP_LIGHTNING, enemyID);
+	var canUseStalactite = canUseChipOnEnemyIfMoving(CHIP_STALACTITE, enemyID);
+	var canUseWeapon = canUseWeaponOnEnemyIfMoving(weaponID, enemyID);
+	var canUseSpark = canUseChipOnEnemyIfMoving(CHIP_SPARK, enemyID);
+
+	//Si en bougeant on ne peut pas attaquer
+	if (canUseLightning == -1 && canUseStalactite == -1 && canUseWeapon == -1 && canUseSpark == -1){
+		if (getCooldown(CHIP_PUNY_BULB) == 0 ){ 				// 6 on vérifie qu'on est pas en cooldown et qu'on a pas déjà invoqué un bulbes
+			TPTotal += 6;
+			actionSequence[actionTotal] = SUMMON_PUNNY_BULB; 	// 6 TP	+ 1 MP
+			actionTotal++;
+		}
+	}
+	else if (canUseLightning != -1){
+		TPTotal += 12;
+		actionSequence[actionTotal] = MOVE_TO_LIGHTNING_RANGE; 		// 0-4 MP
+		actionTotal++;
+
+		actionSequence[actionTotal] = USE_LIGHTNING; 		// 4 TP
+		actionTotal++;
+
+		actionSequence[actionTotal] = USE_LIGHTNING; 		// 4 TP
+		actionTotal++;
+
+		actionSequence[actionTotal] = USE_LIGHTNING; 		// 4 TP
+		actionTotal++;
+
+	}
+	else if ((getTP() - TPTotal) >= 6 && canUseStalactite != -1){
+	//if (getCellToUseWeapon(weaponID, enemyID) != null){	
+		TPTotal += 6;		
+		actionSequence[actionTotal] = MOVE_TO_STALACTITE_RANGE;			// 6 TP
+		actionTotal++;
+
+		actionSequence[actionTotal] = USE_STALACTITE;			// 6 TP
+		actionTotal++;
+
+	}
+		//condition approximative servant à ne pas lancer le shield si on a le lethal
+	if ((getTP() - TPTotal) >= 4 && (getLife(enemyID) + getAbsoluteShield(enemyID)) > 215){
+		TPTotal += 4;
+		actionSequence[actionTotal] = USE_SHIELD;			//4 TP
+		actionTotal++;
+	}
+
+	if ((getTP() - TPTotal) >= 5 && canUseWeapon != -1){
+	//if (getCellToUseWeapon(weaponID, enemyID) != null){			
+		actionSequence[actionTotal] = MOVE_TO_WEAPON_RANGE; 		// 0-4 MP
+		actionTotal++;
+
+		TPTotal += 5;
+		actionSequence[actionTotal] = USE_WEAPON;			// 5 TP
+		actionTotal++;
+
+		if ((getTP() - TPTotal) >= 5){
+			TPTotal += 5;
+			actionSequence[actionTotal] = USE_WEAPON;			//5 TP
+			actionTotal++;
+		}
+	}
+
+	if ((getTP() - TPTotal) >= 3 && canUseSpark != -1){
+		TPTotal += 3;
+
+		actionSequence[actionTotal] = MOVE_TO_SPARK_RANGE;			//3 TP
+		actionTotal++;
+
+		actionSequence[actionTotal] = USE_SPARK;			//3 TP
+		actionTotal++;
+
+		if ((getTP() - TPTotal) >= 3){
+			TPTotal += 3;
+			actionSequence[actionTotal] = USE_SPARK;			//3 TP
+			actionTotal++;
+		}
+
+		if ((getTP() - TPTotal) >= 3){
+			TPTotal += 3;
+			actionSequence[actionTotal] = USE_SPARK;			//3 TP
+			actionTotal++;
+		}
+
+		if ((getTP() - TPTotal) >= 3){
+			TPTotal += 3;
+			actionSequence[actionTotal] = USE_SPARK;			//3 TP
+			actionTotal++;
+		}
+
+	}
+
+}

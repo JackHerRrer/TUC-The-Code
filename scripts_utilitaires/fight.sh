@@ -2,7 +2,7 @@
 set +x
 
 LEEK_NAME=JeanFile
-IA_NAME=machine_learning
+IA_NAME=IA
 
 #--------------------------------------------------------------------------------------------------------------------------
 function connect(){
@@ -149,7 +149,7 @@ curl "https://leekwars.com/api/farmer/disconnect" -H "Cookie: ${TOKEN}" \
 
 connect
 #upload_code
-for ((i = 0; i < 10; i++))
+for ((i = 0; i < 16; i++))
 do
 garden_fight
 fight_analysis
