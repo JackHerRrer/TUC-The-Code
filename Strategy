@@ -54,7 +54,7 @@ function complete_strategy(){
 			actionTotal++;
 		}
 
-	if (canUseChipOnEnemyIfMoving(CHIP_LIGHTNING, enemyID) != -1){
+	if (canUseIfMoving(CHIP_LIGHTNING, enemyID) != -1){
 	//if (getCellToUseWeapon(weaponID, enemyID) != null){			
 		actionSequence[actionTotal] = MOVE_TO_LIGHTNING_RANGE; 		// 0-4 MP
 		actionTotal++;
@@ -74,7 +74,7 @@ function complete_strategy(){
 			actionTotal++;
 		}
 
-		if (canUseWeaponOnEnemyIfMoving(weaponID, enemyID) != -1){
+		if (canUseIfMoving(weaponID, enemyID) != -1){
 		//if (getCellToUseWeapon(weaponID, enemyID) != null){			
 			actionSequence[actionTotal] = MOVE_TO_WEAPON_RANGE; 		// 0-4 MP
 			actionTotal++;
@@ -152,20 +152,31 @@ function running_away_strategy(){
 }
 
 function fight_strategy(){
-	var canUseLightning = canUseChipOnEnemyIfMoving(CHIP_LIGHTNING, enemyID);
-	var canUseStalactite = canUseChipOnEnemyIfMoving(CHIP_STALACTITE, enemyID);
-	var canUseWeapon = canUseWeaponOnEnemyIfMoving(weaponID, enemyID);
-	var canUseSpark = canUseChipOnEnemyIfMoving(CHIP_SPARK, enemyID);
+	var weCanUseLightningIfMoving = canUseIfMoving(CHIP_LIGHTNING, getCell(enemyID), ourLeekID);
+	var weCanUseStalactiteIfMoving = canUseIfMoving(CHIP_STALACTITE, getCell(enemyID), ourLeekID);
+	var weCanUseWeaponIfMoving = canUseIfMoving(weaponID, getCell(enemyID), ourLeekID);
+	var weCanUseSparkIfMoving = canUseIfMoving(CHIP_SPARK, getCell(enemyID), ourLeekID);
+	var enemyCanUseWeaponIfMoving = canUseIfMoving(getWeapon(enemyID), getCell(ourLeekID), enemyID);
+	var enemyCanUseSparkIfMoving = canUseIfMoving(CHIP_SPARK, getCell(ourLeekID), enemyID);
+
+	if ((enemyCanUseWeaponIfMoving != -1 || enemyCanUseSparkIfMoving != -1) && getCooldown(CHIP_FORTRESS) == 0){
+		TPTotal += 11;
+		actionSequence[actionTotal] = USE_RAMPART; 		//5 TP
+		actionTotal++;
+
+		actionSequence[actionTotal] = USE_FORTRESS; 		//6 TP
+		actionTotal++;
+	}
 
 	//Si en bougeant on ne peut pas attaquer
-	if (canUseLightning == -1 && canUseStalactite == -1 && canUseWeapon == -1 && canUseSpark == -1){
+	else if (weCanUseLightningIfMoving == -1 && weCanUseStalactiteIfMoving == -1 && weCanUseWeaponIfMoving == -1 && weCanUseSparkIfMoving == -1){
 		if (getCooldown(CHIP_PUNY_BULB) == 0 ){ 				// 6 on vérifie qu'on est pas en cooldown et qu'on a pas déjà invoqué un bulbes
 			TPTotal += 6;
 			actionSequence[actionTotal] = SUMMON_PUNNY_BULB; 	// 6 TP	+ 1 MP
 			actionTotal++;
 		}
 	}
-	else if (canUseLightning != -1){
+	else if (weCanUseLightningIfMoving != -1){
 		TPTotal += 12;
 		actionSequence[actionTotal] = MOVE_TO_LIGHTNING_RANGE; 		// 0-4 MP
 		actionTotal++;
@@ -180,7 +191,7 @@ function fight_strategy(){
 		actionTotal++;
 
 	}
-	else if ((getTP() - TPTotal) >= 6 && canUseStalactite != -1){
+	else if ((getTP() - TPTotal) >= 6 && weCanUseStalactiteIfMoving != -1){
 	//if (getCellToUseWeapon(weaponID, enemyID) != null){	
 		TPTotal += 6;		
 		actionSequence[actionTotal] = MOVE_TO_STALACTITE_RANGE;			// 6 TP
@@ -190,14 +201,8 @@ function fight_strategy(){
 		actionTotal++;
 
 	}
-		//condition approximative servant à ne pas lancer le shield si on a le lethal
-	if ((getTP() - TPTotal) >= 4 && (getLife(enemyID) + getAbsoluteShield(enemyID)) > 215){
-		TPTotal += 4;
-		actionSequence[actionTotal] = USE_SHIELD;			//4 TP
-		actionTotal++;
-	}
 
-	if ((getTP() - TPTotal) >= 5 && canUseWeapon != -1){
+	if ((getTP() - TPTotal) >= 5 && weCanUseWeaponIfMoving != -1){
 	//if (getCellToUseWeapon(weaponID, enemyID) != null){			
 		actionSequence[actionTotal] = MOVE_TO_WEAPON_RANGE; 		// 0-4 MP
 		actionTotal++;
@@ -213,7 +218,13 @@ function fight_strategy(){
 		}
 	}
 
-	if ((getTP() - TPTotal) >= 3 && canUseSpark != -1){
+	if ((getTP() - TPTotal) >= 4 ){
+		TPTotal += 4;
+		actionSequence[actionTotal] = USE_SHIELD;			//4 TP
+		actionTotal++;
+	}
+
+	if ((getTP() - TPTotal) >= 3 && weCanUseSparkIfMoving != -1){
 		TPTotal += 3;
 
 		actionSequence[actionTotal] = MOVE_TO_SPARK_RANGE;			//3 TP

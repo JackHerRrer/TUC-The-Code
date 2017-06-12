@@ -39,8 +39,8 @@ global USE_SHIELD=			"USE_SHIELD";
 global USE_PROTEIN = 		"USE_PROTEIN";
 global USE_SPARK =	 		"USE_SPARK";
 global USE_LIGHTNING = 		"USE_LIGHTNING";
-
-
+global USE_RAMPART =		"USE_RAMPART";
+global USE_FORTRESS =		"USE_FORTRESS";
 
 
 

@@ -34,13 +34,13 @@ function initTurnFunction(){
 	var weCanUseChipIfMoving = false;
 	if(weaponID != null) {
 		
-		weCanShootifMoving = canUseWeaponIfMoving(getLeek(), getCell(enemyID));
-		if (canUseChipIfMoving(CHIP_ROCK, getLeek(), getCell(enemyID)) != -1 || getMP() >= getChipMinRange(CHIP_ROCK))
+		weCanShootifMoving = canUseIfMoving(getLeek(), getCell(enemyID));
+		if (canUseIfMoving(CHIP_ROCK, getLeek(), getCell(enemyID)) != -1 || getMP() >= getChipMinRange(CHIP_ROCK))
 			weCanUseChipIfMoving = true;
 	}
 		
-	var enemyCanShootNextTurn = canUseWeaponIfMoving(enemyID, getCell());
-	//var enemyCanUseChipNextTurn = canUseChipIfMoving(CHIP_SPARK, enemyID, getCell());
+	var enemyCanShootNextTurn = canUseIfMoving(enemyID, getCell());
+	//var enemyCanUseChipNextTurn = canUseIfMoving(CHIP_SPARK, enemyID, getCell());
 	if(enemyID == null || isDead(enemyID))
 		enemyID = getNearestEnemy();
 		
@@ -187,7 +187,7 @@ function moveTowardLeekFunction(){
 function moveToWeaponRangeFunction(){
 	debug("move to weapon range state"); 	
 
-	moveTowardCell(canUseWeaponOnEnemyIfMoving(weaponID, enemyID));
+	moveTowardCell(canUseIfMoving(weaponID, getCell(enemyID), ourLeekID));
 
 	etat = ACTION_CHOICE;
 }
@@ -195,7 +195,7 @@ function moveToWeaponRangeFunction(){
 function moveToLightningRangeFunction(){
 	debug("move to lightning range state"); 	
 
-	moveTowardCell(canUseChipOnEnemyIfMoving(CHIP_LIGHTNING, enemyID));
+	moveTowardCell(canUseIfMoving(CHIP_LIGHTNING, getCell(enemyID), ourLeekID));
 
 	etat = ACTION_CHOICE;
 }
@@ -203,7 +203,7 @@ function moveToLightningRangeFunction(){
 function moveToStalactiteRangeFunction(){
 	debug("move to stalactite range state"); 	
 
-	moveTowardCell(canUseChipOnEnemyIfMoving(CHIP_STALACTITE, enemyID));
+	moveTowardCell(canUseIfMoving(CHIP_STALACTITE, getCell(enemyID), ourLeekID));
 
 	etat = ACTION_CHOICE;
 
@@ -212,7 +212,7 @@ function moveToStalactiteRangeFunction(){
 function moveToSparkRangeFunction(){
 	debug("move to spark range state"); 	
 
-	moveTowardCell(canUseChipOnEnemyIfMoving(CHIP_SPARK, enemyID));
+	moveTowardCell(canUseIfMoving(CHIP_SPARK, getCell(enemyID), ourLeekID));
 
 	etat = ACTION_CHOICE;
 
@@ -259,7 +259,7 @@ function usePebbleFunction(){
 
 
 function useHelmetFunction(){
-	debug("use helemt state");
+	debug("use helmet state");
 
 	useChip(CHIP_HELMET, ourLeekID);
 
@@ -270,7 +270,22 @@ function useShieldFunction(){
 	debug("use SHIELD state");
 
 	useChip(CHIP_SHIELD, ourLeekID);
-	debug("absolute shield : " + getAbsoluteShield(ourLeekID));
+
+	etat = ACTION_CHOICE;
+}
+
+function useFortressFunction(){
+	debug("use fortress state");
+
+	useChip(CHIP_FORTRESS, ourLeekID);
+
+	etat = ACTION_CHOICE;
+}
+
+function useRampartFunction(){
+	debug("use rampart state");
+
+	useChip(CHIP_RAMPART, ourLeekID);
 
 	etat = ACTION_CHOICE;
 }
@@ -306,7 +321,7 @@ function strategyMoveToLimitRange(){
 	debug ("strategy move to limit range");
 	var i = 0;
 	var pathToEnemy = getPath(getCell(), getCell(enemyID));
-	while (getMP() > 0 && canUseChipIfMoving(CHIP_ROCK, enemyID, pathToEnemy[i]) == -1){
+	while (getMP() > 0 && canUseIfMoving(CHIP_ROCK, enemyID, pathToEnemy[i]) == -1){
 		moveToward(enemyID,1);
 		i++;
 	}
