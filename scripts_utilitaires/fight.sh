@@ -86,6 +86,11 @@ if [ $(jq '.fight.status' fight.log) -ne 1 ]; then
 	echo Fight non terminée : attente de 1 seconde
 	sleep 1
 	curl "https://leekwars.com/api/fight/get/${FIGHT_ID}" > fight.log 2>/dev/null
+	if [ $(jq '.fight.status' fight.log) -ne 1 ]; then
+        	echo Fight non terminée : attente de 1 seconde
+     	   	sleep 1
+        	curl "https://leekwars.com/api/fight/get/${FIGHT_ID}" > fight.log 2>/dev/null
+	fi
 fi
 
 
@@ -97,18 +102,23 @@ fi
 echo We are player 1 : ${WE_ARE_PLAYER_1}
 
 echo 
-# on vérifie  si le gagnant est le joueur 1 ou le joueur 2, et on regarde si le nom $LEEK_NAME est contenu dans ce joueur
-if [ $(jq ".fight.winner" fight.log) -eq 1 ]; then
-	WINNER_LEEK=$(jq ".fight.leeks1[] | select(.name == \"${LEEK_NAME}\") | .name" fight.log)
+if [ $(jq ".fight.winner" fight.log) -eq 0 ]; then
+	figlet "Tie" -f big
+        RESULT_FIGHT="tie"
 else
-	WINNER_LEEK=$(jq ".fight.leeks2[] | select(.name == \"${LEEK_NAME}\") | .name" fight.log)
-fi
-if [ -z ${WINNER_LEEK} ]; then
-	figlet Defeat -f big
-	RESULT_FIGHT=defeat
-else
-	figlet Victory --gay -f big
-	RESULT_FIGHT=victory
+	# on vérifie  si le gagnant est le joueur 1 ou le joueur 2, et on regarde si le nom $LEEK_NAME est contenu dans ce joueur
+	if [ $(jq ".fight.winner" fight.log) -eq 1 ]; then
+		WINNER_LEEK=$(jq ".fight.leeks1[] | select(.name == \"${LEEK_NAME}\") | .name" fight.log)
+	else
+		WINNER_LEEK=$(jq ".fight.leeks2[] | select(.name == \"${LEEK_NAME}\") | .name" fight.log)
+	fi
+	if [ -z ${WINNER_LEEK} ]; then
+		figlet Defeat -f big
+		RESULT_FIGHT=defeat
+	else
+		figlet Victory --gay -f big
+		RESULT_FIGHT=victory
+	fi
 fi
 
 P1_RECEIVED_DAMAGE=$(jq '.fight.data.actions[]|select(.[0] == 101 and .[1] == 0)[2]' fight.log | awk '{s+=$1} END {print s}')
@@ -149,7 +159,7 @@ curl "https://leekwars.com/api/farmer/disconnect" -H "Cookie: ${TOKEN}" \
 
 connect
 #upload_code
-for ((i = 0; i < 16; i++))
+for ((i = 0; i < 5; i++))
 do
 garden_fight
 fight_analysis

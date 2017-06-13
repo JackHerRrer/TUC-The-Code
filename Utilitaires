@@ -50,15 +50,17 @@ function canUseIfMoving(ID, targetCell, user) {
 			var closestCell = -1;
 			for (var i = 0; i < count(cellsToUseWeapon); i++){
 				var pathLength = getPathLength(getCell(user), cellsToUseWeapon[i]);
-				if (pathLength <= MPAvailable){
-					if (shortestPath == -1 || pathLength < shortestPath){
-						shortestPath = pathLength;
-						closestCell = cellsToUseWeapon[i];
+				if (pathLength != null){
+					if (pathLength <= MPAvailable ){
+						if (shortestPath == -1 || pathLength < shortestPath){
+							shortestPath = pathLength;
+							closestCell = cellsToUseWeapon[i];
+						}
 					}
 				}
-				if (closestCell != -1){
-					return closestCell;
-				}
+			}
+			if (closestCell != -1){
+				return closestCell;
 			}
 		}
 		else { 
@@ -73,15 +75,17 @@ function canUseIfMoving(ID, targetCell, user) {
 			var closestCell = -1;
 			for (var i = 0; i < count(cellsToUseChip); i++){
 				var pathLength = getPathLength(getCell(user), cellsToUseChip[i]);
-				if (pathLength <= MPAvailable){
-					if (shortestPath == -1 || pathLength < shortestPath){
-						shortestPath = pathLength;
-						closestCell = cellsToUseChip[i];
+				if (pathLength != null){
+					if (pathLength <= MPAvailable ){
+						if (shortestPath == -1 || pathLength < shortestPath){
+							shortestPath = pathLength;
+							closestCell = cellsToUseChip[i];
+						}
 					}
 				}
-				if (closestCell != -1){
-					return closestCell;
-				}
+			}
+			if (closestCell != -1){
+				return closestCell;
 			}
 		}
 		else { 

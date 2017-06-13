@@ -110,6 +110,13 @@ function strategyChoiceFunction(){
 		punnyBulbStrategyChoice();
 	}
 
+	debug("******************************");
+	for (var i = 0; i < actionTotal; i++){
+		debug(actionSequence[i]);
+	}
+	debug("TP total : "+ TPTotal);
+	debug("******************************\n");
+
 	etat = ACTION_CHOICE;	
 }
 
@@ -167,7 +174,7 @@ function moveAwayFromEnemyFunction(){
 }
 
 function summonPunnyBulbFunction(){
-	debug("use punny bulb chip state"); 	
+	debug("summon punny bulb state"); 	
 	
 	var summoningCell = getCell();
 	moveToward(enemyID, 1);
@@ -187,7 +194,7 @@ function moveTowardLeekFunction(){
 function moveToWeaponRangeFunction(){
 	debug("move to weapon range state"); 	
 
-	moveTowardCell(canUseIfMoving(weaponID, getCell(enemyID), ourLeekID));
+	moveTowardCell(canUseIfMoving(weaponID, getCell(enemyID), getLeek()));
 
 	etat = ACTION_CHOICE;
 }
@@ -195,7 +202,7 @@ function moveToWeaponRangeFunction(){
 function moveToLightningRangeFunction(){
 	debug("move to lightning range state"); 	
 
-	moveTowardCell(canUseIfMoving(CHIP_LIGHTNING, getCell(enemyID), ourLeekID));
+	moveTowardCell(canUseIfMoving(CHIP_LIGHTNING, getCell(enemyID), getLeek()));
 
 	etat = ACTION_CHOICE;
 }
@@ -203,7 +210,7 @@ function moveToLightningRangeFunction(){
 function moveToStalactiteRangeFunction(){
 	debug("move to stalactite range state"); 	
 
-	moveTowardCell(canUseIfMoving(CHIP_STALACTITE, getCell(enemyID), ourLeekID));
+	moveTowardCell(canUseIfMoving(CHIP_STALACTITE, getCell(enemyID), getLeek()));
 
 	etat = ACTION_CHOICE;
 
@@ -212,11 +219,20 @@ function moveToStalactiteRangeFunction(){
 function moveToSparkRangeFunction(){
 	debug("move to spark range state"); 	
 
-	moveTowardCell(canUseIfMoving(CHIP_SPARK, getCell(enemyID), ourLeekID));
+	moveTowardCell(canUseIfMoving(CHIP_SPARK, getCell(enemyID), getLeek()));
 
 	etat = ACTION_CHOICE;
 
 }
+
+function moveToHelmetRangeFunction(){
+	debug("move to helmet range state"); 	
+
+	moveTowardCell(canUseIfMoving(CHIP_HELMET, ourLeekID, getLeek()));
+
+	etat = ACTION_CHOICE;
+}
+
 function useWeaponFunction(){
 	debug("use weapon state"); 	
 
