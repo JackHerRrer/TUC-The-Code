@@ -88,7 +88,6 @@ while [ $(jq '.fight.status' fight.log) -ne 1 ]; do
        	sleep 1
 	curl "https://leekwars.com/api/fight/get/${FIGHT_ID}" > fight.log 2>/dev/null
 	ITERATION=$((${ITERATION} + 1))
-	echo ITERATION
 	if [ ${ITERATION} -eq 60 ]; then
 		echo "Cannot get the fight report in less than 60 secondes"
 		exit 1
@@ -141,10 +140,10 @@ echo Player 2 heal  received : ${P2_RECEIVED_HEAL}
 #Inscription du résultat dans les logs des fights
 if ${WE_ARE_PLAYER_1}; then
 
-	echo logging
+	echo logging result in fight_history.log
 	echo ${FIGHT_ID} 	${RESULT_FIGHT}		$((${P1_RECEIVED_DAMAGE}-${P1_RECEIVED_HEAL})) 	$((${P2_RECEIVED_DAMAGE}-${P2_RECEIVED_HEAL}))>> fight_history.log
 else
-	echo logging
+	echo logging result in fight_history.log
 	echo ${FIGHT_ID} 	${RESULT_FIGHT}		$((${P2_RECEIVED_DAMAGE}-${P2_RECEIVED_HEAL})) 	$((${P1_RECEIVED_DAMAGE}-${P1_RECEIVED_HEAL}))>> fight_history.log
 fi
 }
@@ -161,7 +160,7 @@ curl "https://leekwars.com/api/farmer/disconnect" -H "Cookie: ${TOKEN}" \
 
 connect
 #upload_code
-for ((i = 0; i < 5; i++))
+for ((i = 0; i < 10; i++))
 do
 garden_fight
 fight_analysis

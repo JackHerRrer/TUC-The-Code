@@ -181,6 +181,8 @@ function fight_strategy(){
 		enemyCanUseWeaponIfMoving = -1;
 	}
 	var enemyCanUseSparkIfMoving = canUseIfMoving(CHIP_SPARK, getCell(ourLeekID), enemyID);
+	var enemyHasSpark = leekHasChip(CHIP_SPARK, enemyID);
+
 
 	if (enemyCanUseWeaponIfMoving != -1 && getCooldown(CHIP_FORTRESS) == 0){
 		TPTotal += 10;
@@ -245,8 +247,8 @@ function fight_strategy(){
 	if ((getTP() - TPTotal) >= 3 && weCanUseSparkIfMoving != -1){
 		TPTotal += 3;
 
-		actionSequence[actionTotal] = MOVE_TO_SPARK_RANGE;			//3 TP
-		actionTotal++;
+		//actionSequence[actionTotal] = MOVE_TO_SPARK_RANGE;			//3 TP
+		//actionTotal++;
 
 		actionSequence[actionTotal] = USE_SPARK;			//3 TP
 		actionTotal++;
@@ -269,8 +271,16 @@ function fight_strategy(){
 			actionTotal++;
 		}
 
-		actionSequence[actionTotal] = MOVE_TOWARD_ENEMY;			//3 TP
-		actionTotal++;
+		/*
+		if (enemyHasSpark == false){
+			actionSequence[actionTotal] = MOVE_TOWARD_ENEMY;			//3 TP
+			actionTotal++;
+		}
+		else {
+			actionSequence[actionTotal] = MOVE_AWAY_FROM_ENEMY;			//3 TP
+			actionTotal++;
+		}
+		*/
 	}
 
 }

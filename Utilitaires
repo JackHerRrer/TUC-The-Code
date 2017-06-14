@@ -98,23 +98,18 @@ function canUseIfMoving(ID, targetCell, user) {
 	return -1;
 }
 
-/*
-function canUseChipIfMoving(chip, targetCell) {
+function leekHasChip(chipID, leekID){
+	var chips = getChips(leekID);
 	
-	var cellsToUseChip = getCellsToUseChip(chip, targetCell);
-	var MPAvailable = getMP();
-	if (cellsToUseChip != null){ 
-		for (var i = 0; i < count(cellsToUseChip); i++){
-			var pathLength = getPathLength(getCell(), cellsToUseChip[i]);
-			if (pathLength <= MPAvailable){
-				return cellsToUseChip[i];
+	if (chips != null){
+		for (var chip in chips){
+			if (chip == chipID){
+				return true;
 			}
 		}
 	}
-	else { 
-		debug("cellsToUseChip is null");
+	else {
+		debug ("chips is NULL");
 	}
-	return -1;
+	return false;
 }
-
-*/
