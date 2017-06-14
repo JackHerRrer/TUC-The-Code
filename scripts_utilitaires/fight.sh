@@ -80,18 +80,20 @@ echo Fight ID : ${FIGHT_ID}
 
 #--------------------------------------------------------------------------------------------------------------------------
 function fight_analysis(){
-# récupération des log du combat. Si le combat n'est pas encore finni on attend 1 seconde et on récupère les logs
+# récupération des log du combat. Si le combat n'est pas encore finni on attend 1 seconde (60 secondes max) et on récupère les logs
 curl "https://leekwars.com/api/fight/get/${FIGHT_ID}" > fight.log 2>/dev/null
-if [ $(jq '.fight.status' fight.log) -ne 1 ]; then
-	echo Fight non terminée : attente de 1 seconde
-	sleep 1
+ITERATION=0
+while [ $(jq '.fight.status' fight.log) -ne 1 ]; do
+        echo Fight non terminée : attente de 1 seconde
+       	sleep 1
 	curl "https://leekwars.com/api/fight/get/${FIGHT_ID}" > fight.log 2>/dev/null
-	if [ $(jq '.fight.status' fight.log) -ne 1 ]; then
-        	echo Fight non terminée : attente de 1 seconde
-     	   	sleep 1
-        	curl "https://leekwars.com/api/fight/get/${FIGHT_ID}" > fight.log 2>/dev/null
+	ITERATION=$((${ITERATION} + 1))
+	echo ITERATION
+	if [ ${ITERATION} -eq 60 ]; then
+		echo "Cannot get the fight report in less than 60 secondes"
+		exit 1
 	fi
-fi
+done 
 
 
 if [ ! -z $(jq ".fight.leeks1[] | select(.name == \"${LEEK_NAME}\") | .name" fight.log) ]; then
