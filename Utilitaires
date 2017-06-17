@@ -41,7 +41,7 @@ function calculateDamage(leekID, damage) {
 }
 
 
-function canUseIfMoving(ID, targetCell, user) {
+function canUseIfMoving(ID, targetCell, user, mark) {
 	if(isWeapon(ID)) {
 		var cellsToUseWeapon = getCellsToUseWeaponOnCell(ID, targetCell);
 		var MPAvailable = getMP(user);
