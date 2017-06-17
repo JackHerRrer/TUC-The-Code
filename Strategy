@@ -21,7 +21,7 @@ function leekStrategyChoice(){
 
 function punnyBulbStrategyChoice(){
 
-	var bulbCanUseHelmetIfMoving = canUseIfMoving(CHIP_HELMET, getCell(ourLeekID), getLeek());
+	var bulbCanUseHelmetIfMoving = canUseIfMoving(CHIP_HELMET, getCell(ourLeekID), getLeek(), false);
 	var enemyCanUseWeaponIfMoving;
 	
 	if (getTurn() == 1){
@@ -30,7 +30,7 @@ function punnyBulbStrategyChoice(){
 	}
 	else {
 		if (getWeapon(enemyID) != null){
-			enemyCanUseWeaponIfMoving = canUseIfMoving(getWeapon(enemyID), getCell(ourLeekID), enemyID);
+			enemyCanUseWeaponIfMoving = canUseIfMoving(getWeapon(enemyID), getCell(ourLeekID), enemyID, false);
 		}
 		else {
 			enemyCanUseWeaponIfMoving = -1;
@@ -145,6 +145,7 @@ function complete_strategy(){
 
 function first_turn_strategy(){
 
+
 	actionSequence[actionTotal] = EQUIP_GRENADE_LAUNCHER; 			// 1 TP
 	actionTotal++;
 
@@ -169,18 +170,35 @@ function running_away_strategy(){
 }
 
 function fight_strategy(){
-	var weCanUseLightningIfMoving = canUseIfMoving(CHIP_LIGHTNING, getCell(enemyID), ourLeekID);
-	var weCanUseStalactiteIfMoving = canUseIfMoving(CHIP_STALACTITE, getCell(enemyID), ourLeekID);
-	var weCanUseWeaponIfMoving = canUseIfMoving(weaponID, getCell(enemyID), ourLeekID);
-	var weCanUseSparkIfMoving = canUseIfMoving(CHIP_SPARK, getCell(enemyID), ourLeekID);	
+
+	canUseIfMoving(weaponID, 578, ourLeekID, true);
+	canUseIfMoving(weaponID, 0, ourLeekID, true);
+		canUseIfMoving(weaponID, 612, ourLeekID, true);
+		canUseIfMoving(weaponID, 17, ourLeekID, true);
+				canUseIfMoving(weaponID, 604, ourLeekID, true);
+		canUseIfMoving(weaponID, 279, ourLeekID, true);
+		canUseIfMoving(weaponID, 306, ourLeekID, true);
+
+
+
+	//canUseIfMoving(weaponID, 438, ourLeekID, true);
+	//canUseIfMoving(weaponID, 367, ourLeekID, true);
+	//canUseIfMoving(weaponID, 559, ourLeekID, true);
+
+
+
+	var weCanUseLightningIfMoving = canUseIfMoving(CHIP_LIGHTNING, getCell(enemyID), ourLeekID, false);
+	var weCanUseStalactiteIfMoving = canUseIfMoving(CHIP_STALACTITE, getCell(enemyID), ourLeekID, false);
+	var weCanUseWeaponIfMoving = canUseIfMoving(weaponID, getCell(enemyID), ourLeekID, false);
+	var weCanUseSparkIfMoving = canUseIfMoving(CHIP_SPARK, getCell(enemyID), ourLeekID, false);	
 	var enemyCanUseWeaponIfMoving;
 	if (getWeapon(enemyID) != null){	
-		enemyCanUseWeaponIfMoving = canUseIfMoving(getWeapon(enemyID), getCell(ourLeekID), enemyID);
+		enemyCanUseWeaponIfMoving = canUseIfMoving(getWeapon(enemyID), getCell(ourLeekID), enemyID, false);
 	}
 	else {
 		enemyCanUseWeaponIfMoving = -1;
 	}
-	var enemyCanUseSparkIfMoving = canUseIfMoving(CHIP_SPARK, getCell(ourLeekID), enemyID);
+	var enemyCanUseSparkIfMoving = canUseIfMoving(CHIP_SPARK, getCell(ourLeekID), enemyID, false);
 	var enemyHasSpark = leekHasChip(CHIP_SPARK, enemyID);
 
 

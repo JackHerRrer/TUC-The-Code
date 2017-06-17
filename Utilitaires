@@ -36,16 +36,97 @@ function getDamage(ID, strength) {
 	return damage;
 }
 
+/******************************************************************************************/
+
 function calculateDamage(leekID, damage) {	
 	return damage * (1 - getRelativeShield(leekID) / 100) - getAbsoluteShield(leekID);
 }
 
+/******************************************************************************************/
 
-function canUseIfMoving(ID, targetCell, user, mark) {
-	if(isWeapon(ID)) {
-		var cellsToUseWeapon = getCellsToUseWeaponOnCell(ID, targetCell);
+function isEven(number){
+	if ((number % 2) == 0){
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+function getCellsAffected(objectID, targetCell){
+	var targetCells = [];
+	if(isWeapon(objectID)) {
+		var weaponArea = getWeaponArea(objectID);
+		if (weaponArea == null){
+			debug("weaponArea is null");
+		}
+		else {
+			push(targetCells, targetCell);
+		
+		 	if (weaponArea == AREA_CIRCLE_1 || weaponArea == AREA_CIRCLE_2 || weaponArea == AREA_CIRCLE_3){
+				//haut 0	
+				if (targetCell % 35 != 0 && (targetCell-18) % 35 != 0) 		push(targetCells, targetCell - 1); 	//gauche			
+				if ((targetCell-17) % 35 != 0 && (targetCell-34) % 35 != 0) push(targetCells, targetCell + 1);	//droite
+
+				//haut 1
+				if (targetCell > 17){
+					if (targetCell % 35 != 0)		push(targetCells, targetCell - 18); //gauche
+					if ((targetCell-17) % 35 != 0) 	push(targetCells, targetCell - 17);	//droite
+				}
+
+				//bas 1
+				if (targetCell < 595){
+					if ((targetCell-17) % 35 != 0) 	push(targetCells, targetCell + 18); //droite
+					if (targetCell % 35 != 0) 		push(targetCells, targetCell + 17); //gauche
+				}
+
+			}
+			
+			if (weaponArea == AREA_CIRCLE_2 || weaponArea == AREA_CIRCLE_3){
+				//haut 2
+				if (targetCell > 34){
+					push(targetCells, targetCell - 35);																//milieu
+					if (targetCell % 35 != 0 && (targetCell-18) % 35 != 0) 		push(targetCells, targetCell - 36); //gauche
+					if ((targetCell-17) % 35 != 0 && (targetCell-34) % 35 != 0) push(targetCells, targetCell - 34);	//droite 
+				}
+
+				//bas 2
+				if (targetCell < 560){
+					push(targetCells, targetCell + 35);																//milieu
+					if ((targetCell-17) % 35 != 0 && (targetCell-34) % 35 != 0) push(targetCells, targetCell + 36);	//droite
+					if (targetCell % 35 != 0 && (targetCell-18) % 35 != 0) 		push(targetCells, targetCell + 34);	//gauche
+				}
+			}
+			
+			if (weaponArea == AREA_CIRCLE_3){
+				//à compléter
+			}
+		}
+	}
+	return targetCells;
+}
+
+function canUseIfMoving(objectID, targetCell, user, markCells) {
+	if(isWeapon(objectID)) {
+
+		var targetCells = getCellsAffected(objectID, targetCell);
+
+		if (markCells){
+			for (var cell in targetCells){
+				mark(cell, getColor(200, 50, 50));
+			}
+			pause();
+		}
+
+		var cellsToUseWeapon = getCellsToUseWeaponOnCell(objectID, targetCell);
 		var MPAvailable = getMP(user);
 		if (cellsToUseWeapon != null){ 
+			/*if (markCells){
+				for (var cell in cellsToUseWeapon){
+					mark(cell, getColor(200, 50, 50));
+				}
+				//pause();
+			}*/
 			var shortestPath = -1;
 			var closestCell = -1;
 			for (var i = 0; i < count(cellsToUseWeapon); i++){
@@ -67,10 +148,16 @@ function canUseIfMoving(ID, targetCell, user, mark) {
 			debug("cellsToUseWeapon is null");
 		}
 	}
-	else if (isChip(ID)) {
-		var cellsToUseChip = getCellsToUseChipOnCell(ID, targetCell);
+	else if (isChip(objectID)) {
+		var cellsToUseChip = getCellsToUseChipOnCell(objectID, targetCell);
 		var MPAvailable = getMP(user);
 		if (cellsToUseChip != null){ 
+			if (markCells){
+				for (var cell in cellsToUseChip){
+					mark(cell, getColor(200, 50, 50));
+				}
+				//pause
+			}
 			var shortestPath = -1;
 			var closestCell = -1;
 			for (var i = 0; i < count(cellsToUseChip); i++){
