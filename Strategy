@@ -36,6 +36,7 @@ function punnyBulbStrategyChoice(){
 			enemyCanUseWeaponIfMoving = -1;
 		}
 
+		/*
 		if (bulbCanUseHelmetIfMoving != -1){
 			actionSequence[actionTotal] = MOVE_TO_HELMET_RANGE; 
 			actionTotal++;
@@ -43,8 +44,10 @@ function punnyBulbStrategyChoice(){
 		else {
 			actionSequence[actionTotal] = MOVE_TOWARD_LEEK; 
 			actionTotal++;
-		}
+		}*/
 
+		actionSequence[actionTotal] = MOVE_TOWARD_LEEK; 
+		actionTotal++;
 
 		if (enemyCanUseWeaponIfMoving != -1 && getCooldown(CHIP_HELMET) == 0){
 			actionSequence[actionTotal] = USE_HELMET; 
