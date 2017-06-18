@@ -29,74 +29,9 @@ function initTurnFunction(){
 	currentAction = 0;
 	actionTotal = 0;
 	TPTotal = 0;
-	/*	
-	var weCanShootifMoving = false;
-	var weCanUseChipIfMoving = false;
-	if(weaponID != null) {
-		
-		weCanShootifMoving = canUseIfMoving(getLeek(), getCell(enemyID));
-		if (canUseIfMoving(CHIP_ROCK, getLeek(), getCell(enemyID)) != -1 || getMP() >= getChipMinRange(CHIP_ROCK))
-			weCanUseChipIfMoving = true;
-	}
-		
-	var enemyCanShootNextTurn = canUseIfMoving(enemyID, getCell());
-	//var enemyCanUseChipNextTurn = canUseIfMoving(CHIP_SPARK, enemyID, getCell());
-	if(enemyID == null || isDead(enemyID))
-		enemyID = getNearestEnemy();
-		
-	minDamageEnemy = 0;
-	maxDamageEnemy = 0;
-	var minDamage = 0;
-	var maxDamage = 0;
-	weaponID = getWeapon();
-	strengthEnemy = getStrength(enemyID);
-	enemyWeapon = getWeapon(enemyID);
-	enemyMaxWeaponRange = getWeaponMaxRange(enemyWeapon);
 	
-	if(getWeapon(enemyID) != null) {
-		for(var damage in getDamage(getWeapon(enemyID), strengthEnemy)) {
-			minDamageEnemy += calculateDamage(getLeek(), damage["MIN"]);
-			maxDamageEnemy += calculateDamage(getLeek(), damage["MAX"]);
-		}
-	}
-	debug("minDamage ennemi : "+minDamageEnemy);
-	debug("maxDamage ennemi : "+maxDamageEnemy);
-	
-	if(weaponID != WEAPON_SHOTGUN) {
-		if(weCanUseChipIfMoving) {
-			for(var damage in getDamage(CHIP_ROCK, getStrength())) {
-					minDamage += calculateDamage(getLeek(), damage["MIN"]);
-					maxDamage += calculateDamage(getLeek(), damage["MAX"]);
-				}	
-		}
-		if(weCanShootifMoving) {
-			if(weaponID != null) {
-				for(var i = 0; i<getTP()/getWeaponCost(weaponID); i++) {
-					for(var damage in getDamage(weaponID, getStrength())) {
-						minDamage += calculateDamage(getLeek(), damage["MIN"]);
-						maxDamage += calculateDamage(getLeek(), damage["MAX"]);
-					}
-				}
-			}
-		}
-	} else {
-		for(var i = 0; i<getTP()/getWeaponCost(weaponID); i++) {
-			for(var damage in getDamage(weaponID, getStrength())) {
-				minDamage += calculateDamage(getLeek(), damage["MIN"]);
-				maxDamage += calculateDamage(getLeek(), damage["MAX"]);
-			}
-		}
-	}
-	
-	debug("minDamage : "+minDamage);
-	debug("maxDamage : "+maxDamage);
-	
-	if(minDamage >= getLife(enemyID)*0.9 && maxDamage > getLife(enemyID))
-		etat = ATTACK;
-	else
-		etat = BUFF;
+	actionMap = [];
 
-	*/
 	etat = STRATEGY_CHOICE;
 }
 
@@ -329,42 +264,6 @@ function useLightningFunction(){
 
 	etat = ACTION_CHOICE;
 }
-
-
-
-/*
-function strategyMoveToLimitRange(){
-	debug ("strategy move to limit range");
-	var i = 0;
-	var pathToEnemy = getPath(getCell(), getCell(enemyID));
-	while (getMP() > 0 && canUseIfMoving(CHIP_ROCK, enemyID, pathToEnemy[i]) == -1){
-		moveToward(enemyID,1);
-		i++;
-	}
-	etat = END;
-}
-*/
-
-
-/*
-//kiting
-function strategyKitingFunction(){
-	debug("strategy Kiting");
-	while (!canUseChipFromCellToCell(CHIP_SPARK, getCell(), getCell(enemyID)) && getMP() > 0){
-		moveToward(enemyID, 1);
-	}
-	
-	while (getTP() >= getChipCost(CHIP_SPARK) && canUseChipFromCellToCell(CHIP_SPARK, getCell(), getCell(enemyID))){
-		useChip(CHIP_SPARK, enemyID);
-	}
-	
-	moveAwayFrom(enemyID, getMP());
-	
-	etat = END;
-}
-*/
-
-
 
 
 
