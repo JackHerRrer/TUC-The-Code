@@ -158,11 +158,19 @@ curl "https://leekwars.com/api/farmer/disconnect" -H "Cookie: ${TOKEN}" \
 						--data "token="%"24" >/dev/null 2>&1 
 }
 
+NBR_FIGHT=50
 connect
 #upload_code
-for ((i = 0; i < 10; i++))
+for ((i = 0; i < ${NBR_FIGHT}; i++))
 do
 garden_fight
 fight_analysis
 done
 disconnect
+
+echo victory :
+tail -n ${NBR_FIGHT} fight_history.log | grep victory | wc -l
+echo tie :
+tail -n ${NBR_FIGHT} fight_history.log | grep tie | wc -l
+echo defeat :
+tail -n ${NBR_FIGHT} fight_history.log | grep defeat | wc -l

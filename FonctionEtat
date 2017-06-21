@@ -31,6 +31,7 @@ function initTurnFunction(){
 	TPTotal = 0;
 	
 	actionMap = [];
+	instructionsCount = 0;
 
 	etat = STRATEGY_CHOICE;
 }

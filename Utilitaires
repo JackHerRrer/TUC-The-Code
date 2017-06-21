@@ -70,7 +70,8 @@ Return the cells that will be affected by the object (weapon or chip) if it is u
 -------------------------
 */
 
-function getCellsAffected(objectID, targetCell){
+function getCellsAffected(objectID, targetCell){		// environ 400 op
+
 	//varaiable that will store the cells affected
 	var indirectCells = [];
 
@@ -159,7 +160,9 @@ function getCellsAffected(objectID, targetCell){
 
 function canUseIfMoving(objectID, targetCell, user, markCells) {
 
+	var instruct1 = getOperations();
 	var indirectCells = getCellsAffected(objectID, targetCell);
+
 
 	if (indirectCells == null){
 		debug("indirectCells is null");
@@ -168,48 +171,71 @@ function canUseIfMoving(objectID, targetCell, user, markCells) {
 
 	var MPAvailable = getMP(user);
 
+	var cellsFromWhereToUseObject = [];
 	for (var indirectCell in indirectCells){
-
-		var cellsFromWhereToUseObject = [-];
+		var cells = [];
 		if(isWeapon(objectID)) {
-			cellsFromWhereToUseObject = getCellsToUseWeaponOnCell(objectID, indirectCell);
+			cells = getCellsToUseWeaponOnCell(objectID, indirectCell);
 		}
 		else if(isChip(objectID)) {
-			cellsFromWhereToUseObject = getCellsToUseChipOnCell(objectID, indirectCell);
+			cells = getCellsToUseChipOnCell(objectID, indirectCell);	
 		}
 		else {
 			debug("Object is not a chip or a weapon");
 			return null;
 		}
+		if (cells != null){
+			var data = [];
+			for (var i = 0; i < count(cells); i++){
+				data[0] = cells[i];
+				data[1] = indirectCell;
+			}
+			push(cellsFromWhereToUseObject, data);
+		}
+	}	
 
-		if (cellsFromWhereToUseObject != null){ 
-			for (var cellFromWhereToUseObject in cellsFromWhereToUseObject){
-				var pathLength = getPathLength(getCell(user), cellFromWhereToUseObject);
-				if (pathLength != null){
-					if (pathLength <= MPAvailable ){
-						var data = [];
-						data[0] = objectID;
-						data[1]	= targetCell;
-						data[2]	= indirectCell;
-						data[3] = pathLength;	
-						actionMap[cellFromWhereToUseObject] = [];
-						push(actionMap[cellFromWhereToUseObject], data);
-						if (markCells){
-							if (indirectCell == targetCell){
-								mark(cellFromWhereToUseObject, getColor(200, 50, 50));
-							}
-							else {
-								mark(cellFromWhereToUseObject, getColor(200, 50, 150));
+	if (cellsFromWhereToUseObject != null){ 
+		for (var cellFromWhereToUseObject in cellsFromWhereToUseObject){
+			var cellAlreadyAnalysed = false;
+			for (var action in actionMap[cellFromWhereToUseObject[0]]){
+				if (action[0] == objectID){
+					cellAlreadyAnalysed = true;
+				}
+			}
+			if (cellAlreadyAnalysed == false){
+				//optimisation : la longueur du chemin n'est pas calculé, si la distance sans obstacle est superieur au nombre de MP
+				if (getCellDistance(cellFromWhereToUseObject[0],getCell(user)) <= MPAvailable){
+					var pathLength = getPathLength(getCell(user), cellFromWhereToUseObject[0]);
+					if (pathLength != null){
+						if (pathLength <= MPAvailable ){
+							var data = [];
+							data[0] = objectID;
+							data[1]	= targetCell;
+							data[2]	= cellFromWhereToUseObject[1];
+							data[3] = pathLength;	
+							actionMap[cellFromWhereToUseObject[0]] = [];		/// A CHANGER !!!!! INITIALISER AU DEBUT !!!!!
+							push(actionMap[cellFromWhereToUseObject[0]], data);
+							if (markCells){
+								if (cellFromWhereToUseObject[1] == targetCell){
+									mark(cellFromWhereToUseObject, getColor(200, 50, 50));
+								}
+								else {
+									mark(cellFromWhereToUseObject, getColor(200, 50, 150));
+								}
 							}
 						}
 					}
 				}
 			}
 		}
-		else { 
-			debug("cellsToUseWeapon is null");
-		}
-	}		
+	}
+	else { 
+		debug("cellsToUseWeapon is null");
+	}
+
+	var instruct2 = getOperations();
+	debug("can use if moving operation : " + (instruct2 - instruct1));
+
 }
 
 /********************************************************************************************/

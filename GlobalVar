@@ -67,3 +67,4 @@ global enemyMaxWeaponRange;
 global initialisation;
 
 
+global instructionsCount;
