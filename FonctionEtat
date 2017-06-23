@@ -18,6 +18,11 @@ function initGameFunction(){
 	}
 	ourLeekID = getLeek();
 
+	for (var i = 0; i < 613; i++){
+		actionMap[i] = [];
+	}
+
+
 	etat = INIT_TURN;
 }
 
