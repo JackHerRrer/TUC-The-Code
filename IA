@@ -1,20 +1,61 @@
-	//gestion des autres fichiers
+/********************************************************************************************
+    start turn   
+         +
+         |
++--------v--------+
+|INIT_GAME        |		// Only executed turn 1
++--------+--------+
+         |
+         |
+         |
++--------v--------+
+|INIT_TURN        |		// initialize the required global variables  
++--------+--------+
+         |
+         |
+         |
++--------v--------+
+|STRATEGY_CHOICE  |		// generates an array of action (detailed in "Strategy" source code)
++--------+--------+
+         |
+         |
+         |
++--------v--------+		// execute every actions stored in the array
+|ACTION_CHOICE    <--------------------------------------------------------------------+
++--------+--------+                                                                    |
+         |                                                                             |
+         +----------------------+--------------------+-----------------+               |                                                              
+         +----------------------+--------------------+-----------------+               |
+         |                      |                    |                 |               |
+         |                      |                    |                 |               |
++--------v--------+     +-------v-------+    +-------v------+   +------v-------+       |
+|LAST_ACTION      |     |ACTION_1       |    |ACTION_2      |   |ACTION_n      |       |
++--------+--------+     +-------+-------+    +-------+------+   +------+-------+       |
+         |                      |                    |                 |               |
+         |                      |                    |                 |               |
+         |                      v--------------------v-----------------v---------------+
+         |
+         v
+	  end turn
+
+*******************************************************************************************/
+
 include("Utilitaires");
 include("GlobalVar");
 include("FonctionEtat");
 include("Strategy");
 
+
 /***********************************/
 /*   Fonction principale de l'IA   */
 /***********************************/
-// l'IA est une fonction afin qu'elle puisse servir pour le poireau et pour le buble
+// l'IA entière est une fonction afin qu'elle puisse servir pour le poireau et pour le buble
 stateMachine();
 
 
 /***********************************/
 /*	 Fonction gérant les états     */
 /***********************************/
-
 function stateMachine(){
 // On défini si c'est la première fois ou pas que le script est lancé
 	if (initialisation == null){
@@ -45,6 +86,8 @@ function stateMachine(){
 		else if (etat == MOVE_TO_STALACTITE_RANGE){moveToStalactiteRangeFunction();}
 		else if (etat == MOVE_TO_SPARK_RANGE)	{moveToSparkRangeFunction();}
 		else if (etat == MOVE_TO_HELMET_RANGE)	{moveToHelmetRangeFunction();}
+		else if (etat == MOVE_TO_CELL)			{moveToCellFunction();}
+
 
 		else if (etat == SUMMON_PUNNY_BULB) {summonPunnyBulbFunction();}
 		else if (etat == USE_WEAPON)		{useWeaponFunction();}
@@ -59,7 +102,10 @@ function stateMachine(){
 		else if (etat == USE_LIGHTNING)		{useLightningFunction();}	
 		else if (etat == USE_FORTRESS)		{useFortressFunction();}		
 		else if (etat == USE_RAMPART)		{useRampartFunction();}		
-
-		else {debugC("ETAT INDEFINI !!!",getColor(255, 0, 0));}
+		else if (etat == USE_OBJECT)		{useObjectFunction();}		
+		
+		else {debugC("ETAT INDEFINI !!!",getColor(255, 0, 0));
+			break;
+		}
 	}
 }

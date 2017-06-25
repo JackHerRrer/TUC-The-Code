@@ -18,11 +18,6 @@ function initGameFunction(){
 	}
 	ourLeekID = getLeek();
 
-	for (var i = 0; i < 613; i++){
-		actionMap[i] = [];
-	}
-
-
 	etat = INIT_TURN;
 }
 
@@ -34,9 +29,9 @@ function initTurnFunction(){
 	currentAction = 0;
 	actionTotal = 0;
 	TPTotal = 0;
-	
+	MPTotal = 0;
+
 	actionMap = [];
-	instructionsCount = 0;
 
 	etat = STRATEGY_CHOICE;
 }
@@ -51,9 +46,15 @@ function strategyChoiceFunction(){
 		punnyBulbStrategyChoice();
 	}
 
+	// display the list of the chosen actions
 	debug("******************************");
 	for (var i = 0; i < actionTotal; i++){
-		debug(actionSequence[i]);
+		if (actionSequence[i][0] != USE_OBJECT){
+			debug(actionSequence[i][0]);
+		}
+		else {
+			debug(actionSequence[i][0] + " : " + actionSequence[i][1]);
+		}
 	}
 	debug("TP total : "+ TPTotal);
 	debug("******************************\n");
@@ -66,7 +67,8 @@ function actionChoiceFunction(){
 	//debug("action choice state"); 
 
 	if (currentAction < actionTotal){
-		etat = actionSequence[currentAction];
+		etat = actionSequence[currentAction][0];		
+		// As currentAction is incremented before the action happens, to get the right parameters of the action, currentAction - 1 needs to be used
 		currentAction++;
 	}
 	else {
@@ -273,7 +275,45 @@ function useLightningFunction(){
 
 
 
+function useObjectFunction(){
+	// Parameters of this state
+	// actionSequence[0][0] =  USE_OBJECT;
+	// actionSequence[0][1] =  object_ID; 
+	// actionSequence[0][2] =  targetCell;
+
+	debug("use object state : " + actionSequence[currentAction - 1][1]);
+
+	if (isWeapon(actionSequence[currentAction - 1][1])){
+		useWeaponOnCell(actionSequence[currentAction - 1][2]);
+	}
+	else if (isChip(actionSequence[currentAction - 1][1])){
+		useChipOnCell(actionSequence[currentAction - 1][1], actionSequence[currentAction - 1][2]);
+	}
+	else{
+		debug("error : this is not an object");
+	}
+
+	etat = ACTION_CHOICE;
+}
+
+
+function moveToCellFunction(){
+	// Parameters of this state
+	// actionSequence[0][0] =  USE_OBJECT;
+	// actionSequence[0][1] =  cell; 
+	
+	debug("Move to cell state : ");
+	moveTowardCell(actionSequence[currentAction - 1][1]);
+
+	etat = ACTION_CHOICE;
+}
+
+
+
 function lastActionFunction() {
+
+	debug("Total operation : " + getOperations());
+	debug("remaining operation : " + (OPERATIONS_LIMIT - getOperations()));
 
 	if (isDead(enemyID)){say ("Reviens gamin !! C'était pour rire ");}
 	else if (getTurn() == 2){

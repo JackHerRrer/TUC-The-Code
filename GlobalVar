@@ -3,10 +3,15 @@
 //-------------------------------------------------------------------
 
 //-----Constantes d'état--------------
-global actionSequence = [];	//tableau contenant la liste des actions à effectuer pendant ce tour
+global actionSequence = [];	// Tableau contenant la liste des actions à effectuer pendant ce tour. 
+							// Une action est un tableau comprenant au minimum le nom de l'action.
+							// Il peut aussi contenir des paramètre liés à l'action
+
 global currentAction = 0;	//numéro de l'action actuel
 global actionTotal = 0;		//nombre total d'action dans ce tour
 global TPTotal = 0;			//nombre de point d'action utilisé ce tour ci
+global MPTotal = 0;			//nombre de point de mouvement utilisé ce tour ci
+
 
 global etat;
 global INIT_GAME = 			"INIT_GAME";
@@ -23,11 +28,12 @@ global MOVE_TO_LIGHTNING_RANGE=	"MOVE_TO_LIGHTNING_RANGE";
 global MOVE_TO_STALACTITE_RANGE="MOVE_TO_STALACTITE_RANGE";
 global MOVE_TO_SPARK_RANGE=		"MOVE_TO_SPARK_RANGE";
 global MOVE_TO_HELMET_RANGE=	"MOVE_TO_HELMET_RANGE";
+global MOVE_TO_CELL=			"MOVE_TO_CELL";
 
-global EQUIP_SHOTGUN = 		"EQUIP_SHOTGUN";
-global EQUIP_MAGNUM = 		"EQUIP_MAGNUM";
-global EQUIP_GRENADE_LAUNCHER="EQUIP_GRENADE_LAUNCHER";
-global USE_WEAPON=	 		"USE_WEAPON";
+global EQUIP_SHOTGUN = 			"EQUIP_SHOTGUN";
+global EQUIP_MAGNUM = 			"EQUIP_MAGNUM";
+global EQUIP_GRENADE_LAUNCHER=	"EQUIP_GRENADE_LAUNCHER";
+global USE_WEAPON=	 			"USE_WEAPON";
 
 global SUMMON_PUNNY_BULB =  "SUMMON_PUNNY_BULB";
 global MOVE_TOWARD_LEEK= 	"MOVE_TOWARD_LEEK";
@@ -43,7 +49,7 @@ global USE_LIGHTNING = 		"USE_LIGHTNING";
 global USE_RAMPART =		"USE_RAMPART";
 global USE_FORTRESS =		"USE_FORTRESS";
 
-
+global USE_OBJECT = 		"USE_OBJECT";
 
 //----Variables globales---------------------
 //Variables globales alliés
@@ -51,20 +57,11 @@ global weaponID;
 global ourLeekID;
 global vieMax;
 
-
+//array of the map containing the calculated possible actions on the cells 
 global actionMap = [];
 
 //Variables globales ennemies
 global enemyID;
-global enemyAbsoluteShield;
-global minDamageEnemy;
-global maxDamageEnemy;
-global strengthEnemy;
-global enemyWeapon;
-global enemyMaxWeaponRange;
 
 //Booleen
 global initialisation;
-
-
-global instructionsCount;

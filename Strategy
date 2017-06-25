@@ -1,3 +1,28 @@
+/********************************************************************************************
+                          
+                                 strategy_choice
+                                        +
+                                        |
+                                        |
+           +----------------------------v----------------------------+
+           +---------------------------------------------------------+
+           |                            |                            |
+           +- is_leek                   +- is_punny_bulb             +- is_..._bulb
+           |                            |                            |
++----------v-----------+   +------------v-------------+  +-----------v--------------+
+| LEEK_STRATEGY_CHOICE |   |PUNNY_BULB_STRATEGY_CHOICE|  | ..._BULB_STRATEGY_CHOICE |
++----------+-----------+   +------------+-------------+  +-----------+--------------+
+           |                            |                            |
+           |                            |                            |
+          +v----------------------------v----------------------------v-+
+                                        |
+                                        |
+                                        v
+                                  action_choice
+
+********************************************************************************************/
+
+
 include("GlobalVar");
 include("Utilitaires");
 include("FonctionEtat");
@@ -25,7 +50,8 @@ function punnyBulbStrategyChoice(){
 	var enemyCanUseWeaponIfMoving;
 	
 	if (getTurn() == 1){
-		actionSequence[actionTotal] = MOVE_AWAY_FROM_ENEMY; 		// 0-3 MP
+		actionSequence[actionTotal] = []; 	
+		actionSequence[actionTotal][0] = MOVE_TOWARD_LEEK; 		// 0-3 MP
 		actionTotal++;
 	}
 	else {
@@ -37,82 +63,128 @@ function punnyBulbStrategyChoice(){
 		}
 
 		if (bulbCanUseHelmetIfMoving != false){
-			actionSequence[actionTotal] = MOVE_TO_HELMET_RANGE; 
+			actionSequence[actionTotal] = []; 	
+			actionSequence[actionTotal][0] = MOVE_TOWARD_LEEK; 
 			actionTotal++;
 		}
 		else {
-			actionSequence[actionTotal] = MOVE_TOWARD_LEEK; 
+			actionSequence[actionTotal] = []; 	
+			actionSequence[actionTotal][0] = MOVE_TOWARD_LEEK; 
 			actionTotal++;
 		}
 
 
 		if (enemyCanUseWeaponIfMoving != false && getCooldown(CHIP_HELMET) == 0){
-			actionSequence[actionTotal] = USE_HELMET; 
+			actionSequence[actionTotal] = []; 	
+			actionSequence[actionTotal][0] = USE_HELMET; 
 			actionTotal++;
 		}
 
-		actionSequence[actionTotal] = USE_PEBBLE; 
+		actionSequence[actionTotal] = []; 	
+		actionSequence[actionTotal][0] = USE_PEBBLE; 
 		actionTotal++;
 
 		if (getLife(ourLeekID) < getTotalLife(ourLeekID && getCooldown(CHIP_BANDAGE) == 0)){
-			actionSequence[actionTotal] = USE_BANDAGE; 
+			actionSequence[actionTotal] = []; 	
+			actionSequence[actionTotal][0] = USE_BANDAGE; 
 			actionTotal++;
 		}
 
-		actionSequence[actionTotal] = USE_PROTEIN; 
+		actionSequence[actionTotal] = []; 	
+		actionSequence[actionTotal][0] = USE_PROTEIN; 
 		actionTotal++;
 	}
 }
 
 
-function first_turn_strategy(){
-
-
-	actionSequence[actionTotal] = EQUIP_GRENADE_LAUNCHER; 			// 1 TP
-	actionTotal++;
-
-	actionSequence[actionTotal] = SUMMON_PUNNY_BULB; 	// 6 TP	+ 1 MP
-	actionTotal++;
-
-	//actionSequence[actionTotal] = MOVE_AWAY_FROM_ENEMY; 		// 0-3 MP
-	//actionTotal++;
-
-}
-
 function running_away_strategy(){
-	actionSequence[actionTotal] = MOVE_AWAY_FROM_ENEMY; 		// 0-3 MP
+	actionSequence[actionTotal] = []; 	
+	actionSequence[actionTotal][0] = MOVE_AWAY_FROM_ENEMY; 		// 0-3 MP
 	actionTotal++;
 
 	if (getCooldown(CHIP_PUNY_BULB) == 0 ){ 		// 6 on vérifie qu'on est pas en cooldown et qu'on a pas déjà invoqué un bulbes
-			actionSequence[actionTotal] = SUMMON_PUNNY_BULB; 	// 6 TP	+ 1 MP
+			actionSequence[actionTotal] = []; 	
+			actionSequence[actionTotal][0] = SUMMON_PUNNY_BULB; 	// 6 TP	+ 1 MP
 			actionTotal++;
 		}
+}
 
+/********************************************************************************************
+
+
+               leek_strategy_choice
+                        +
+                        |
+                        |
+       +----------------------------------+
+       +----------------------------------+
+       |                                  |
+       |                                  |
+       +-  turn 1                         +-  not turn 1
+       |                                  |
++------v-----+                     +------v---------------------+
+|EQUIP_WEAPON|                     |CALCULATE_LEEK_POSSIBILITIES|
++------+-----+                     +------+---------------------+
+       |                                  |
+       |                                  |
++------v-----+                     +------v----------------------+
+|SUMMON_BULB |                     |CALCULATE_ENEMY_POSSIBILITIES|
++------+-----+                     +------+----------------------+
+       |                                  |
+       |                           +------v-------+
+       |                           |CHECK_STRAT_1 |
+       |                           +------+-------+
+       |                                  |
+       |                                  +-------------------+
+       |                                  |                   |
+       |                                  |           +-------v----------+
+       |                                  |           |FILL_ACTION_ARRAY |
+       |                                  |           +-------+----------+
+       |                                  |                   |
+       |                                  +-------------------+
+       |                           +------v-------+
+       |                           |CHECK_STRAT_2 |
+       |                           +------+-------+
+       |                                  |
+       |                                  +-------------------+
+       |                                  |                   |
+       |                                  |           +-------v----------+
+       |                                  |           |FILL_ACTION_ARRAY |
+       |                                  |           +-------+----------+
+       |                                  |                   |
+       +---------------+------------------v-------------------v
+                       |
+                       |
+                       v
+                 action_choice
+
+********************************************************************************************/
+
+function first_turn_strategy(){
+
+
+	actionSequence[actionTotal] = []; 	
+	actionSequence[actionTotal][0] = EQUIP_GRENADE_LAUNCHER; 			// 1 TP
+	actionTotal++;
+
+	actionSequence[actionTotal] = []; 	
+	actionSequence[actionTotal][0] = SUMMON_PUNNY_BULB; 	// 6 TP	+ 1 MP
+	actionTotal++;
+
+	//actionSequence[actionTotal][0] = MOVE_AWAY_FROM_ENEMY; 		// 0-3 MP
+	//actionTotal++;
 
 }
 
 function fight_strategy(){
 
-	/*canUseIfMoving(weaponID, 578, ourLeekID, true);
-	canUseIfMoving(weaponID, 0, ourLeekID, true);
-		canUseIfMoving(weaponID, 612, ourLeekID, true);
-		canUseIfMoving(weaponID, 17, ourLeekID, true);
-				canUseIfMoving(weaponID, 604, ourLeekID, true);
-		canUseIfMoving(weaponID, 279, ourLeekID, true);
-		canUseIfMoving(weaponID, 306, ourLeekID, true);
-*/
-
-
-	//canUseIfMoving(weaponID, 438, ourLeekID, true);
-	canUseIfMoving(CHIP_LIGHTNING, 367, ourLeekID, true);
-	//canUseIfMoving(weaponID, 559, ourLeekID, true);
-
-
-
-	var weCanUseLightningIfMoving = canUseIfMoving(CHIP_LIGHTNING, getCell(enemyID), ourLeekID, false);
+	//CALCULATE_LEEK_POSSIBILITIES
+	var weCanUseLightningIfMoving = canUseIfMoving(CHIP_LIGHTNING, getCell(enemyID), ourLeekID, true);
 	var weCanUseStalactiteIfMoving = canUseIfMoving(CHIP_STALACTITE, getCell(enemyID), ourLeekID, false);
-	var weCanUseWeaponIfMoving = canUseIfMoving(weaponID, getCell(enemyID), ourLeekID, true);
+	var weCanUseWeaponIfMoving = canUseIfMoving(weaponID, getCell(enemyID), ourLeekID, false);
 	var weCanUseSparkIfMoving = canUseIfMoving(CHIP_SPARK, getCell(enemyID), ourLeekID, false);	
+
+	//CALCULATE_ENEMY_POSSIBILITIES	
 	var enemyCanUseWeaponIfMoving;
 	if (getWeapon(enemyID) != null){	
 		enemyCanUseWeaponIfMoving = canUseIfMoving(getWeapon(enemyID), getCell(ourLeekID), enemyID, false);
@@ -126,11 +198,17 @@ function fight_strategy(){
 
 	if (enemyCanUseWeaponIfMoving != false && getCooldown(CHIP_FORTRESS) == 0){
 		TPTotal += 10;
-
-		actionSequence[actionTotal] = USE_SHIELD;			//4 TP
+		
+		actionSequence[actionTotal] = []; 	
+		actionSequence[actionTotal][0] = USE_SHIELD;			//4 TP
+		actionTotal++;
+		
+		actionSequence[actionTotal] = []; 	
+		actionSequence[actionTotal][0] = USE_FORTRESS; 		//6 TP
 		actionTotal++;
 
-		actionSequence[actionTotal] = USE_FORTRESS; 		//6 TP
+		actionSequence[actionTotal] = []; 	
+		actionSequence[actionTotal][0] = MOVE_AWAY_FROM_ENEMY;			
 		actionTotal++;
 	}
 
@@ -138,86 +216,166 @@ function fight_strategy(){
 	else if (weCanUseLightningIfMoving == false && weCanUseStalactiteIfMoving == false && weCanUseWeaponIfMoving == false && weCanUseSparkIfMoving == false){
 		if (getCooldown(CHIP_PUNY_BULB) == 0 ){ 				// 6 on vérifie qu'on est pas en cooldown et qu'on a pas déjà invoqué un bulbes
 			TPTotal += 6;
-			actionSequence[actionTotal] = SUMMON_PUNNY_BULB; 	// 6 TP	+ 1 MP
+			
+			actionSequence[actionTotal] = []; 	
+			actionSequence[actionTotal][0] = SUMMON_PUNNY_BULB; 	// 6 TP	+ 1 MP
 			actionTotal++;
 		}
 	}
-	else if (weCanUseLightningIfMoving != false){
-		TPTotal += 12;
-		actionSequence[actionTotal] = MOVE_TO_LIGHTNING_RANGE; 		// 0-4 MP
-		actionTotal++;
+	else if (weCanUseLightningIfMoving == true){
 
-		actionSequence[actionTotal] = USE_LIGHTNING; 		// 4 TP
-		actionTotal++;
+		var selectedCell = null;
+		var targetCell = null;
+		var shortestPath = -1;
+		for(var key : var cell in actionMap){
+			for(var action in cell){
+				if (action[0] == CHIP_LIGHTNING){
+					if (shortestPath == -1 || action[3] < shortestPath){
+						selectedCell = key;
+						targetCell = action[2];
+						shortestPath = action[3];
+					}
+				}
+			}
+		}
 
-		actionSequence[actionTotal] = USE_LIGHTNING; 		// 4 TP
-		actionTotal++;
+		if (selectedCell != null){
+			TPTotal += 12;
+			actionSequence[actionTotal] = []; 	
+			actionSequence[actionTotal][0] = MOVE_TO_CELL; 	
+			actionSequence[actionTotal][1] = selectedCell; 			
+			actionTotal++;
+			
+			actionSequence[actionTotal] = []; 	
+			actionSequence[actionTotal][0] = USE_OBJECT; 		// 4 TP
+			actionSequence[actionTotal][1] = CHIP_LIGHTNING;
+			actionSequence[actionTotal][2] = targetCell;
+			actionTotal++;
 
-		actionSequence[actionTotal] = USE_LIGHTNING; 		// 4 TP
-		actionTotal++;
+			actionSequence[actionTotal] = []; 	
+			actionSequence[actionTotal][0] = USE_OBJECT; 		// 4 TP
+			actionSequence[actionTotal][1] = CHIP_LIGHTNING;
+			actionSequence[actionTotal][2] = targetCell;
+			actionTotal++;
+
+			actionSequence[actionTotal] = []; 	
+			actionSequence[actionTotal][0] = USE_OBJECT; 		// 4 TP
+			actionSequence[actionTotal][1] = CHIP_LIGHTNING;
+			actionSequence[actionTotal][2] = targetCell;
+			actionTotal++;
+
+			actionSequence[actionTotal] = []; 	
+			actionSequence[actionTotal][0] = MOVE_AWAY_FROM_ENEMY;			
+			actionTotal++;
+
+		}
+		else {
+			debug("error : no cells available for lightning");
+		}
 
 	}
 	else if ((getTP() - TPTotal) >= 6 && weCanUseStalactiteIfMoving != false){
 	//if (getCellToUseWeapon(weaponID, enemyID) != null){	
 		TPTotal += 6;		
-		actionSequence[actionTotal] = MOVE_TO_STALACTITE_RANGE;			// 6 TP
+		actionSequence[actionTotal] = []; 	
+		actionSequence[actionTotal][0] = MOVE_TO_STALACTITE_RANGE;			// 6 TP
 		actionTotal++;
 
-		actionSequence[actionTotal] = USE_STALACTITE;			// 6 TP
+		actionSequence[actionTotal] = []; 	
+		actionSequence[actionTotal][0] = USE_STALACTITE;			// 6 TP
 		actionTotal++;
 
 	}
 
 	if ((getTP() - TPTotal) >= 5 && weCanUseWeaponIfMoving != false){
 	//if (getCellToUseWeapon(weaponID, enemyID) != null){			
-		actionSequence[actionTotal] = MOVE_TO_WEAPON_RANGE; 		// 0-4 MP
-		actionTotal++;
+		
+		var selectedCell = null;
+		var targetCell = null;
+		var shortestPath = -1;
+		for(var key : var cell in actionMap){
+			for(var action in cell){
+				if (action[0] == CHIP_LIGHTNING){
+					if (shortestPath == -1 || action[3] < shortestPath){
+						selectedCell = key;
+						targetCell = action[2];
+						shortestPath = action[3];
+					}
+				}
+			}
+		}
 
-		TPTotal += 5;
-		actionSequence[actionTotal] = USE_WEAPON;			// 5 TP
-		actionTotal++;
+		if (selectedCell != null){
 
-		if ((getTP() - TPTotal) >= 5){
-			TPTotal += 5;
-			actionSequence[actionTotal] = USE_WEAPON;			//5 TP
+			actionSequence[actionTotal] = []; 	
+			actionSequence[actionTotal][0] = MOVE_TO_CELL; 	
+			actionSequence[actionTotal][1] = selectedCell; 			
 			actionTotal++;
+			
+			TPTotal += 5;
+			actionSequence[actionTotal] = []; 	
+			actionSequence[actionTotal][0] = USE_OBJECT; 		
+			actionSequence[actionTotal][1] = weaponID;
+			actionSequence[actionTotal][2] = targetCell;
+			actionTotal++;
+
+			if ((getTP() - TPTotal) >= 5){
+				TPTotal += 5;
+				actionSequence[actionTotal] = []; 	
+				actionSequence[actionTotal][0] = USE_OBJECT; 		
+				actionSequence[actionTotal][1] = weaponID;
+				actionSequence[actionTotal][2] = targetCell;
+				actionTotal++;
+			}
+
+			actionSequence[actionTotal] = []; 	
+			actionSequence[actionTotal][0] = MOVE_AWAY_FROM_ENEMY;			
+			actionTotal++;
+			
+		}
+		else {
+			debug("error : no cells available for weapon");
 		}
 	}
 
 	if ((getTP() - TPTotal) >= 3 && weCanUseSparkIfMoving != false){
 		TPTotal += 3;
 
-		//actionSequence[actionTotal] = MOVE_TO_SPARK_RANGE;			//3 TP
-		//actionTotal++;
 
-		actionSequence[actionTotal] = USE_SPARK;			//3 TP
+		actionSequence[actionTotal] = []; 	
+		actionSequence[actionTotal][0] = USE_SPARK;			//3 TP
 		actionTotal++;
 
 		if ((getTP() - TPTotal) >= 3){
 			TPTotal += 3;
-			actionSequence[actionTotal] = USE_SPARK;			//3 TP
+			actionSequence[actionTotal] = []; 	
+			actionSequence[actionTotal][0] = USE_SPARK;			//3 TP
 			actionTotal++;
 		}
 
 		if ((getTP() - TPTotal) >= 3){
 			TPTotal += 3;
-			actionSequence[actionTotal] = USE_SPARK;			//3 TP
+			actionSequence[actionTotal] = []; 	
+			actionSequence[actionTotal][0] = USE_SPARK;			//3 TP
 			actionTotal++;
 		}
 
 		if ((getTP() - TPTotal) >= 3){
 			TPTotal += 3;
-			actionSequence[actionTotal] = USE_SPARK;			//3 TP
+			actionSequence[actionTotal] = []; 	
+			actionSequence[actionTotal][0] = USE_SPARK;			//3 TP
 			actionTotal++;
 		}
 
 		/*
 		if (enemyHasSpark == false){
-			actionSequence[actionTotal] = MOVE_TOWARD_ENEMY;			//3 TP
+			actionSequence[actionTotal] = []; 	
+			actionSequence[actionTotal][0] = MOVE_TOWARD_ENEMY;			//3 TP
 			actionTotal++;
 		}
 		else {
-			actionSequence[actionTotal] = MOVE_AWAY_FROM_ENEMY;			//3 TP
+			actionSequence[actionTotal] = []; 	
+			actionSequence[actionTotal][0] = MOVE_AWAY_FROM_ENEMY;			//3 TP
 			actionTotal++;
 		}
 		*/

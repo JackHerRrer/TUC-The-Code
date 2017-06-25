@@ -56,21 +56,22 @@ function isEven(number){
 /*****************************************************************************************/
 /*
 Return the cells that will be affected by the object (weapon or chip) if it is used on targetCell
+Does not return the cells that are obstacle (to avoid uneccesary operations from the function canUseIfMoving())
 
--------------------------
++---+---+---+---+---+---+
 |   |   |   |   |   |   |  	1 = targetCell
--------------------------
++---+---+---+---+---+---+
 |   |   |   |   |   |   | 	2 = indirectCells
--------------------------
++---+---+---+---+---+---+
 |   |   |   |   | 2 |   | 	
--------------------------
++---+---+---+---+---+---+
 |   |   |   | 2 | 1 | 2 | 
--------------------------
++---+---+---+---+---+---+
 |   |   |   |   | 2 |   | 
--------------------------
++---+---+---+---+---+---+
 */
 
-function getCellsAffected(objectID, targetCell){		// environ 400 op
+function getAOE(objectID, targetCell){		// environ 400 op
 
 	//varaiable that will store the cells affected
 	var indirectCells = [];
@@ -94,23 +95,23 @@ function getCellsAffected(objectID, targetCell){		// environ 400 op
 		debug("area is null");
 	}
 	else {
-		push(indirectCells, targetCell);
+		if (isObstacle(targetCell) == false) push(indirectCells, targetCell);
 	
 	 	if (area == AREA_CIRCLE_1 || area == AREA_CIRCLE_2 || area == AREA_CIRCLE_3){
 			//haut 0	
-			if (targetCell % 35 != 0 && (targetCell-18) % 35 != 0) 		push(indirectCells, targetCell - 1); 	//gauche			
-			if ((targetCell-17) % 35 != 0 && (targetCell-34) % 35 != 0) push(indirectCells, targetCell + 1);	//droite
+			if (targetCell % 35 != 0 && (targetCell-18) % 35 != 0 && isObstacle(targetCell - 1) == false) 		push(indirectCells, targetCell - 1); 	//gauche			
+			if ((targetCell-17) % 35 != 0 && (targetCell-34) % 35 != 0 && isObstacle(targetCell + 1) == false) 	push(indirectCells, targetCell + 1);	//droite
 
 			//haut 1
 			if (targetCell > 17){
-				if (targetCell % 35 != 0)		push(indirectCells, targetCell - 18); //gauche
-				if ((targetCell-17) % 35 != 0) 	push(indirectCells, targetCell - 17);	//droite
+				if (targetCell % 35 != 0 && isObstacle(targetCell - 18) == false)		push(indirectCells, targetCell - 18); 	//gauche
+				if ((targetCell-17) % 35 != 0 && isObstacle(targetCell -17) == false) 	push(indirectCells, targetCell - 17);	//droite
 			}
 
 			//bas 1
 			if (targetCell < 595){
-				if ((targetCell-17) % 35 != 0) 	push(indirectCells, targetCell + 18); //droite
-				if (targetCell % 35 != 0) 		push(indirectCells, targetCell + 17); //gauche
+				if ((targetCell-17) % 35 != 0 && isObstacle(targetCell + 18) == false) 	push(indirectCells, targetCell + 18); //droite
+				if (targetCell % 35 != 0 && isObstacle(targetCell + 17) == false) 		push(indirectCells, targetCell + 17); //gauche
 			}
 
 		}
@@ -118,16 +119,16 @@ function getCellsAffected(objectID, targetCell){		// environ 400 op
 		if (area == AREA_CIRCLE_2 || area == AREA_CIRCLE_3){
 			//haut 2
 			if (targetCell > 34){
-				push(indirectCells, targetCell - 35);																//milieu
-				if (targetCell % 35 != 0 && (targetCell-18) % 35 != 0) 		push(indirectCells, targetCell - 36); //gauche
-				if ((targetCell-17) % 35 != 0 && (targetCell-34) % 35 != 0) push(indirectCells, targetCell - 34);	//droite 
+				if ( isObstacle(targetCell - 35) == false) 															push(indirectCells, targetCell - 35);	//milieu
+				if (targetCell % 35 != 0 && (targetCell-18) % 35 != 0 && isObstacle(targetCell - 36) == false) 		push(indirectCells, targetCell - 36); 	//gauche
+				if ((targetCell-17) % 35 != 0 && (targetCell-34) % 35 != 0 && isObstacle(targetCell - 34) == false) push(indirectCells, targetCell - 34);	//droite 
 			}
 
 			//bas 2
 			if (targetCell < 560){
-				push(indirectCells, targetCell + 35);																//milieu
-				if ((targetCell-17) % 35 != 0 && (targetCell-34) % 35 != 0) push(indirectCells, targetCell + 36);	//droite
-				if (targetCell % 35 != 0 && (targetCell-18) % 35 != 0) 		push(indirectCells, targetCell + 34);	//gauche
+				if ( isObstacle(targetCell + 35) == false) 															push(indirectCells, targetCell + 35);	//milieu
+				if ((targetCell-17) % 35 != 0 && (targetCell-34) % 35 != 0 && isObstacle(targetCell + 36) == false) push(indirectCells, targetCell + 36);	//droite
+				if (targetCell % 35 != 0 && (targetCell-18) % 35 != 0 && isObstacle(targetCell + 34) == false) 		push(indirectCells, targetCell + 34);	//gauche
 			}
 		}
 		
@@ -142,18 +143,20 @@ function getCellsAffected(objectID, targetCell){		// environ 400 op
 
 /********************************************************************************************************/
 /*
+// fill the cells of "actionMap" that the leek can reach if he moves, from where he can touch targetCell with the object 
+// If the object has AOE, the function calculates if the leek can touch targetCell undirectly
 
--------------------------
++---+---+---+---+---+---+
 |   |   |   |   |   |   |  	1 = targetCell
--------------------------
++---+---+---+---+---+---+
 |   |   |   | 3 | 3 | 3 | 	2 = indirectCells
--------------------------
-|   |   | 3 | 3 | 2 | 3 | 	3 = cellFromWhereToUseObject
--------------------------
++---+---+---+---+---+---+
+|   |   | 3 | 3 | 2 | 3 | 	3 = cellsFromWhereToUseObject
++---+---+---+---+---+---+
 |   |   | 3 | 2 | 1 | 2 | 
--------------------------
++---+---+---+---+---+---+
 |   |   | 3 | 3 | 2 | 3 | 
--------------------------
++---+---+---+---+---+---+
 
 */
 
@@ -161,7 +164,7 @@ function getCellsAffected(objectID, targetCell){		// environ 400 op
 function canUseIfMoving(objectID, targetCell, user, markCells) {
 
 	var instruct1 = getOperations();
-	var indirectCells = getCellsAffected(objectID, targetCell);
+	var indirectCells = getAOE(objectID, targetCell);
 	var canUse = false;
 
 	if (indirectCells == null){
@@ -192,6 +195,7 @@ function canUseIfMoving(objectID, targetCell, user, markCells) {
 				for (var action in actionMap[cellFromWhereToUseObject]){
 					if (action[0] == objectID){
 						cellAlreadyAnalysed = true;
+						break;
 					}
 				}
 				if (cellAlreadyAnalysed == false){
@@ -215,7 +219,7 @@ function canUseIfMoving(objectID, targetCell, user, markCells) {
 										mark(cellFromWhereToUseObject, getColor(200, 50, 50));
 									}
 									else {
-										mark(cellFromWhereToUseObject, getColor(200, 50, 150));
+										mark(cellFromWhereToUseObject, getColor(50, 50, 200));
 									}
 								}
 							}
@@ -229,8 +233,8 @@ function canUseIfMoving(objectID, targetCell, user, markCells) {
 		}
 	}	
 
-	var instruct2 = getOperations();
-	debug("can use if moving operation : " + (instruct2 - instruct1));
+	//var instruct2 = getOperations();
+	//debug("can use if moving operation : " + (instruct2 - instruct1));
 	return canUse;
 }
 
