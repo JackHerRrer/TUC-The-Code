@@ -64,12 +64,12 @@ function punnyBulbStrategyChoice(){
 
 		if (bulbCanUseHelmetIfMoving != false){
 			actionSequence[actionTotal] = []; 	
-			actionSequence[actionTotal][0] = MOVE_TOWARD_LEEK; 
+			actionSequence[actionTotal][0] = MOVE_TOWARD_ENEMY; 
 			actionTotal++;
 		}
 		else {
 			actionSequence[actionTotal] = []; 	
-			actionSequence[actionTotal][0] = MOVE_TOWARD_LEEK; 
+			actionSequence[actionTotal][0] = MOVE_TOWARD_ENEMY; 
 			actionTotal++;
 		}
 
@@ -221,6 +221,9 @@ function fight_strategy(){
 			actionSequence[actionTotal][0] = SUMMON_PUNNY_BULB; 	// 6 TP	+ 1 MP
 			actionTotal++;
 		}
+			actionSequence[actionTotal] = []; 	
+			actionSequence[actionTotal][0] = MOVE_TOWARD_ENEMY; 	// 6 TP	+ 1 MP
+			actionTotal++;
 	}
 	else if (weCanUseLightningIfMoving == true){
 
@@ -229,11 +232,39 @@ function fight_strategy(){
 		var shortestPath = -1;
 		for(var key : var cell in actionMap){
 			for(var action in cell){
-				if (action[0] == CHIP_LIGHTNING){
+				if (action[0] == CHIP_LIGHTNING && action[1] == action[2]){
 					if (shortestPath == -1 || action[3] < shortestPath){
 						selectedCell = key;
 						targetCell = action[2];
 						shortestPath = action[3];
+					}
+				}
+			}
+		}
+
+		if (selectedCell == null){
+			for(var key : var cell in actionMap){
+				for(var action in cell){
+					if (action[0] == CHIP_LIGHTNING && getCellDistance(action[1], action[2])){
+						if (shortestPath == -1 || action[3] < shortestPath){
+							selectedCell = key;
+							targetCell = action[2];
+							shortestPath = action[3];
+						}
+					}
+				}
+			}
+		}
+
+		if (selectedCell == null){
+			for(var key : var cell in actionMap){
+				for(var action in cell){
+					if (action[0] == CHIP_LIGHTNING){
+						if (shortestPath == -1 || action[3] < shortestPath){
+							selectedCell = key;
+							targetCell = action[2];
+							shortestPath = action[3];
+						}
 					}
 				}
 			}
@@ -295,11 +326,39 @@ function fight_strategy(){
 		var shortestPath = -1;
 		for(var key : var cell in actionMap){
 			for(var action in cell){
-				if (action[0] == CHIP_LIGHTNING){
+				if (action[0] == weaponID && action[1] == action[2]){
 					if (shortestPath == -1 || action[3] < shortestPath){
 						selectedCell = key;
 						targetCell = action[2];
 						shortestPath = action[3];
+					}
+				}
+			}
+		}
+
+		if (selectedCell == null){
+			for(var key : var cell in actionMap){
+				for(var action in cell){
+					if (action[0] == weaponID && getCellDistance(action[1], action[2])){
+						if (shortestPath == -1 || action[3] < shortestPath){
+							selectedCell = key;
+							targetCell = action[2];
+							shortestPath = action[3];
+						}
+					}
+				}
+			}
+		}
+
+		if (selectedCell == null){
+			for(var key : var cell in actionMap){
+				for(var action in cell){
+					if (action[0] == weaponID){
+						if (shortestPath == -1 || action[3] < shortestPath){
+							selectedCell = key;
+							targetCell = action[2];
+							shortestPath = action[3];
+						}
 					}
 				}
 			}
