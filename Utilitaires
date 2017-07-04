@@ -4,6 +4,27 @@
 include("GlobalVar");
 
 
+
+
+function leekHasChip(chipID, leekID){
+	var chips = getChips(leekID);
+	
+	if (chips != null){
+		for (var chip in chips){
+			if (chip == chipID){
+				return true;
+			}
+		}
+	}
+	else {
+		debug ("chips is NULL");
+	}
+	return false;
+}
+
+/********************************************************************************************/
+
+
 function getDamage(ID, strength) {	
 	var damage = [];
 	
@@ -38,8 +59,48 @@ function getDamage(ID, strength) {
 
 /******************************************************************************************/
 
-function calculateDamage(leekID, damage) {	
-	return damage * (1 - getRelativeShield(leekID) / 100) - getAbsoluteShield(leekID);
+function calculateDamage(userID, targetID, objectID, cellID) {	
+
+	var area;
+	if(isWeapon(objectID)) {
+		area = getWeaponArea(objectID);
+	}
+	else if(isChip(objectID)) {
+		area = getChipArea(objectID);
+	}
+
+	if (area != null){
+		var zoneMaxExtent;
+		if (area == AREA_CIRCLE_1){
+			zoneMaxExtent = 1;
+		}
+		else if (area == AREA_CIRCLE_2){
+			zoneMaxExtent = 2;
+		}
+		else if (area == AREA_CIRCLE_3){
+			zoneMaxExtent = 3;
+		}
+		else {
+			//Vérifier que la condition est vrai dans le cas du laser
+			if (getCellDistance(cellID, getCell(targetID))){
+				debug("The object wont hit the target");	
+				return null;	
+			}
+			zoneMaxExtent = 1;
+
+		}
+		var ratioDistance = 1 - (getCellDistance(cellID, getCell(targetID)) / zoneMaxExtent * 0.5);
+		var damage = getDamage(objectID, getStrength(userID));
+		if (damage == null){
+			debug ("damage is null");
+			return null;
+		}
+		return max(0, (damage["MIN"] - damage["MAX"])/2 * ratioDistance * (1 - getRelativeShield(targetID) / 100) - getAbsoluteShield(targetID));
+	}
+	else {
+		debug("Area is null");
+		return null;
+	}
 }
 
 /******************************************************************************************/
@@ -51,6 +112,74 @@ function isEven(number){
 	else {
 		return false;
 	}
+}
+
+/*****************************************************************************************
+//exemple pour une distance de 2
+             i = x 							Les 2 boucles imbriquées
+<----------------------------->           génèrent les couples suivants
+										
+            +-----+             /|\			  		i   |   j
+            |-2,0 |              |              	--------- 		
+      +-----+-----+-----+        |						|	0
+      |-1,1 |-1,0 |-1,-1|        |					0	|	1
++-----+-----+-----+-----+-----+  |						|	2	
+| 0,2 | 0,1 | 0,0 | 0,-1| 0,-2|  | j = y           		|
++-----+-----+-----+-----+-----+  |					1	|	0
+      | 1,1 | 1,0 | 1,-1|        |						|	1
+      +-----+-----+-----+        |						|
+            | 2,0 |              |					2	|	0
+            +-----+             \|/
+
+*/
+
+function getArea(distance, origin){
+	var area = [];
+	var x = getCellX(origin);
+	var y = getCellY(origin);
+	var cell;
+	for (var i = 0; i < distance + 1; i ++){
+		for(var j = 0; j < (distance + 1 - i); j++){
+			if (i == 0){
+				if (j == 0){
+					cell = getCellFromXY(i+x,j+y);
+					if (cell != null) push(area, cell);
+				}
+				else {
+					cell = getCellFromXY(i+x,j+y);
+					if (cell != null) push(area, cell);
+
+					cell = getCellFromXY(i+x,-j+y);
+					if (cell != null) push(area, cell);
+				}
+			}
+			else{
+				if (j == 0){
+					cell = getCellFromXY(i+x,j+y);
+					if (cell != null) push(area, cell);
+
+					cell = getCellFromXY(-i+x,j+y);		
+					if (cell != null) push(area, cell);
+				}
+				else {
+					cell = getCellFromXY(i+x,j+y);
+					if (cell != null) push(area, cell);	
+
+					cell = getCellFromXY(i+x,-j+y);	
+					if (cell != null) push(area, cell);
+
+					cell = getCellFromXY(-i+x,j+y);	
+					if (cell != null) push(area, cell);
+
+					cell = getCellFromXY(-i+x,-j+y);
+					if (cell != null) push(area, cell);
+				}
+			}
+		}
+	}
+
+	// return the area without the obstacles
+	return 	arrayFilter(area, function (oneCell) {return !isObstacle(oneCell);});	
 }
 
 /*****************************************************************************************/
@@ -95,45 +224,17 @@ function getAOE(objectID, targetCell){		// environ 400 op
 		debug("area is null");
 	}
 	else {
-		if (isObstacle(targetCell) == false) push(indirectCells, targetCell);
-	
-	 	if (area == AREA_CIRCLE_1 || area == AREA_CIRCLE_2 || area == AREA_CIRCLE_3){
-			//haut 0	
-			if (targetCell % 35 != 0 && (targetCell-18) % 35 != 0 && isObstacle(targetCell - 1) == false) 		push(indirectCells, targetCell - 1); 	//gauche			
-			if ((targetCell-17) % 35 != 0 && (targetCell-34) % 35 != 0 && isObstacle(targetCell + 1) == false) 	push(indirectCells, targetCell + 1);	//droite
-
-			//haut 1
-			if (targetCell > 17){
-				if (targetCell % 35 != 0 && isObstacle(targetCell - 18) == false)		push(indirectCells, targetCell - 18); 	//gauche
-				if ((targetCell-17) % 35 != 0 && isObstacle(targetCell -17) == false) 	push(indirectCells, targetCell - 17);	//droite
-			}
-
-			//bas 1
-			if (targetCell < 595){
-				if ((targetCell-17) % 35 != 0 && isObstacle(targetCell + 18) == false) 	push(indirectCells, targetCell + 18); //droite
-				if (targetCell % 35 != 0 && isObstacle(targetCell + 17) == false) 		push(indirectCells, targetCell + 17); //gauche
-			}
-
+		if (area == AREA_CIRCLE_1){
+			indirectCells = getArea(1, targetCell);
 		}
-		
-		if (area == AREA_CIRCLE_2 || area == AREA_CIRCLE_3){
-			//haut 2
-			if (targetCell > 34){
-				if ( isObstacle(targetCell - 35) == false) 															push(indirectCells, targetCell - 35);	//milieu
-				if (targetCell % 35 != 0 && (targetCell-18) % 35 != 0 && isObstacle(targetCell - 36) == false) 		push(indirectCells, targetCell - 36); 	//gauche
-				if ((targetCell-17) % 35 != 0 && (targetCell-34) % 35 != 0 && isObstacle(targetCell - 34) == false) push(indirectCells, targetCell - 34);	//droite 
-			}
-
-			//bas 2
-			if (targetCell < 560){
-				if ( isObstacle(targetCell + 35) == false) 															push(indirectCells, targetCell + 35);	//milieu
-				if ((targetCell-17) % 35 != 0 && (targetCell-34) % 35 != 0 && isObstacle(targetCell + 36) == false) push(indirectCells, targetCell + 36);	//droite
-				if (targetCell % 35 != 0 && (targetCell-18) % 35 != 0 && isObstacle(targetCell + 34) == false) 		push(indirectCells, targetCell + 34);	//gauche
-			}
+		else if (area == AREA_CIRCLE_2){
+			indirectCells = getArea(2, targetCell);
 		}
-		
-		if (area == AREA_CIRCLE_3){
-			//à compléter
+		else if (area == AREA_CIRCLE_3){
+			indirectCells = getArea(3, targetCell);
+		}
+		else {
+			indirectCells = targetCell;
 		}
 	}
 	
@@ -143,7 +244,12 @@ function getAOE(objectID, targetCell){		// environ 400 op
 
 /********************************************************************************************************/
 /*
-// fill the cells of "actionMap" that the leek can reach if he moves, from where he can touch targetCell with the object 
+// if the user is an ally
+// fill the cells of "actionMap" from where he can touch targetCell with the object 
+
+// else if the user is an enemy
+// fill the cells of "dangerMap" that the leek can target if he moves
+
 // If the object has AOE, the function calculates if the leek can touch targetCell undirectly
 
 +---+---+---+---+---+---+
@@ -161,21 +267,32 @@ function getAOE(objectID, targetCell){		// environ 400 op
 */
 
 
-function canUseIfMoving(objectID, targetCell, user, markCells) {
+function canUseIfMoving(objectID, targetCell, user, useAOE, markCells) {
 
 	var instruct1 = getOperations();
-	var indirectCells = getAOE(objectID, targetCell);
+	var indirectCells = [];
+
+	//récupération des indirectCells
+	if (useAOE){
+		indirectCells = getAOE(objectID, targetCell);
+	}
+	else {
+		push(indirectCells, targetCell);
+	}
+
 	var canUse = false;
 
-	if (indirectCells == null){
+	if (isEmpty(indirectCells)){
 		debug("indirectCells is null");
 		push(indirectCells, targetCell);
 	}
 
 	var MPAvailable = getMP(user);
-
 	var cellsFromWhereToUseObject = [];
+
+	// Boucle parcourant l'ensemble des indirectCells dans le but de déterminer si elles sont atteignables, si l'utilisateur se déplace
 	for (var indirectCell in indirectCells){
+		//récupération de toutes les cases depuis lesquelles il est possible d'atteindre cette indirectCell
 		if(isWeapon(objectID)) {
 			cellsFromWhereToUseObject = getCellsToUseWeaponOnCell(objectID, indirectCell);
 		}
@@ -187,41 +304,71 @@ function canUseIfMoving(objectID, targetCell, user, markCells) {
 			return null;
 		}
 
-
-		if (cellsFromWhereToUseObject !== []){ 
+		if (!isEmpty(cellsFromWhereToUseObject)){ 
+			//Boucle parcourant l'ensemble des cases (cellsFromWhereToUseObject) depuis lesquelles il est possible d'atteindre cette indirectCell
 			for (var cellFromWhereToUseObject in cellsFromWhereToUseObject){
+				
 				//optimisation : Si une action de ce type est déjà enregistré dans actionMap on en rajoute pas (c'est une perte de donnée acceptable)
 				var cellAlreadyAnalysed = false;
-				for (var action in actionMap[cellFromWhereToUseObject]){
-					if (action[0] == objectID){
-						cellAlreadyAnalysed = true;
-						break;
+				if (!isEnemy(user)){
+					for (var action in actionMap[cellFromWhereToUseObject]){
+						if (action["OBJECT_ID"] == objectID){
+							cellAlreadyAnalysed = true;
+							break;
+						}
 					}
 				}
+
 				if (cellAlreadyAnalysed == false){
+
 					//optimisation : la longueur du chemin n'est pas calculé, si la distance sans obstacle est superieur au nombre de MP
 					if (getCellDistance(cellFromWhereToUseObject,getCell(user)) <= MPAvailable){
+						//on calcul la distance à parcourir pour atteindre cette cellFromWhereToUseObject
 						var pathLength = getPathLength(getCell(user), cellFromWhereToUseObject);
 						if (pathLength != null){
-							if (pathLength <= MPAvailable ){
-								var data = [];
-								data[0] = objectID;
-								data[1]	= targetCell;
-								data[2]	= indirectCell;
-								data[3] = pathLength;	
-								if (actionMap[cellFromWhereToUseObject] == null){
-									actionMap[cellFromWhereToUseObject] = [];
-								}
-								push(actionMap[cellFromWhereToUseObject], data);
-								canUse = true;
-								if (markCells){
-									if (indirectCell == targetCell){
-										mark(cellFromWhereToUseObject, getColor(200, 50, 50));
+							//si cette cellFromWhereToUseObject est atteignable par l'utilisateur
+							if (pathLength <= MPAvailable ){	
+								if (isEnemy(user)){
+
+									if (dangerMap[cellFromWhereToUseObject] == null){
+										dangerMap[cellFromWhereToUseObject] = [];
 									}
-									else {
-										mark(cellFromWhereToUseObject, getColor(50, 50, 200));
+									var data = [];
+									data["OBJECT_ID"] = objectID;
+									push(dangerMap[cellFromWhereToUseObject], data);
+									
+									canUse = true;
+
+									if (markCells){
+										mark(indirectCell, getColor(200, 50, 50));
+									}
+
+									//le but est seulement de savoir que cette case peut être atteinte, pas d'où elle peut être atteinte
+									break;
+								}
+								else{
+									if (actionMap[cellFromWhereToUseObject] == null){
+										actionMap[cellFromWhereToUseObject] = [];
+									}
+									var data = [];
+									data["OBJECT_ID"] 		= objectID;
+									data["TARGET_CELL"]		= targetCell;
+									data["INDIRECT_CELL"]	= indirectCell;
+									data["PATH_LENGTH"] 	= pathLength;
+									push(actionMap[cellFromWhereToUseObject], data);
+
+									canUse = true;
+								
+									if (markCells){
+										if (indirectCell == targetCell){
+											mark(cellFromWhereToUseObject, getColor(200, 50, 50));
+										}
+										else {
+											mark(cellFromWhereToUseObject, getColor(50, 50, 200));
+										}
 									}
 								}
+								
 							}
 						}
 					}
@@ -238,20 +385,3 @@ function canUseIfMoving(objectID, targetCell, user, markCells) {
 	return canUse;
 }
 
-/********************************************************************************************/
-
-function leekHasChip(chipID, leekID){
-	var chips = getChips(leekID);
-	
-	if (chips != null){
-		for (var chip in chips){
-			if (chip == chipID){
-				return true;
-			}
-		}
-	}
-	else {
-		debug ("chips is NULL");
-	}
-	return false;
-}

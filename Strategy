@@ -46,7 +46,7 @@ function leekStrategyChoice(){
 
 function punnyBulbStrategyChoice(){
 
-	var bulbCanUseHelmetIfMoving = canUseIfMoving(CHIP_HELMET, getCell(ourLeekID), getLeek(), false);
+	var bulbCanUseHelmetIfMoving = canUseIfMoving(CHIP_HELMET,  getCell(ourLeekID),  getLeek(), true,  false);
 	var enemyCanUseWeaponIfMoving;
 	
 	if (getTurn() == 1){
@@ -56,7 +56,7 @@ function punnyBulbStrategyChoice(){
 	}
 	else {
 		if (getWeapon(enemyID) != null){
-			enemyCanUseWeaponIfMoving = canUseIfMoving(getWeapon(enemyID), getCell(ourLeekID), enemyID, false);
+			enemyCanUseWeaponIfMoving = canUseIfMoving(getWeapon(enemyID),  getCell(ourLeekID),  enemyID, true,  false);
 		}
 		else {
 			enemyCanUseWeaponIfMoving = false;
@@ -171,6 +171,10 @@ function first_turn_strategy(){
 	actionSequence[actionTotal][0] = SUMMON_PUNNY_BULB; 	// 6 TP	+ 1 MP
 	actionTotal++;
 
+	actionSequence[actionTotal] = []; 	
+	actionSequence[actionTotal][0] = USE_ARMORING; 	// 6 TP	+ 1 MP
+	actionTotal++;
+
 	//actionSequence[actionTotal][0] = MOVE_AWAY_FROM_ENEMY; 		// 0-3 MP
 	//actionTotal++;
 
@@ -179,28 +183,40 @@ function first_turn_strategy(){
 function fight_strategy(){
 
 	//CALCULATE_LEEK_POSSIBILITIES
-	var weCanUseLightningIfMoving = canUseIfMoving(CHIP_LIGHTNING, getCell(enemyID), ourLeekID, true);
-	var weCanUseStalactiteIfMoving = canUseIfMoving(CHIP_STALACTITE, getCell(enemyID), ourLeekID, false);
-	var weCanUseWeaponIfMoving = canUseIfMoving(weaponID, getCell(enemyID), ourLeekID, false);
-	var weCanUseSparkIfMoving = canUseIfMoving(CHIP_SPARK, getCell(enemyID), ourLeekID, false);	
+	var weCanUseLightningIfMoving = canUseIfMoving(CHIP_LIGHTNING,  getCell(enemyID),  ourLeekID, true,  false);
+	var weCanUseStalactiteIfMoving = canUseIfMoving(CHIP_STALACTITE,  getCell(enemyID),  ourLeekID, true,  false);
+	var weCanUseWeaponIfMoving = canUseIfMoving(weaponID,  getCell(enemyID),  ourLeekID, true,  false);
+	var weCanUseSparkIfMoving = canUseIfMoving(CHIP_SPARK,  getCell(enemyID),  ourLeekID, true,  false);	
+	movingArea = getArea(getMP(), getCell());
 
 	//CALCULATE_ENEMY_POSSIBILITIES	
-	var enemyCanUseWeaponIfMoving;
-	if (getWeapon(enemyID) != null){	
-		enemyCanUseWeaponIfMoving = canUseIfMoving(getWeapon(enemyID), getCell(ourLeekID), enemyID, false);
+	var enemyCanUseWeaponIfMoving = false;
+	if (getWeapon(enemyID) != null && movingArea != null){	
+		for (var cell in movingArea){
+			if (canUseIfMoving(getWeapon(enemyID), cell, enemyID, false,  true)){
+				enemyCanUseWeaponIfMoving = true;
+			}
+		}
 	}
 	else {
 		enemyCanUseWeaponIfMoving = false;
 	}
-	var enemyCanUseSparkIfMoving = canUseIfMoving(CHIP_SPARK, getCell(ourLeekID), enemyID, false);
+	var enemyCanUseSparkIfMoving = canUseIfMoving(CHIP_SPARK,  getCell(ourLeekID),  enemyID, false,  false);
 	var enemyHasSpark = leekHasChip(CHIP_SPARK, enemyID);
 
+	//PAS BEAU !!! A CHANGER !!! BEURK !!! VALEUR EN DUR !!!
+	if ((getTotalLife(ourLeekID) - getLife(ourLeekID) > 600) && getCooldown(CHIP_REGENERATION) == 0){
+		TPTotal += 8;
+		actionSequence[actionTotal] = []; 	
+		actionSequence[actionTotal][0] = USE_REGENERATION;			//4 TP
+		actionTotal++;
+	}
 
-	if (enemyCanUseWeaponIfMoving != false && getCooldown(CHIP_FORTRESS) == 0){
+	if (enemyCanUseWeaponIfMoving == true && getCooldown(CHIP_ARMOR) == 0){
 		TPTotal += 10;
 		
 		actionSequence[actionTotal] = []; 	
-		actionSequence[actionTotal][0] = USE_SHIELD;			//4 TP
+		actionSequence[actionTotal][0] = USE_ARMOR;			//4 TP
 		actionTotal++;
 		
 		actionSequence[actionTotal] = []; 	
@@ -225,45 +241,104 @@ function fight_strategy(){
 			actionSequence[actionTotal][0] = MOVE_TOWARD_ENEMY; 	// 6 TP	+ 1 MP
 			actionTotal++;
 	}
-	else if (weCanUseLightningIfMoving == true){
+	else if (weCanUseLightningIfMoving == true || weCanUseWeaponIfMoving == true){
 
 		var selectedCell = null;
 		var targetCell = null;
 		var shortestPath = -1;
 		for(var key : var cell in actionMap){
 			for(var action in cell){
-				if (action[0] == CHIP_LIGHTNING && action[1] == action[2]){
-					if (shortestPath == -1 || action[3] < shortestPath){
+				if (action["OBJECT_ID"] == weaponID && action["TARGET_CELL"] == action["INDIRECT_CELL"]){
+					if (shortestPath == -1 || action["PATH_LENGTH"] < shortestPath){
 						selectedCell = key;
-						targetCell = action[2];
-						shortestPath = action[3];
+						targetCell = action["INDIRECT_CELL"];
+						shortestPath = action["PATH_LENGTH"];
 					}
 				}
 			}
 		}
 
+		if (selectedCell != null){
+			TPTotal += 12;
+			actionSequence[actionTotal] = []; 	
+			actionSequence[actionTotal][0] = MOVE_TO_CELL; 	
+			actionSequence[actionTotal][1] = selectedCell; 			
+			actionTotal++;
+			
+			actionSequence[actionTotal] = []; 	
+			actionSequence[actionTotal][0] = USE_OBJECT; 		// 4 TP
+			actionSequence[actionTotal][1] = weaponID;
+			actionSequence[actionTotal][2] = targetCell;
+			actionTotal++;
+
+			actionSequence[actionTotal] = []; 	
+			actionSequence[actionTotal][0] = USE_OBJECT; 		// 4 TP
+			actionSequence[actionTotal][1] = weaponID;
+			actionSequence[actionTotal][2] = targetCell;
+			actionTotal++;
+
+			actionSequence[actionTotal] = []; 	
+			actionSequence[actionTotal][0] = USE_OBJECT; 		// 4 TP
+			actionSequence[actionTotal][1] = weaponID;
+			actionSequence[actionTotal][2] = targetCell;
+			actionTotal++;
+
+			actionSequence[actionTotal] = []; 	
+			actionSequence[actionTotal][0] = MOVE_AWAY_FROM_ENEMY;			
+			actionTotal++;
+		}
+
 		if (selectedCell == null){
 			for(var key : var cell in actionMap){
 				for(var action in cell){
-					if (action[0] == CHIP_LIGHTNING && getCellDistance(action[1], action[2])){
-						if (shortestPath == -1 || action[3] < shortestPath){
+					if (action["OBJECT_ID"] == CHIP_LIGHTNING && action["TARGET_CELL"] == action["INDIRECT_CELL"]){
+						if (shortestPath == -1 || action["PATH_LENGTH"] < shortestPath){
 							selectedCell = key;
-							targetCell = action[2];
-							shortestPath = action[3];
+							targetCell = action["INDIRECT_CELL"];
+							shortestPath = action["PATH_LENGTH"];
 						}
 					}
 				}
 			}
 		}
 
+		if (selectedCell != null){
+
+			actionSequence[actionTotal] = []; 	
+			actionSequence[actionTotal][0] = MOVE_TO_CELL; 	
+			actionSequence[actionTotal][1] = selectedCell; 			
+			actionTotal++;
+			
+			TPTotal += 5;
+			actionSequence[actionTotal] = []; 	
+			actionSequence[actionTotal][0] = USE_OBJECT; 		
+			actionSequence[actionTotal][1] = CHIP_LIGHTNING;
+			actionSequence[actionTotal][2] = targetCell;
+			actionTotal++;
+
+			if ((getTP() - TPTotal) >= 5){
+				TPTotal += 5;
+				actionSequence[actionTotal] = []; 	
+				actionSequence[actionTotal][0] = USE_OBJECT; 		
+				actionSequence[actionTotal][1] = CHIP_LIGHTNING;
+				actionSequence[actionTotal][2] = targetCell;
+				actionTotal++;
+			}
+
+			actionSequence[actionTotal] = []; 	
+			actionSequence[actionTotal][0] = MOVE_AWAY_FROM_ENEMY;			
+			actionTotal++;
+			
+		}
+
 		if (selectedCell == null){
 			for(var key : var cell in actionMap){
 				for(var action in cell){
-					if (action[0] == CHIP_LIGHTNING){
-						if (shortestPath == -1 || action[3] < shortestPath){
+					if (action["OBJECT_ID"] == CHIP_LIGHTNING && getCellDistance(action["TARGET_CELL"], action["INDIRECT_CELL"]) < 2){
+						if (shortestPath == -1 || action["PATH_LENGTH"] < shortestPath){
 							selectedCell = key;
-							targetCell = action[2];
-							shortestPath = action[3];
+							targetCell = action["INDIRECT_CELL"];
+							shortestPath = action["PATH_LENGTH"];
 						}
 					}
 				}
@@ -300,11 +375,143 @@ function fight_strategy(){
 			actionTotal++;
 
 		}
+
+		if (selectedCell == null){
+			for(var key : var cell in actionMap){
+				for(var action in cell){
+					if (action["OBJECT_ID"] == weaponID && getCellDistance(action["TARGET_CELL"], action["INDIRECT_CELL"]) < 2){
+						if (shortestPath == -1 || action["PATH_LENGTH"] < shortestPath){
+							selectedCell = key;
+							targetCell = action["INDIRECT_CELL"];
+							shortestPath = action["PATH_LENGTH"];
+						}
+					}
+				}
+			}
+		}
+
+		if (selectedCell != null){
+
+			actionSequence[actionTotal] = []; 	
+			actionSequence[actionTotal][0] = MOVE_TO_CELL; 	
+			actionSequence[actionTotal][1] = selectedCell; 			
+			actionTotal++;
+			
+			TPTotal += 5;
+			actionSequence[actionTotal] = []; 	
+			actionSequence[actionTotal][0] = USE_OBJECT; 		
+			actionSequence[actionTotal][1] = weaponID;
+			actionSequence[actionTotal][2] = targetCell;
+			actionTotal++;
+
+			if ((getTP() - TPTotal) >= 5){
+				TPTotal += 5;
+				actionSequence[actionTotal] = []; 	
+				actionSequence[actionTotal][0] = USE_OBJECT; 		
+				actionSequence[actionTotal][1] = weaponID;
+				actionSequence[actionTotal][2] = targetCell;
+				actionTotal++;
+			}
+
+			actionSequence[actionTotal] = []; 	
+			actionSequence[actionTotal][0] = MOVE_AWAY_FROM_ENEMY;			
+			actionTotal++;
+			
+		}
+		if (selectedCell == null){
+			for(var key : var cell in actionMap){
+				for(var action in cell){
+					if (action["OBJECT_ID"] == CHIP_LIGHTNING){
+						if (shortestPath == -1 || action["PATH_LENGTH"] < shortestPath){
+							selectedCell = key;
+							targetCell = action["INDIRECT_CELL"];
+							shortestPath = action["PATH_LENGTH"];
+						}
+					}
+				}
+			}
+		}
+
+		if (selectedCell != null){
+			TPTotal += 12;
+			actionSequence[actionTotal] = []; 	
+			actionSequence[actionTotal][0] = MOVE_TO_CELL; 	
+			actionSequence[actionTotal][1] = selectedCell; 			
+			actionTotal++;
+			
+			actionSequence[actionTotal] = []; 	
+			actionSequence[actionTotal][0] = USE_OBJECT; 		// 4 TP
+			actionSequence[actionTotal][1] = CHIP_LIGHTNING;
+			actionSequence[actionTotal][2] = targetCell;
+			actionTotal++;
+
+			actionSequence[actionTotal] = []; 	
+			actionSequence[actionTotal][0] = USE_OBJECT; 		// 4 TP
+			actionSequence[actionTotal][1] = CHIP_LIGHTNING;
+			actionSequence[actionTotal][2] = targetCell;
+			actionTotal++;
+
+			actionSequence[actionTotal] = []; 	
+			actionSequence[actionTotal][0] = USE_OBJECT; 		// 4 TP
+			actionSequence[actionTotal][1] = CHIP_LIGHTNING;
+			actionSequence[actionTotal][2] = targetCell;
+			actionTotal++;
+
+			actionSequence[actionTotal] = []; 	
+			actionSequence[actionTotal][0] = MOVE_AWAY_FROM_ENEMY;			
+			actionTotal++;
+
+		}
+
+		if (selectedCell == null){
+			for(var key : var cell in actionMap){
+				for(var action in cell){
+					if (action["OBJECT_ID"] == weaponID){
+						if (shortestPath == -1 || action["PATH_LENGTH"] < shortestPath){
+							selectedCell = key;
+							targetCell = action["INDIRECT_CELL"];
+							shortestPath = action["PATH_LENGTH"];
+						}
+					}
+				}
+			}
+		}
+
+		if (selectedCell != null){
+
+			actionSequence[actionTotal] = []; 	
+			actionSequence[actionTotal][0] = MOVE_TO_CELL; 	
+			actionSequence[actionTotal][1] = selectedCell; 			
+			actionTotal++;
+			
+			TPTotal += 5;
+			actionSequence[actionTotal] = []; 	
+			actionSequence[actionTotal][0] = USE_OBJECT; 		
+			actionSequence[actionTotal][1] = weaponID;
+			actionSequence[actionTotal][2] = targetCell;
+			actionTotal++;
+
+			if ((getTP() - TPTotal) >= 5){
+				TPTotal += 5;
+				actionSequence[actionTotal] = []; 	
+				actionSequence[actionTotal][0] = USE_OBJECT; 		
+				actionSequence[actionTotal][1] = weaponID;
+				actionSequence[actionTotal][2] = targetCell;
+				actionTotal++;
+			}
+
+			actionSequence[actionTotal] = []; 	
+			actionSequence[actionTotal][0] = MOVE_AWAY_FROM_ENEMY;			
+			actionTotal++;
+			
+		}
 		else {
-			debug("error : no cells available for lightning");
+			debug("error : no cells available");
 		}
 
 	}
+
+	/*
 	else if ((getTP() - TPTotal) >= 6 && weCanUseStalactiteIfMoving != false){
 	//if (getCellToUseWeapon(weaponID, enemyID) != null){	
 		TPTotal += 6;		
@@ -317,7 +524,8 @@ function fight_strategy(){
 		actionTotal++;
 
 	}
-
+	*/
+/*
 	if ((getTP() - TPTotal) >= 5 && weCanUseWeaponIfMoving != false){
 	//if (getCellToUseWeapon(weaponID, enemyID) != null){			
 		
@@ -326,11 +534,11 @@ function fight_strategy(){
 		var shortestPath = -1;
 		for(var key : var cell in actionMap){
 			for(var action in cell){
-				if (action[0] == weaponID && action[1] == action[2]){
-					if (shortestPath == -1 || action[3] < shortestPath){
+				if (action["OBJECT_ID"] == weaponID && action["TARGET_CELL"] == action["INDIRECT_CELL"]){
+					if (shortestPath == -1 || action["PATH_LENGTH"] < shortestPath){
 						selectedCell = key;
-						targetCell = action[2];
-						shortestPath = action[3];
+						targetCell = action["INDIRECT_CELL"];
+						shortestPath = action["PATH_LENGTH"];
 					}
 				}
 			}
@@ -339,11 +547,11 @@ function fight_strategy(){
 		if (selectedCell == null){
 			for(var key : var cell in actionMap){
 				for(var action in cell){
-					if (action[0] == weaponID && getCellDistance(action[1], action[2])){
-						if (shortestPath == -1 || action[3] < shortestPath){
+					if (action["OBJECT_ID"] == weaponID && getCellDistance(action["TARGET_CELL"], action["INDIRECT_CELL"])){
+						if (shortestPath == -1 || action["PATH_LENGTH"] < shortestPath){
 							selectedCell = key;
-							targetCell = action[2];
-							shortestPath = action[3];
+							targetCell = action["INDIRECT_CELL"];
+							shortestPath = action["PATH_LENGTH"];
 						}
 					}
 				}
@@ -353,11 +561,11 @@ function fight_strategy(){
 		if (selectedCell == null){
 			for(var key : var cell in actionMap){
 				for(var action in cell){
-					if (action[0] == weaponID){
-						if (shortestPath == -1 || action[3] < shortestPath){
+					if (action["OBJECT_ID"] == weaponID){
+						if (shortestPath == -1 || action["PATH_LENGTH"] < shortestPath){
 							selectedCell = key;
-							targetCell = action[2];
-							shortestPath = action[3];
+							targetCell = action["INDIRECT_CELL"];
+							shortestPath = action["PATH_LENGTH"];
 						}
 					}
 				}
@@ -395,7 +603,7 @@ function fight_strategy(){
 		else {
 			debug("error : no cells available for weapon");
 		}
-	}
+	}*/
 
 	if ((getTP() - TPTotal) >= 3 && weCanUseSparkIfMoving != false){
 		TPTotal += 3;

@@ -86,6 +86,7 @@ function stateMachine(){
 		else if (etat == MOVE_TO_STALACTITE_RANGE){moveToStalactiteRangeFunction();}
 		else if (etat == MOVE_TO_SPARK_RANGE)	{moveToSparkRangeFunction();}
 		else if (etat == MOVE_TO_HELMET_RANGE)	{moveToHelmetRangeFunction();}
+
 		else if (etat == MOVE_TO_CELL)			{moveToCellFunction();}
 
 
@@ -101,7 +102,11 @@ function stateMachine(){
 		else if (etat == USE_SPARK)			{useSparkFunction();}		
 		else if (etat == USE_LIGHTNING)		{useLightningFunction();}	
 		else if (etat == USE_FORTRESS)		{useFortressFunction();}		
-		else if (etat == USE_RAMPART)		{useRampartFunction();}		
+		else if (etat == USE_RAMPART)		{useRampartFunction();}	
+		else if (etat == USE_ARMORING)		{useArmoringFunction();}	
+		else if (etat == USE_ARMOR)			{useArmorFunction();}	
+		else if (etat == USE_REGENERATION)	{useRegenerationFunction();}
+
 		else if (etat == USE_OBJECT)		{useObjectFunction();}		
 		
 		else {debugC("ETAT INDEFINI !!!",getColor(255, 0, 0));

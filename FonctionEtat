@@ -32,6 +32,8 @@ function initTurnFunction(){
 	MPTotal = 0;
 
 	actionMap = [];
+	dangerMap = [];
+	movingArea = [];
 
 	etat = STRATEGY_CHOICE;
 }
@@ -111,7 +113,19 @@ function moveTowardEnemyFunction (){
 
 function moveAwayFromEnemyFunction(){
 	debug("move away from enemy state"); 	
-	moveAwayFrom(enemyID);
+	
+	var hidden = false;
+	for (var cell in movingArea){
+		if (getPathLength(getCell(), cell) <= getMP()){
+			moveTowardCell(cell);
+			hidden = true;
+			break;
+		}
+	}
+
+	if (!hidden){
+		moveAwayFrom(enemyID);
+	}
 
 	etat = ACTION_CHOICE;
 }
@@ -137,7 +151,7 @@ function moveTowardLeekFunction(){
 function moveToWeaponRangeFunction(){
 	debug("move to weapon range state"); 	
 
-	moveTowardCell(canUseIfMoving((weaponID), getCell(enemyID), getLeek(), false));
+	moveTowardCell(canUseIfMoving((weaponID),  getCell(enemyID),  getLeek(), true,  false));
 
 	etat = ACTION_CHOICE;
 }
@@ -145,7 +159,7 @@ function moveToWeaponRangeFunction(){
 function moveToLightningRangeFunction(){
 	debug("move to lightning range state"); 	
 
-	moveTowardCell(canUseIfMoving(CHIP_LIGHTNING, getCell(enemyID), getLeek(), false));
+	moveTowardCell(canUseIfMoving(CHIP_LIGHTNING,  getCell(enemyID),  getLeek(), true,  false));
 
 	etat = ACTION_CHOICE;
 }
@@ -153,7 +167,7 @@ function moveToLightningRangeFunction(){
 function moveToStalactiteRangeFunction(){
 	debug("move to stalactite range state"); 	
 
-	moveTowardCell(canUseIfMoving(CHIP_STALACTITE, getCell(enemyID), getLeek(), false));
+	moveTowardCell(canUseIfMoving(CHIP_STALACTITE,  getCell(enemyID),  getLeek(), true,  false));
 
 	etat = ACTION_CHOICE;
 
@@ -162,7 +176,7 @@ function moveToStalactiteRangeFunction(){
 function moveToSparkRangeFunction(){
 	debug("move to spark range state"); 	
 
-	moveTowardCell(canUseIfMoving(CHIP_SPARK, getCell(enemyID), getLeek(), false));
+	moveTowardCell(canUseIfMoving(CHIP_SPARK,  getCell(enemyID),  getLeek(), true,  false));
 
 	etat = ACTION_CHOICE;
 
@@ -171,7 +185,7 @@ function moveToSparkRangeFunction(){
 function moveToHelmetRangeFunction(){
 	debug("move to helmet range state"); 	
 
-	moveTowardCell(canUseIfMoving(CHIP_HELMET, ourLeekID, getLeek(), false));
+	moveTowardCell(canUseIfMoving(CHIP_HELMET,  ourLeekID,  getLeek(), true,  false));
 
 	etat = ACTION_CHOICE;
 }
@@ -273,6 +287,29 @@ function useLightningFunction(){
 	etat = ACTION_CHOICE;
 }
 
+function useArmoringFunction(){
+	debug("use armoring state");
+
+	useChip(CHIP_ARMORING, ourLeekID);
+
+	etat = ACTION_CHOICE;
+}
+
+function useArmorFunction(){
+	debug("use armor state");
+
+	useChip(CHIP_ARMOR, ourLeekID);
+
+	etat = ACTION_CHOICE;
+}
+
+function useRegenerationFunction(){
+	debug("use regeneration state");
+
+	useChip(CHIP_REGENERATION, ourLeekID);
+
+	etat = ACTION_CHOICE;
+}
 
 
 function useObjectFunction(){

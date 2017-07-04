@@ -48,6 +48,9 @@ global USE_SPARK =	 		"USE_SPARK";
 global USE_LIGHTNING = 		"USE_LIGHTNING";
 global USE_RAMPART =		"USE_RAMPART";
 global USE_FORTRESS =		"USE_FORTRESS";
+global USE_ARMORING =		"USE_ARMORING";
+global USE_ARMOR =			"USE_ARMOR";
+global USE_REGENERATION =	"USE_REGENERATION";
 
 global USE_OBJECT = 		"USE_OBJECT";
 
@@ -59,6 +62,8 @@ global vieMax;
 
 //array of the map containing the calculated possible actions on the cells 
 global actionMap = [];
+global movingArea = [];
+global dangerMap = [];
 
 //Variables globales ennemies
 global enemyID;
