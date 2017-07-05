@@ -282,7 +282,7 @@ function canUseIfMoving(objectID, targetCell, user, useAOE, markCells) {
 
 	var canUse = false;
 
-	if (isEmpty(indirectCells)){
+	if (indirectCells === []){
 		debug("indirectCells is null");
 		push(indirectCells, targetCell);
 	}
@@ -330,12 +330,12 @@ function canUseIfMoving(objectID, targetCell, user, useAOE, markCells) {
 							if (pathLength <= MPAvailable ){	
 								if (isEnemy(user)){
 
-									if (dangerMap[cellFromWhereToUseObject] == null){
-										dangerMap[cellFromWhereToUseObject] = [];
+									if (dangerMap[indirectCell] == null){
+										dangerMap[indirectCell] = [];
 									}
 									var data = [];
 									data["OBJECT_ID"] = objectID;
-									push(dangerMap[cellFromWhereToUseObject], data);
+									push(dangerMap[indirectCell], data);
 									
 									canUse = true;
 

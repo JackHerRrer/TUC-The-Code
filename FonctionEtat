@@ -114,20 +114,30 @@ function moveTowardEnemyFunction (){
 function moveAwayFromEnemyFunction(){
 	debug("move away from enemy state"); 	
 	
-	var hidden = false;
+	var closestCell;
+	var shortestPath=-1;
 	for (var cell in movingArea){
-		if (getPathLength(getCell(), cell) <= getMP()){
-			moveTowardCell(cell);
-			hidden = true;
-			break;
+		if (dangerMap[cell] == null){
+			mark(cell, getColor(20, 235, 20));
+			var pathLength = getPathLength(getCell(), cell);
+			if (pathLength <= getMP()){
+				if (shortestPath == -1 || pathLength < shortestPath){
+					shortestPath = pathLength;
+					closestCell = cell;
+				}
+			}
 		}
+
 	}
 
-	if (!hidden){
+	if (shortestPath != -1){
+		moveTowardCell(closestCell);
+	}
+	else {
 		moveAwayFrom(enemyID);
 	}
 
-	etat = ACTION_CHOICE;
+	etat = LAST_ACTION;
 }
 
 function summonPunnyBulbFunction(){
