@@ -24,11 +24,12 @@ function connect(){
 echo -----------
 echo Connexion
 
-
+# requiert un fichier "pass" contenant (sans les guillements) "password=motdepasse" au format url. Par exemple pour "motdep@ss" il faut mettre "motdep%40ss"
+# requiert un fichhier "login" contenant le login. Par exemple pour "toto" il faut mettre "toto" (sans les guillemets)
 curl -i "https://leekwars.com/api/farmer/login" --data "@pass" \
-							--data-urlencode "login@login" \
-							2>/dev/null \
-							> result_connection.log
+						--data-urlencode "login@login" \
+						2>/dev/null \
+						> result_connection.log 
 
 TOKEN=$(grep -oP 'token=.*?;' result_connection.log)
 echo Token de la session :${TOKEN}
