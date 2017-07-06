@@ -104,6 +104,15 @@ function equipGrenadeLauncherFunction(){
 	etat = ACTION_CHOICE;
 }
 
+function equipGazorFunction(){
+	debug("equip gazor state"); 	
+	setWeapon(WEAPON_GAZOR); // Attention : coûte 1 PT
+	weaponID = getWeapon();
+
+	etat = ACTION_CHOICE;
+}
+
+
 function moveTowardEnemyFunction (){
 	debug("move toward enemy state"); 	
 	moveToward(enemyID);
@@ -239,6 +248,15 @@ function usePebbleFunction(){
 
 	etat = ACTION_CHOICE;
 }
+
+function useToxinFunction(){
+	debug("use toxin state");
+
+	useChip(CHIP_TOXIN, enemyID);
+
+	etat = ACTION_CHOICE;
+}
+
 
 
 function useHelmetFunction(){

@@ -77,6 +77,8 @@ function stateMachine(){
 		else if (etat == EQUIP_SHOTGUN)		{equipShotgunFunction();}
 		else if (etat == EQUIP_MAGNUM)		{equipMagnumFunction();} 
 		else if (etat == EQUIP_GRENADE_LAUNCHER){equipGrenadeLauncherFunction();} 
+		else if (etat == EQUIP_GAZOR)		{equipGazorFunction();} 
+
 
 		else if (etat == MOVE_TOWARD_ENEMY)		{moveTowardEnemyFunction();} 
 		else if (etat == MOVE_TOWARD_LEEK)		{moveTowardLeekFunction();}
@@ -106,6 +108,9 @@ function stateMachine(){
 		else if (etat == USE_ARMORING)		{useArmoringFunction();}	
 		else if (etat == USE_ARMOR)			{useArmorFunction();}	
 		else if (etat == USE_REGENERATION)	{useRegenerationFunction();}
+		else if (etat == USE_TOXIN)			{useToxinFunction();}
+
+
 
 		else if (etat == USE_OBJECT)		{useObjectFunction();}		
 		
