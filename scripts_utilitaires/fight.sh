@@ -1,4 +1,4 @@
-! /bin/bash
+#! /bin/bash
 set +x
 
 LEEK_NAME=JeanFile
@@ -82,6 +82,7 @@ echo Fight ID : ${FIGHT_ID}
 
 #--------------------------------------------------------------------------------------------------------------------------
 function fight_analysis(){
+sleep 0.5
 # récupération des log du combat. Si le combat n'est pas encore finni on attend 1 seconde (60 secondes max) et on récupère les logs
 curl "https://leekwars.com/api/fight/get/${FIGHT_ID}" > fight.log 2>/dev/null
 ITERATION=0
@@ -163,9 +164,9 @@ curl "https://leekwars.com/api/farmer/disconnect" -H "Cookie: ${TOKEN}" \
 NBR_FIGHT=$1
 connect
 #upload_code
-clear
 for ((i = 0; i < $NBR_FIGHT; i++ )); do
-     	tput sc
+	clear
+#     	tput sc
 	printf "\n["
         for ((j = 0; j < $i; j++)); do
                 printf "="
@@ -179,14 +180,11 @@ for ((i = 0; i < $NBR_FIGHT; i++ )); do
 	printf "] %d / %d\n" "$i" "$NBR_FIGHT"
 
 	if [ "$RESULT_FIGHT" == "tie" ]; then
-		#echo Tie
-		figlet "Tie             " -f big
+		figlet "Tie                                        " -f big
 	elif [ "$RESULT_FIGHT" == "victory" ]; then
-                #echo Victory
-		figlet "Victory         " --gay -f big
+		figlet "Victory                                    " --gay -f big
         elif [ "$RESULT_FIGHT" == "defeat" ]; then
-                #echo Defeat
-		figlet "Defeat          " -f big
+		figlet "Defeat                                     " -f big
 	else 
 		echo Begining 
 	fi 
@@ -195,20 +193,24 @@ for ((i = 0; i < $NBR_FIGHT; i++ )); do
 	echo
     garden_fight
     fight_analysis
-    tput rc
+ #   tput rc
 	
 done
 
 clear
+printf "\n["
+for ((i = 0; i < $NBR_FIGHT; i++)); do
+        printf "="
+done
+
+printf "] %d / %d\n" "$i" "$NBR_FIGHT"
+
 if [ "$RESULT_FIGHT" == "tie" ]; then
-        #echo Tie
-        figlet "Tie             " -f big
+        figlet "Tie                                               " -f big
 elif [ "$RESULT_FIGHT" == "victory" ]; then
-        #echo Victory
-        figlet "Victory         " --gay -f big
+        figlet "Victory                                           " --gay -f big
 elif [ "$RESULT_FIGHT" == "defeat" ]; then
-        #echo Defeat
-        figlet "Defeat          " -f big
+        figlet "Defeat                                            " -f big
 else
         echo Begining
 fi
