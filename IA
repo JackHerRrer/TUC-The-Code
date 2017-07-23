@@ -109,7 +109,7 @@ function stateMachine(){
 		else if (etat == USE_ARMOR)			{useArmorFunction();}	
 		else if (etat == USE_REGENERATION)	{useRegenerationFunction();}
 		else if (etat == USE_TOXIN)			{useToxinFunction();}
-
+		else if (etat == USE_LIBERATION)	{useLiberationFunction();}
 
 
 		else if (etat == USE_OBJECT)		{useObjectFunction();}		

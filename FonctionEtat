@@ -257,6 +257,13 @@ function useToxinFunction(){
 	etat = ACTION_CHOICE;
 }
 
+function useLiberationFunction(){
+	debug("use liberation state");
+
+	useChip(CHIP_LIBERATION, enemyID);
+
+	etat = ACTION_CHOICE;
+}
 
 
 function useHelmetFunction(){

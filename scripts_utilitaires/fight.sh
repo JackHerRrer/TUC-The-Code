@@ -1,8 +1,10 @@
-#! /bin/bash
+! /bin/bash
 set +x
 
 LEEK_NAME=JeanFile
 IA_NAME=IA
+
+RESULT_FIGHT=
 
 #--------------------------------------------------------------------------------------------------------------------------
 function connect(){
@@ -104,7 +106,7 @@ echo We are player 1 : ${WE_ARE_PLAYER_1}
 
 echo 
 if [ $(jq ".fight.winner" fight.log) -eq 0 ]; then
-	figlet "Tie" -f big
+	#figlet "Tie" -f big
         RESULT_FIGHT="tie"
 else
 	# on vérifie  si le gagnant est le joueur 1 ou le joueur 2, et on regarde si le nom $LEEK_NAME est contenu dans ce joueur
@@ -114,10 +116,10 @@ else
 		WINNER_LEEK=$(jq ".fight.leeks2[] | select(.name == \"${LEEK_NAME}\") | .name" fight.log)
 	fi
 	if [ -z ${WINNER_LEEK} ]; then
-		figlet Defeat -f big
+		 #figlet Defeat -f big
 		RESULT_FIGHT=defeat
 	else
-		figlet Victory --gay -f big
+		#figlet Victory --gay -f big
 		RESULT_FIGHT=victory
 	fi
 fi
@@ -158,14 +160,61 @@ curl "https://leekwars.com/api/farmer/disconnect" -H "Cookie: ${TOKEN}" \
 						--data "token="%"24" >/dev/null 2>&1 
 }
 
-NBR_FIGHT=50
+NBR_FIGHT=$1
 connect
 #upload_code
-for ((i = 0; i < ${NBR_FIGHT}; i++))
-do
-garden_fight
-fight_analysis
+clear
+for ((i = 0; i < $NBR_FIGHT; i++ )); do
+     	tput sc
+	printf "\n["
+        for ((j = 0; j < $i; j++)); do
+                printf "="
+        done
+        printf ">"
+
+        for ((j = $i; j < $NBR_FIGHT; j++)); do
+                printf " "
+        done
+        
+	printf "] %d / %d\n" "$i" "$NBR_FIGHT"
+
+	if [ "$RESULT_FIGHT" == "tie" ]; then
+		#echo Tie
+		figlet "Tie             " -f big
+	elif [ "$RESULT_FIGHT" == "victory" ]; then
+                #echo Victory
+		figlet "Victory         " --gay -f big
+        elif [ "$RESULT_FIGHT" == "defeat" ]; then
+                #echo Defeat
+		figlet "Defeat          " -f big
+	else 
+		echo Begining 
+	fi 
+	
+	echo
+	echo
+    garden_fight
+    fight_analysis
+    tput rc
+	
 done
+
+clear
+if [ "$RESULT_FIGHT" == "tie" ]; then
+        #echo Tie
+        figlet "Tie             " -f big
+elif [ "$RESULT_FIGHT" == "victory" ]; then
+        #echo Victory
+        figlet "Victory         " --gay -f big
+elif [ "$RESULT_FIGHT" == "defeat" ]; then
+        #echo Defeat
+        figlet "Defeat          " -f big
+else
+        echo Begining
+fi
+echo
+echo
+
 disconnect
 
 echo victory :
