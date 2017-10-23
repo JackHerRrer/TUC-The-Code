@@ -1,0 +1,17 @@
+HTTP/1.1 200 OK
+Server: nginx
+Date: Sun, 22 Oct 2017 21:49:35 GMT
+Content-Type: text/html; charset=UTF-8
+Transfer-Encoding: chunked
+Connection: keep-alive
+Vary: Accept-Encoding
+Access-Control-Allow-Origin: *
+Set-Cookie: PHPSESSID=lpnq1torp95vgqs0mc8aigf8e5; path=/; HttpOnly
+Expires: Thu, 19 Nov 1981 08:52:00 GMT
+Cache-Control: no-store, no-cache, must-revalidate
+Pragma: no-cache
+Set-Cookie: token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC9sZWVrd2Fycy5jb20iLCJhdWQiOiJodHRwOlwvXC9sZWVrd2Fycy5jb20iLCJleHAiOjE1MDg3MTYxNzUsImlkIjo0NzkwOCwia2VlcCI6ZmFsc2UsImhhc2giOiJhNDk1ODYzYWJiMDE3ZjNjNzBjYiJ9.3jR8YqWtKuqCZghlDuuNUZ94ZHnIwCk1LeBi3joXkoA; expires=Sun, 22-Oct-2017 23:49:35 GMT; Max-Age=7200; path=/; domain=leekwars.com; HttpOnly
+X-Frame-Options: DENY
+X-Content-Type-Options: nosniff
+
+{"success":true,"opponents":[{"id":19786,"name":"Sathla1","level":251,"talent":1290,"skin":1,"hat":null,"fights":0},{"id":54789,"name":"Catharsis","level":251,"talent":1311,"skin":3,"hat":7,"fights":0},{"id":47395,"name":"JaveLeek","level":247,"talent":1236,"skin":11,"hat":7,"fights":0},{"id":39205,"name":"Ygash","level":245,"talent":1119,"skin":1,"hat":null,"fights":0},{"id":44887,"name":"LeRadisNoir","level":249,"talent":1300,"skin":1,"hat":null,"fights":0}]}
