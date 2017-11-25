@@ -24,8 +24,8 @@
 |ACTION_CHOICE    <--------------------------------------------------------------------+
 +--------+--------+                                                                    |
          |                                                                             |
-         +----------------------+--------------------+-----------------+               |                                                              
-         +----------------------+--------------------+-----------------+               |
+         +----------------------+--------------------+- - - - - - - - -+               |                                                              
+         +----------------------+--------------------+- - - - - - - - -+               |
          |                      |                    |                 |               |
          |                      |                    |                 |               |
 +--------v--------+     +-------v-------+    +-------v------+   +------v-------+       |
@@ -68,7 +68,7 @@ function stateMachine(){
 
 // Boucle appellant les fonctions de la machine état
 	while (etat != END_TURN){
-		if (etat == INIT_GAME) {initGameFunction();}
+		if 		(etat == INIT_GAME) 		{initGameFunction();}
 		else if (etat == INIT_TURN) 		{initTurnFunction();}
 		else if (etat == STRATEGY_CHOICE) 	{strategyChoiceFunction();}
 		else if (etat == ACTION_CHOICE)		{actionChoiceFunction();}
@@ -114,7 +114,8 @@ function stateMachine(){
 
 		else if (etat == USE_OBJECT)		{useObjectFunction();}		
 		
-		else {debugC("ETAT INDEFINI !!!",getColor(255, 0, 0));
+		else {
+			debugC("ETAT INDEFINI !!!",getColor(255, 0, 0));
 			break;
 		}
 	}

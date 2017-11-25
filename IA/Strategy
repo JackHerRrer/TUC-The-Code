@@ -187,6 +187,7 @@ function fight_strategy(){
 	var weCanUseWeaponIfMoving = canUseIfMoving(weaponID,  getCell(enemyID),  ourLeekID, true,  false);
 	var weCanUseLiberationkIfMoving = canUseIfMoving(CHIP_LIBERATION,  getCell(enemyID),  ourLeekID, true,  false);
 
+	//calculate the area wher our leek can go
 	movingArea = getArea(getMP(), getCell());
 
 	//CALCULATE_ENEMY_POSSIBILITIES	

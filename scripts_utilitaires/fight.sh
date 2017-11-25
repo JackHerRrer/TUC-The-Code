@@ -36,11 +36,11 @@ for ((i = 0; i < $NBR_FIGHT; i++ )); do
 	printf "] %d / %d\n" "$i" "$NBR_FIGHT"
 
 	if [ "$RESULT_FIGHT" == "tie" ]; then
-		figlet "Tie                                        " -f $VAR_PATH/big
+		toilet "Tie                                        " -f big
 	elif [ "$RESULT_FIGHT" == "victory" ]; then
-		figlet "Victory                                    " -f $VAR_PATH/big --gay
+		toilet "Victory                                    " -f big --gay
         elif [ "$RESULT_FIGHT" == "defeat" ]; then
-		figlet "Defeat                                     " -f $VAR_PATH//big
+		toilet "Defeat                                     " -f big
 	else 
 		echo Begining 
 	fi 
@@ -60,11 +60,11 @@ done
 printf "] %d / %d\n" "$i" "$NBR_FIGHT"
 
 if [ "$RESULT_FIGHT" == "tie" ]; then
-        figlet "Tie                                               " -f $VAR_PATH/big
+        toilet "Tie                                               " -f big
 elif [ "$RESULT_FIGHT" == "victory" ]; then
-        figlet "Victory                                           " -f $VAR_PATH/big --gay
+        toilet "Victory                                           " -f big --gay
 elif [ "$RESULT_FIGHT" == "defeat" ]; then
-        figlet "Defeat                                            " -f $VAR_PATH/big
+        toilet "Defeat                                            " -f big
 else
         echo Begining
 fi

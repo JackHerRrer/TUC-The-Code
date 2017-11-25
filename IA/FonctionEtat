@@ -6,17 +6,7 @@ include("IA");
 function initGameFunction(){
 	//debug("init game state");
 
-	var enemyList = getAliveEnemies();
-	for (var i = 0; i < count(enemyList) && enemyID == null; i++){
-		if (getType(enemyList[i]) == ENTITY_LEEK){
-			enemyID = enemyList[i];
-		}
-	}
-
-	if (enemyID == null){
-		debug("no enemy selected");
-	}
-	ourLeekID = getLeek();
+    ourLeekID = getLeek();
 
 	etat = INIT_TURN;
 }
@@ -34,6 +24,24 @@ function initTurnFunction(){
 	actionMap = [];
 	dangerMap = [];
 	movingArea = [];
+
+
+	var enemyList = getAliveEnemies();
+	var distToNearestEnenmy = 1000;
+	for (var i = 0; i < count(enemyList); i++){
+		if (getType(enemyList[i]) == ENTITY_LEEK){
+			var distToEnemy = getPathLength(getCell(ourLeekID), getCell(enemyList[i]));
+			if (distToEnemy < distToNearestEnenmy){
+				enemyID = enemyList[i];
+				distToNearestEnenmy = distToEnemy;
+			}
+		}
+	}
+
+	if (enemyID == null){
+		debug("no enemy selected");
+		enemyID = getNearestEnemy();
+	}
 
 	etat = STRATEGY_CHOICE;
 }

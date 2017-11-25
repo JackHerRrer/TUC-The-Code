@@ -245,10 +245,10 @@ function getAOE(objectID, targetCell){		// environ 400 op
 /********************************************************************************************************/
 /*
 // if the user is an ally
-// fill the cells of "actionMap" from where he can touch targetCell with the object 
+// 		fill the cells of "actionMap" from where he can touch targetCell with the object 
 
 // else if the user is an enemy
-// fill the cells of "dangerMap" that the leek can target if he moves
+// 		fill the cells of "dangerMap" that the leek can target if he moves
 
 // If the object has AOE, the function calculates if the leek can touch targetCell undirectly
 
@@ -376,7 +376,7 @@ function canUseIfMoving(objectID, targetCell, user, useAOE, markCells) {
 			}
 		}
 		else { 
-			debug("cellsToUseWeapon is null");
+			debug("cellsFromWhereToUseObject is null");
 		}
 	}	
 

@@ -6,8 +6,8 @@ echo ----------
 echo Get adversary from Garden 
 curl -i "https://leekwars.com/api/garden/get-leek-opponents/${LEEK_ID}/$" -H "Cookie: ${TOKEN}" 2>/dev/null > $LOG_PATH/opponents.log
 
-#extrait le json, récupère les opposants, les tri par ratio talent/level et extrait l'ID du premier (aka le plus faible)
-ADVERSARY_ID=$(grep -oP "\{.*\}" $LOG_PATH/opponents.log | jq '.opponents | sort_by(.talent/.level) | .[0].id')
+#extrait le json, récupère les opposants, les tri par ratio level/talent et extrait l'ID du premier (aka le plus fort)
+ADVERSARY_ID=$(grep -oP "\{.*\}" $LOG_PATH/opponents.log | jq '.opponents | sort_by(.level/.talent) | .[0].id')
 #extrait le PHPSESSID nécessaire au lancement de la fight
 PHPSESSID=$(grep -oP "PHPSESSID.*?;" $LOG_PATH/opponents.log)
 
