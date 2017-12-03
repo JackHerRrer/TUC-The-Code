@@ -1,0 +1,17 @@
+include("GlobalVar");
+
+
+/*************************************************************************/
+//filter used to remove combos with useless weapon equipement
+
+// TO BE IMPROVED !!!
+function weaponFilter(combo){
+	for (var skill in combo){
+		if (skill > 1000){
+			if (getWeapon() == (skill - 1000)){
+				return false;
+			}
+		}
+	}
+	return true;
+}

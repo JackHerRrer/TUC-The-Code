@@ -1,0 +1,275 @@
+include("GlobalVar");
+
+
+
+/*****************************************************************************************
+//exemple pour une distance de 2
+             i = x 							Les 2 boucles imbriquées
+<----------------------------->           génèrent les couples suivants
+										
+            +-----+             /|\			  		i   |   j
+            |-2,0 |              |              	--------- 		
+      +-----+-----+-----+        |						|	0
+      |-1,1 |-1,0 |-1,-1|        |					0	|	1
++-----+-----+-----+-----+-----+  |						|	2	
+| 0,2 | 0,1 | 0,0 | 0,-1| 0,-2|  | j = y           		|
++-----+-----+-----+-----+-----+  |					1	|	0
+      | 1,1 | 1,0 | 1,-1|        |						|	1
+      +-----+-----+-----+        |						|
+            | 2,0 |              |					2	|	0
+            +-----+             \|/
+
+*/
+
+function getArea(distance, origin){
+	var area = [];
+	var x = getCellX(origin);
+	var y = getCellY(origin);
+	var cell;
+	for (var i = 0; i < distance + 1; i ++){
+		for(var j = 0; j < (distance + 1 - i); j++){
+			if (i == 0){
+				if (j == 0){
+					cell = getCellFromXY(i+x,j+y);
+					if (cell != null) push(area, cell);
+				}
+				else {
+					cell = getCellFromXY(i+x,j+y);
+					if (cell != null) push(area, cell);
+
+					cell = getCellFromXY(i+x,-j+y);
+					if (cell != null) push(area, cell);
+				}
+			}
+			else{
+				if (j == 0){
+					cell = getCellFromXY(i+x,j+y);
+					if (cell != null) push(area, cell);
+
+					cell = getCellFromXY(-i+x,j+y);		
+					if (cell != null) push(area, cell);
+				}
+				else {
+					cell = getCellFromXY(i+x,j+y);
+					if (cell != null) push(area, cell);	
+
+					cell = getCellFromXY(i+x,-j+y);	
+					if (cell != null) push(area, cell);
+
+					cell = getCellFromXY(-i+x,j+y);	
+					if (cell != null) push(area, cell);
+
+					cell = getCellFromXY(-i+x,-j+y);
+					if (cell != null) push(area, cell);
+				}
+			}
+		}
+	}
+
+	// return the area without the obstacles
+	return 	arrayFilter(area, function (oneCell) {return !isObstacle(oneCell);});	
+}
+
+/*****************************************************************************************/
+/*
+Return the cells that will be affected by the object (weapon or chip) if it is used on targetCell
+Does not return the cells that are obstacle (to avoid uneccesary operations from the function canUseIfMoving())
+
++---+---+---+---+---+---+
+|   |   |   |   |   |   |  	1 = targetCell
++---+---+---+---+---+---+
+|   |   |   |   |   |   | 	2 = indirectCells
++---+---+---+---+---+---+
+|   |   |   |   | 2 |   | 	
++---+---+---+---+---+---+
+|   |   |   | 2 | 1 | 2 | 
++---+---+---+---+---+---+
+|   |   |   |   | 2 |   | 
++---+---+---+---+---+---+
+*/
+
+function getAOE(objectID, targetCell){		// environ 400 op
+
+	//varaiable that will store the cells affected
+	var indirectCells = [];
+
+	//get the type of area
+	var area;
+	if(isWeapon(objectID)) {
+		area = getWeaponArea(objectID);
+	}
+	else if(isChip(objectID)) {
+		area = getChipArea(objectID);
+	}
+	else {
+		debug("Object is not a chip or a weapon");
+		return null;
+	}
+
+
+	//check that the type of the area is not NULL
+	if (area == null){
+		debug("area is null");
+	}
+	else {
+		if (area == AREA_CIRCLE_1){
+			indirectCells = getArea(1, targetCell);
+		}
+		else if (area == AREA_CIRCLE_2){
+			indirectCells = getArea(2, targetCell);
+		}
+		else if (area == AREA_CIRCLE_3){
+			indirectCells = getArea(3, targetCell);
+		}
+		else {
+			indirectCells = targetCell;
+		}
+	}
+	
+	return indirectCells;
+}
+
+
+/********************************************************************************************************/
+/*
+// if the user is an ally
+// 		fill the cells of "actionMap" from where he can touch targetCell with the object 
+
+// else if the user is an enemy
+// 		fill the cells of "dangerMap" that the leek can target if he moves
+
+// If the object has AOE, the function calculates if the leek can touch targetCell undirectly
+
++---+---+---+---+---+---+
+|   |   |   |   |   |   |  	1 = targetCell
++---+---+---+---+---+---+
+|   |   |   | 3 | 3 | 3 | 	2 = indirectCells
++---+---+---+---+---+---+
+|   |   | 3 | 3 | 2 | 3 | 	3 = cellsFromWhereToUseObject
++---+---+---+---+---+---+
+|   |   | 3 | 2 | 1 | 2 | 
++---+---+---+---+---+---+
+|   |   | 3 | 3 | 2 | 3 | 
++---+---+---+---+---+---+
+
+*/
+
+
+function canUseIfMoving(objectID, targetCell, user, useAOE, markCells) {
+
+	var instruct1 = getOperations();
+	var indirectCells = [];
+
+	//récupération des indirectCells
+	if (useAOE){
+		indirectCells = getAOE(objectID, targetCell);
+	}
+	else {
+		push(indirectCells, targetCell);
+	}
+
+	var canUse = false;
+
+	if (indirectCells === []){
+		debug("indirectCells is null");
+		push(indirectCells, targetCell);
+	}
+
+	var MPAvailable = getMP(user);
+	var cellsFromWhereToUseObject = [];
+
+	// Boucle parcourant l'ensemble des indirectCells dans le but de déterminer si elles sont atteignables, si l'utilisateur se déplace
+	for (var indirectCell in indirectCells){
+		//récupération de toutes les cases depuis lesquelles il est possible d'atteindre cette indirectCell
+		if(isWeapon(objectID)) {
+			cellsFromWhereToUseObject = getCellsToUseWeaponOnCell(objectID, indirectCell);
+		}
+		else if(isChip(objectID)) {
+			cellsFromWhereToUseObject = getCellsToUseChipOnCell(objectID, indirectCell);	
+		}
+		else {
+			debug("Object is not a chip or a weapon");
+			return null;
+		}
+
+		if (!isEmpty(cellsFromWhereToUseObject)){ 
+			//Boucle parcourant l'ensemble des cases (cellsFromWhereToUseObject) depuis lesquelles il est possible d'atteindre cette indirectCell
+			for (var cellFromWhereToUseObject in cellsFromWhereToUseObject){
+				
+				//optimisation : Si une action de ce type est déjà enregistré dans actionMap on en rajoute pas (c'est une perte de donnée acceptable)
+				var cellAlreadyAnalysed = false;
+				if (!isEnemy(user)){
+					for (var action in actionMap[cellFromWhereToUseObject]){
+						if (action["OBJECT_ID"] == objectID){
+							cellAlreadyAnalysed = true;
+							break;
+						}
+					}
+				}
+
+				if (cellAlreadyAnalysed == false){
+
+					//optimisation : la longueur du chemin n'est pas calculé, si la distance sans obstacle est superieur au nombre de MP
+					if (getCellDistance(cellFromWhereToUseObject,getCell(user)) <= MPAvailable){
+						//on calcul la distance à parcourir pour atteindre cette cellFromWhereToUseObject
+						var pathLength = getPathLength(getCell(user), cellFromWhereToUseObject);
+						if (pathLength != null){
+							//si cette cellFromWhereToUseObject est atteignable par l'utilisateur
+							if (pathLength <= MPAvailable ){	
+								if (isEnemy(user)){
+
+									if (dangerMap[indirectCell] == null){
+										dangerMap[indirectCell] = [];
+									}
+									var data = [];
+									data["OBJECT_ID"] = objectID;
+									push(dangerMap[indirectCell], data);
+									
+									canUse = true;
+
+									if (markCells){
+										mark(indirectCell, getColor(200, 50, 50));
+									}
+
+									//le but est seulement de savoir que cette case peut être atteinte, pas d'où elle peut être atteinte
+									break;
+								}
+								else{
+									if (actionMap[cellFromWhereToUseObject] == null){
+										actionMap[cellFromWhereToUseObject] = [];
+									}
+									var data = [];
+									data["OBJECT_ID"] 		= objectID;
+									data["TARGET_CELL"]		= targetCell;
+									data["INDIRECT_CELL"]	= indirectCell;
+									data["PATH_LENGTH"] 	= pathLength;
+									push(actionMap[cellFromWhereToUseObject], data);
+
+									canUse = true;
+								
+									if (markCells){
+										if (indirectCell == targetCell){
+											mark(cellFromWhereToUseObject, getColor(200, 50, 50));
+										}
+										else {
+											mark(cellFromWhereToUseObject, getColor(50, 50, 200));
+										}
+									}
+								}
+								
+							}
+						}
+					}
+				}
+			}
+		}
+		else { 
+			debug("cellsFromWhereToUseObject is null");
+		}
+	}	
+
+	//var instruct2 = getOperations();
+	//debug("can use if moving operation : " + (instruct2 - instruct1));
+	return canUse;
+}
+

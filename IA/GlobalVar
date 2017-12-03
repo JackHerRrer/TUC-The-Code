@@ -53,7 +53,7 @@ global USE_ARMORING =		"USE_ARMORING";
 global USE_ARMOR =			"USE_ARMOR";
 global USE_REGENERATION =	"USE_REGENERATION";
 global USE_TOXIN =			"USE_TOXIN";
-global USE_LIBERATION=			"USE_LIBERATION";
+global USE_LIBERATION=		"USE_LIBERATION";
 
 
 global USE_OBJECT = 		"USE_OBJECT";
@@ -74,3 +74,31 @@ global enemyID;
 
 //Booleen
 global initialisation;
+
+
+// Arrays of data used in the various steps of combos generation
+global skillsCostList = [];
+global costCombosList = [];
+global combosList = [];
+global sortedCombosList = [];
+global filteredCombosList = [];
+global comboScores = [];
+global sortedComboScores = [];
+
+// Leeks carac
+
+global ourLeekCarac = [];
+global enemyLeekCarac = [];
+global ourLeekCaracTemp = [];
+global enemyLeekCaracTemp = [];
+
+
+// Constantes utilisées pour rempalcer les structures 
+//global ID = 				"ID";
+global CELL = 				"CELL";
+global STRENGTH = 			"STRENGTH";
+global LIFE = 				"LIFE";
+global RELATIVE_SHIELD =	"RELATIVE_SHIELD";
+global ABSOLUTE_SHIELD = 	"ABSOLUTE_SHIELD";
+
+

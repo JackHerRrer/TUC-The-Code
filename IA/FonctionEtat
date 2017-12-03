@@ -1,5 +1,5 @@
 include("GlobalVar");
-include("Utilitaires");
+include("util_can_use");
 include("Strategy");
 include("IA");
 
@@ -21,11 +21,28 @@ function initTurnFunction(){
 	TPTotal = 0;
 	MPTotal = 0;
 
+	// raz des différentes cartes
 	actionMap = [];
 	dangerMap = [];
 	movingArea = [];
 
+	// raz des donnés de combo
+	skillsCostList = [];
+	costCombosList = [];
+	combosList = [];
+	sortedCombosList = [];
+	filteredCombosList = [];
+	comboScores = [];
+	sortedComboScores = [];
 
+	// raz des carac des leeks
+	ourLeekCarac = [];
+	enemyLeekCarac = [];
+	ourLeekCaracTemp = [];
+	enemyLeekCaracTemp = [];
+	
+	// Choose the closest enemy
+	// TO BE IMPROVED
 	var enemyList = getAliveEnemies();
 	var distToNearestEnenmy = 1000;
 	for (var i = 0; i < count(enemyList); i++){

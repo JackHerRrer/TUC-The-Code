@@ -1,0 +1,118 @@
+include("GlobalVar");
+
+
+/********************************************************************************************/
+
+
+function getDamage(ID, strength) {	
+	var damage = [];
+	
+	if(isChip(ID)) {
+	
+		var chipEffects = getChipEffects(ID);
+		
+		for (var chipEffect in chipEffects) {
+			if(chipEffect[0] == EFFECT_DAMAGE) {
+				var chipDamage = [];
+				damage["MIN"] = chipEffect[1] * (1+strength/100);
+				damage["MAX"] = chipEffect[2] * (1+strength/100);
+				//push(damage, chipDamage);
+			}
+		}
+	} else if (isWeapon(ID)) {
+		var weaponEffects = getWeaponEffects(ID);
+		
+		for (var weaponEffect in weaponEffects) {
+			if(weaponEffect[0] == EFFECT_DAMAGE) {
+				var weaponDamage = [];
+				damage["MIN"] = weaponEffect[1] * (1+strength/100);
+				damage["MAX"] = weaponEffect[2] * (1+strength/100);
+				//push(damage, weaponDamage);
+			}	
+		}
+	} else {
+		debug("Ni puce ni arme !!");
+	}
+	return damage;
+}
+
+/******************************************************************************************/
+
+function calculateDamage(userStrenght, targetCell, targetRelativeShield, targetAbsoluteShield, objectID, cellID) {	
+
+	var area;
+	if(isWeapon(objectID)) {
+		area = getWeaponArea(objectID);
+	}
+	else if(isChip(objectID)) {
+		area = getChipArea(objectID);
+	}
+
+	if (area != null){
+		var zoneMaxExtent;
+		if (area == AREA_CIRCLE_1){
+			zoneMaxExtent = 1;
+		}
+		else if (area == AREA_CIRCLE_2){
+			zoneMaxExtent = 2;
+		}
+		else if (area == AREA_CIRCLE_3){
+			zoneMaxExtent = 3;
+		}
+		else {
+			//Vérifier que la condition est vrai dans le cas du laser
+			if (getCellDistance(cellID, targetCell)){
+				debug("The object wont hit the target");	
+				return null;	
+			}
+			zoneMaxExtent = 1;
+
+		}
+		var ratioDistance = 1 - (getCellDistance(cellID, targetCell) / zoneMaxExtent * 0.5);
+		var damage = getDamage(objectID, userStrenght);
+		if (damage == null){
+			debug ("damage is null");
+			return null;
+		}
+
+		return max(0, (damage["MAX"] + damage["MIN"])/2 * ratioDistance * (1 - targetRelativeShield / 100) - targetAbsoluteShield);
+	}
+	else {
+		debug("Area is null");
+		return null;
+	}
+}
+
+/******************************************************************************************/
+// Gather the caracteristics of leekId and store them leekCarac
+// TO BE COMPLETED
+function getLeekCarac(){
+
+	//leekCarac[ID] = leekId;
+	ourLeekCarac[CELL] = getCell(ourLeekID);
+	ourLeekCarac[STRENGTH] = getStrength(ourLeekID);
+	ourLeekCarac[LIFE] = getLife(ourLeekID);
+	ourLeekCarac[RELATIVE_SHIELD] = getRelativeShield(ourLeekID);
+	ourLeekCarac[ABSOLUTE_SHIELD] = getAbsoluteShield(ourLeekID);
+
+	enemyLeekCarac[CELL] = getCell(enemyID);
+	enemyLeekCarac[STRENGTH] = getStrength(enemyID);
+	enemyLeekCarac[LIFE] = getLife(enemyID);
+	enemyLeekCarac[RELATIVE_SHIELD] = getRelativeShield(enemyID);
+	enemyLeekCarac[ABSOLUTE_SHIELD] = getAbsoluteShield(enemyID);
+}
+
+/******************************************************************************************/
+
+function default_score_function(skill){
+	return 0;
+}
+
+/******************************************************************************************/
+
+function damage_score_function(skill){
+
+	// TO BE IMPROVED, for the moment only direct hits are handled
+	return calculateDamage(ourLeekCaracTemp[STRENGTH], enemyLeekCaracTemp[CELL], enemyLeekCaracTemp[RELATIVE_SHIELD], enemyLeekCaracTemp[ABSOLUTE_SHIELD], skill, enemyLeekCaracTemp[CELL]);
+
+}

@@ -1,0 +1,489 @@
+include("GlobalVar");
+include("util_misc");
+include("util_filters");
+include("util_score");
+
+
+global BUFF = 		"BUFF";
+global ARMOR = 		"ARMOR";
+global HEAL = 		"HEAL";
+global DEBUFF = 	"DEBUFF";
+global DAMAGE = 	"DAMAGE";
+global BULB = 		"BULB";
+global POISON = 	"POISON";
+global UTIL = 		"UTIL"; // peut être à modifier
+global REFLECT = 	"REFLECT";
+
+global TYPE = 0;
+global SCORE_FUNCTION = 1;
+
+global SCORE = 0;
+global KEY = 1;
+
+global skills = [];
+skills[CHIP_BURNING] =                  [DAMAGE, damage_score_function];
+skills[CHIP_DEVIL_STRIKE] =             [DAMAGE, damage_score_function];
+skills[CHIP_FLAME] =                    [DAMAGE, damage_score_function];
+skills[CHIP_FLASH] =                    [DAMAGE, damage_score_function];
+skills[CHIP_ICE] =                      [DAMAGE, damage_score_function];
+skills[CHIP_ICEBERG] =                  [DAMAGE, damage_score_function];
+skills[CHIP_LIGHTNING] =                [DAMAGE, damage_score_function];
+skills[CHIP_METEORITE] =                [DAMAGE, damage_score_function];
+skills[CHIP_PEBBLE] =                   [DAMAGE, damage_score_function];
+skills[CHIP_ROCK] =                     [DAMAGE, damage_score_function];
+skills[CHIP_ROCKFALL] =                 [DAMAGE, damage_score_function];
+skills[CHIP_SHOCK] =                    [DAMAGE, damage_score_function];
+skills[CHIP_SPARK] =                    [DAMAGE, damage_score_function];
+skills[CHIP_STALACTITE] =               [DAMAGE, damage_score_function];
+
+skills[WEAPON_AXE] =                    [DAMAGE, damage_score_function];
+skills[WEAPON_B_LASER] =                [DAMAGE, damage_score_function];
+skills[WEAPON_BROADSWORD] =             [DAMAGE, damage_score_function];
+skills[WEAPON_DESTROYER] =              [DAMAGE, damage_score_function];
+skills[WEAPON_DOUBLE_GUN] =             [DAMAGE, damage_score_function];
+skills[WEAPON_ELECTRISOR] =             [DAMAGE, damage_score_function];
+skills[WEAPON_FLAME_THROWER] =          [DAMAGE, damage_score_function];
+skills[WEAPON_GAZOR] =                  [DAMAGE, default_score_function];
+skills[WEAPON_GRENADE_LAUNCHER] =       [DAMAGE, damage_score_function];
+skills[WEAPON_LASER] =                  [DAMAGE, damage_score_function];
+skills[WEAPON_MACHINE_GUN] =            [DAMAGE, damage_score_function];
+skills[WEAPON_MAGNUM] =                 [DAMAGE, damage_score_function];
+skills[WEAPON_KATANA] =                 [DAMAGE, damage_score_function];
+skills[WEAPON_M_LASER] =                [DAMAGE, damage_score_function];
+skills[WEAPON_PISTOL] =                 [DAMAGE, damage_score_function];
+skills[WEAPON_SHOTGUN] =                [DAMAGE, damage_score_function];
+
+skills[WEAPON_AXE+1000] =               [DAMAGE, default_score_function];
+skills[WEAPON_B_LASER+1000] =           [DAMAGE, default_score_function];
+skills[WEAPON_BROADSWORD+1000] =        [DAMAGE, default_score_function];
+skills[WEAPON_DESTROYER+1000] =         [DAMAGE, default_score_function];
+skills[WEAPON_DOUBLE_GUN+1000] =        [DAMAGE, default_score_function];
+skills[WEAPON_ELECTRISOR+1000] =        [DAMAGE, default_score_function];
+skills[WEAPON_FLAME_THROWER+1000] =     [DAMAGE, default_score_function];
+skills[WEAPON_GAZOR+1000] =         	[DAMAGE, default_score_function];
+skills[WEAPON_GRENADE_LAUNCHER+1000] =	[DAMAGE, default_score_function];
+skills[WEAPON_KATANA+1000] =        	[DAMAGE, default_score_function];
+skills[WEAPON_LASER+1000] =         	[DAMAGE, default_score_function];
+skills[WEAPON_MACHINE_GUN+1000] =   	[DAMAGE, default_score_function];
+skills[WEAPON_MAGNUM+1000] =        	[DAMAGE, default_score_function];
+skills[WEAPON_M_LASER+1000] =       	[DAMAGE, default_score_function];
+skills[WEAPON_PISTOL+1000] =        	[DAMAGE, default_score_function];
+skills[WEAPON_SHOTGUN+1000] =       	[DAMAGE, default_score_function];
+
+skills[CHIP_ACCELERATION] =             [BUFF, default_score_function];
+skills[CHIP_ADRENALINE] =               [BUFF, default_score_function];
+skills[CHIP_ANTIDOTE] =                 [BUFF, default_score_function];
+skills[CHIP_BARK] =                     [BUFF, default_score_function];
+skills[CHIP_COLLAR] =                   [BUFF, default_score_function];
+skills[CHIP_DOPING] =                   [BUFF, default_score_function];
+skills[CHIP_FEROCITY] =                 [BUFF, default_score_function];
+skills[CHIP_LEATHER_BOOTS] =            [BUFF, default_score_function];
+skills[CHIP_MOTIVATION] =               [BUFF, default_score_function];
+skills[CHIP_PROTEIN] =                  [BUFF, default_score_function];
+skills[CHIP_RAGE] =                     [BUFF, default_score_function];
+skills[CHIP_REFLEXES] =                 [BUFF, default_score_function];
+skills[CHIP_SEVEN_LEAGUE_BOOTS] =       [BUFF, default_score_function];
+skills[CHIP_SOLIDIFICATION] =           [BUFF, default_score_function];
+skills[CHIP_STEROID] =                  [BUFF, default_score_function];
+skills[CHIP_STRETCHING] =               [BUFF, default_score_function];
+skills[CHIP_WARM_UP] =                  [BUFF, default_score_function];
+skills[CHIP_WHIP] =                     [BUFF, default_score_function];
+skills[CHIP_WINGED_BOOTS] =             [BUFF, default_score_function];
+
+skills[CHIP_MIRROR] =                   [REFLECT, default_score_function];
+skills[CHIP_THORN] =                    [REFLECT, default_score_function];
+
+skills[CHIP_PLAGUE] =                   [POISON, default_score_function];
+skills[CHIP_TOXIN] =                    [POISON, default_score_function];
+skills[CHIP_VENOM] =                    [POISON, default_score_function];
+
+skills[CHIP_BANDAGE] =                  [HEAL, default_score_function];
+skills[CHIP_CURE] =                     [HEAL, default_score_function];
+skills[CHIP_DRIP] =                     [HEAL, default_score_function];
+skills[CHIP_FERTILIZER] =               [HEAL, default_score_function];
+skills[CHIP_LOAM] =                     [HEAL, default_score_function];
+skills[CHIP_REGENERATION] =             [HEAL, default_score_function];
+skills[CHIP_REMISSION] =                [HEAL, default_score_function];
+skills[CHIP_VACCINE] =                  [HEAL, default_score_function];
+
+skills[CHIP_ARMOR] =                    [ARMOR, default_score_function];
+skills[CHIP_ARMORING] =                 [ARMOR, default_score_function];
+skills[CHIP_CARAPACE] =                 [ARMOR, default_score_function];
+skills[CHIP_FORTRESS] =                 [ARMOR, default_score_function];
+skills[CHIP_HELMET] =                   [ARMOR, default_score_function];
+skills[CHIP_RAMPART] =                  [ARMOR, default_score_function];
+skills[CHIP_SHIELD] =                   [ARMOR, default_score_function];
+skills[CHIP_WALL] =                     [ARMOR, default_score_function];
+
+skills[CHIP_BALL_AND_CHAIN] =           [DEBUFF, default_score_function];
+skills[CHIP_FRACTURE] =                 [DEBUFF, default_score_function];
+skills[CHIP_SLOW_DOWN] =                [DEBUFF, default_score_function];
+skills[CHIP_SOPORIFIC] =                [DEBUFF, default_score_function];
+skills[CHIP_TRANQUILIZER] =             [DEBUFF, default_score_function];
+
+skills[CHIP_INVERSION] =                [UTIL, default_score_function];
+skills[CHIP_LIBERATION] =               [UTIL, default_score_function];
+skills[CHIP_RESURRECTION] =             [UTIL, default_score_function];
+skills[CHIP_TELEPORTATION] =            [UTIL, default_score_function];
+
+skills[CHIP_FIRE_BULB] =                [BULB, default_score_function];
+skills[CHIP_HEALER_BULB] =              [BULB, default_score_function];
+skills[CHIP_ICED_BULB] =                [BULB, default_score_function];
+skills[CHIP_LIGHTNING_BULB] =           [BULB, default_score_function];
+skills[CHIP_METALLIC_BULB] =            [BULB, default_score_function];
+skills[CHIP_PUNY_BULB] =                [BULB, default_score_function];
+skills[CHIP_ROCKY_BULB] =               [BULB, default_score_function];
+
+
+
+
+
+/**********************************************************************/
+// Génère un tableau de valeur avec le coût de tous les chips/weapons du leek
+// Chaque coût n'apparait qu'une fois (même si deux chips on un coup de 4, il n'y // aura qu'une seule fois la valeur 4 dans le tableau)
+// Le tableau est trier par ordre croissant de coût
+// Le tableau sert comme point d'entré pour la fonction generateCostCombosList()
+/**********************************************************************/
+function generateSkillsCostList(){
+	//add change weapon
+
+	var costs = [];
+	var sortedCosts = [];
+	var sortedUniqueCosts = [];
+	
+	var chips = getChips();
+	var weapons = getWeapons();
+	
+	//Fill costs with all the weapon costs
+	for (var weapon in weapons){
+		push(costs, getWeaponCost(weapon));
+		//add the cost of the weapon + the cost of the equipment
+		push(costs, getWeaponCost(weapon)+1);
+	}
+	//Add to costs all the chip costs
+	for (var chip in chips){
+		push(costs, getChipCost(chip));
+	}
+	
+	// sort costs
+	sortedCosts = arraySort(costs, function(cost1, cost2) {
+    	return cost1 - cost2;
+	});
+	
+	// remove the costs that appears more than once
+	var sortedCostsCount = count(sortedCosts);
+	
+	// The very first cost is necessarly unique
+	push(sortedUniqueCosts, sortedCosts[0]);
+	
+	// Check if the previous cost is the same as the current one
+	// if not thje cost is pushed to sortedUniqueCosts
+	for (var i = 1;  i < sortedCostsCount; i++){
+		if (sortedCosts[i] != sortedCosts[i-1]){
+			push(sortedUniqueCosts, sortedCosts[i]);
+		}
+	}
+	
+	return sortedUniqueCosts;
+}
+
+
+/**************************************************************************/
+// Fonction récursive calculant toutes les combos optimums de valeurs possibles
+// Les valeurs représentent les différent points de tour des chips/armes du leek 
+// Un combo est un tableau de valeurs. Ex : [3,3,3] 
+// Les combos sont constitués à partir d'un tableau de valeurs initiales. Ex:[3,4,5]
+// Le tableau de valeur initiales doit être dans l'ordre croissant
+// La somme d'un combo ne dois pas dépasser une valeur max (max de PT du leek)
+// Un combo est optimal si aucune valeure supplémentaire ne peut être ajoutée
+// Ex : si max = 10, [3,3,3] est optimal et [3,3] n'est pas optimal
+// Les combos optimums sont stockés par la fonction dans un tableau nommé costCombosList
+
+// exemple :
+// initialValues = [3,4,5]
+// max = 10
+// costCombosList = [[5,5],[5,4],[5,3],[4,4],[4,3,3],[3,3,3]]
+
+/**************************************************************************/
+
+
+function generateCostCombosList(initialValues, max, unfinishedCombo){
+	var addedResult = false;
+	if (initialValues === null){
+		push(costCombosList, unfinishedCombo);
+		addedResult = true;
+	}
+	else{
+		var sizeArray = count(initialValues);
+		for (var i = sizeArray - 1; i >= 0; i--){
+			//debugE("Function depth : " + depth + ", boucle : " + (sizeArray - i)+"/" + sizeArray);
+			//displayArray(initialValues, "chiffres dispos");
+			//displayArray(unfinishedCombo, "résultat précédent");
+			if (sum(unfinishedCombo) + initialValues[i] < max){
+				//debug("sum + " + initialValues[i] + " < max");
+				var nextResult = unfinishedCombo;
+				push(nextResult, initialValues[i]);
+				//displayDoubleArray(costCombosList, "cost combos : ");
+				if (!generateCostCombosList(initialValues, max, nextResult)){
+					//debug("no result return:");
+					push(costCombosList, nextResult);
+					//displayDoubleArray(costCombosList, "cost combos : ");
+				}
+				addedResult = true;
+			}
+			else if(sum(unfinishedCombo) + initialValues[i] == max){
+				//debug("sum + " + initialValues[i] + " == max");
+				var nextResult = unfinishedCombo;
+				push(nextResult, initialValues[i]);
+				push(costCombosList, nextResult);
+				addedResult = true;
+				//displayDoubleArray(costCombosList, "cost combos : ");
+			}
+			pop(initialValues);
+		}
+	}
+	//debugW("depth : " + depth--);
+	return addedResult;
+}
+
+
+/*************************************************************************/
+// Prepare the input parameters used by the function fillCombo and call this function as many time as there are combos
+// skillSortedByCosts is a two dimensionnal array. The first dimmension is the cost of the skills, the second one is the id of the skills.
+// skillSortedByCosts = (3)[a,b]
+//						(4)[c,d]
+//						(5)[e]
+
+function generateCombosList(){
+	var arrayActions = [];
+	var skillSortedByCosts = [];
+	
+	var chips = getChips();
+	var weapons = getWeapons();
+	
+	for (var weapon in weapons){
+		var weaponCost = getWeaponCost(weapon);
+		if (skillSortedByCosts[weaponCost] === null)
+			skillSortedByCosts[weaponCost] = [];
+			
+		push(skillSortedByCosts[weaponCost], weapon);
+		
+		//handle the weapon + the equipment
+		if (skillSortedByCosts[weaponCost+1] === null)
+			skillSortedByCosts[weaponCost+1] = [];
+
+		push(skillSortedByCosts[weaponCost+1], weapon+1000);
+	}
+	
+	for (var chip in chips){
+		//Only the chip that are not on cooldown are stored
+		if (getCooldown(chip) == 0){
+			var chipCost = getChipCost(chip);
+			if (skillSortedByCosts[chipCost] === null)
+				skillSortedByCosts[chipCost] = [];
+
+			push(skillSortedByCosts[chipCost], chip);
+		}
+	}
+	
+	//displayDoubleArray(skillSortedByCosts, "skills sorted by cost : ");
+	
+	for (var costCombo in costCombosList){
+		fillCombo(costCombo, 0, skillSortedByCosts);
+	}
+}
+
+/************************************************************************/
+// Fonction itérative générant tous les combos possibles à partir d'un combo de coût
+// Gère les cooldowns
+
+/* exemple d'execution de la fonction
+4-4-3-3  a=4 b=4  c=3 d=3
+
+4-4-3-3: a,b c,d
+	a-4-3-3 : a,b  c,d 
+		a-a-3-3 : c,d 
+			a-a-c-3 : c,d
+				a-a-c-c 
+				a-a-c-d 
+			a-a-d-3 : d 
+				a-a-d-d 
+		a-b-3-3 : c,d 	
+			a-b-c-3 : c,d
+				a-b-c-c 
+				a-b-c-d 
+			a-b-d-3 : d 
+				a-b-d-d 
+	b-4-3-3 : b  c,d 
+		b-b-3-3 : c,d	
+			b-b-c-3 : c,d
+				b-b-c-c 
+				b-b-c-d 
+			b-b-d-3 : d 
+				b-b-d-d 
+*/
+function fillCombo(combo, depth, skillsAvailable){
+	
+	//debugE("depth : "+ depth);
+	//displayArray(combo, "combo");
+	//displayDoubleArray(skillsAvailable, "skills available : ");
+	if (count(combo) == depth){
+		//displayArray(combo, "combo to push");
+		push(combosList, combo);
+	}
+	else if (count(skillsAvailable[combo[depth]]) == 0){
+		
+		var nextCombo = combo;
+		//displayArray(nextCombo, "combo avant: ");
+		remove(nextCombo, depth);
+		//displayArray(nextCombo, "combo après: ");
+		fillCombo(nextCombo, depth, skillsAvailable);
+	}
+	else{
+		var partialskillsAvailable = skillsAvailable;	
+		for (var skill in skillsAvailable[combo[depth]]){
+			var skillRemoved = false;
+			var nextCombo = combo;
+			var nextDepth = depth + 1;
+			nextCombo[depth] = skill;
+			if (isChip(skill)){
+				if (getChipCooldown(skill) != 0){
+					//debug("chip : " + skill + ", cooldown : " + getChipCooldown(skill));
+					remove(partialskillsAvailable[combo[depth]],0);
+					skillRemoved = true;
+				}
+			}
+			fillCombo(nextCombo, nextDepth, partialskillsAvailable);
+			if (skillRemoved == false){
+				remove(partialskillsAvailable[combo[depth]],0);
+			}
+		}
+	}	
+}
+
+/*******************************************************************/
+// Call sort Combo as many time as there are combos
+// It sorts the combos themselves, not the list of the combos
+
+function sortCombos(){
+	for (var combo in combosList){
+		push(sortedCombosList, sortCombo(combo));
+	}
+}
+
+/*******************************************************************/
+//
+
+function sortCombo(combo){
+		var buffSkills = [];
+		var armorSkills = [];
+		var healSkills = [];
+		var debuffSkills = [];
+		var damageSkills = [];
+		var bulbSkills = [];
+		var poisonSkills = [];
+		var utilSkills = [];
+		var reflectSkills = [];
+		
+		for (var skill in combo){
+			if (skills[skill][TYPE] == BUFF) {push(buffSkills, skill);} 
+			if (skills[skill][TYPE] == ARMOR) {push(armorSkills, skill);}
+			if (skills[skill][TYPE] == HEAL) {push(healSkills, skill);}
+			if (skills[skill][TYPE] == DEBUFF) {push(debuffSkills, skill);}
+			if (skills[skill][TYPE] == DEBUFF) {push(debuffSkills, skill);}
+			if (skills[skill][TYPE] == DAMAGE) {push(damageSkills, skill);}
+			if (skills[skill][TYPE] == DEBUFF) {push(debuffSkills, skill);}
+			if (skills[skill][TYPE] == BULB) {push(bulbSkills, skill);}
+			if (skills[skill][TYPE] == POISON) {push(poisonSkills, skill);}
+			if (skills[skill][TYPE] == UTIL) {push(utilSkills, skill);}
+			if (skills[skill][TYPE] == REFLECT) {push(reflectSkills, skill);}
+		}
+		var sortedCombo = [];
+		pushAll(sortedCombo, buffSkills);
+		pushAll(sortedCombo, debuffSkills);
+		pushAll(sortedCombo, healSkills);
+		pushAll(sortedCombo, armorSkills);
+		pushAll(sortedCombo, reflectSkills);
+		pushAll(sortedCombo, utilSkills);
+		pushAll(sortedCombo, damageSkills);
+		pushAll(sortedCombo, poisonSkills);
+		
+		//displayArray(combo, "unsorted combo : ");
+		//displayArray(sortedCombo, "sorted combo : ");
+		return sortedCombo;
+}
+
+
+/*************************************************************************/
+function filterCombos(){
+	for (var combo in sortedCombosList){
+		if (filterCombo(combo)){
+			push(filteredCombosList, combo);
+		}
+	}
+}
+
+/*************************************************************************/
+// This function calls every filtering functions
+// Return false to remove the combo
+// Return true to keep the combo
+function filterCombo(combo){
+	if (!weaponFilter(combo)) {return false;}
+	
+	// add other filters here
+	return true;
+}
+
+
+/*************************************************************************/
+// For each combo this function calls calculateComboScore
+// It then stores the score and the key associated to the combo in comboScores
+
+// comboScores[0] = [scoreFirstCombo, keyFirstCombo];
+// comboScores[1] = [scoreSecondCombo, keySecondCombo];
+// comboScores[n] = [...];
+ 
+function calculateCombosScore(){
+
+	getLeekCarac();
+
+	ourLeekCaracTemp = ourLeekCarac;
+	enemyLeekCaracTemp = enemyLeekCarac;
+
+	for (var key : var combo in filteredCombosList){
+		ourLeekCaracTemp = ourLeekCarac;
+		enemyLeekCaracTemp = enemyLeekCarac;
+
+		var score = calculateComboScore(combo);
+		var scoreKey = [];
+		scoreKey[SCORE] = score;
+		scoreKey[KEY] = key;
+
+		push(comboScores, scoreKey);
+	}
+}
+
+
+/*************************************************************************/
+// This function calls 
+
+function calculateComboScore(combo){
+	var score = 0;
+
+	for (var skill in combo){
+			score += skills[skill][SCORE_FUNCTION](skill);
+	}
+
+	return score;
+}
+
+
+/*************************************************************************/
+// This function sorts all the combo by score 
+
+function sortCombosByScore(){
+	// sort costs
+	sortedComboScores = arraySort(comboScores, function(comboScore1, comboScore2) {
+    	return comboScore2[SCORE] - comboScore1[SCORE];
+	});
+}

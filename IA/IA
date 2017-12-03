@@ -40,7 +40,7 @@
 
 *******************************************************************************************/
 
-include("Utilitaires");
+//include("Utilitaires");
 include("GlobalVar");
 include("FonctionEtat");
 include("Strategy");

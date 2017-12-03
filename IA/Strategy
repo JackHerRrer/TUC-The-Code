@@ -24,7 +24,9 @@
 
 
 include("GlobalVar");
-include("Utilitaires");
+include("util_can_use");
+include("util_misc");
+include("util_combos");
 include("FonctionEtat");
 
 function leekStrategyChoice(){
@@ -181,6 +183,42 @@ function first_turn_strategy(){
 }
 
 function fight_strategy(){
+
+	//EXPERIMENTAL
+	// Calcul des combos
+	var max = getTP();
+
+	var count = getOperations();
+	skillsCostList = generateSkillsCostList();
+	debug("nb instruct generateSkillsCostList : " + (getOperations() - count));
+
+	generateCostCombosList(skillsCostList, max, []);
+	debug("nb instruct generateCostCombosList : " + (getOperations() - count));
+
+	generateCombosList();
+	debug("nb instruct generateCombosList : " + (getOperations() - count));
+
+	sortCombos();
+	debug("nb instruct sortCombos : " + (getOperations() - count));
+
+	filterCombos();
+	//debug(filteredCombosList);
+	debug("nb instruct filterCombos : " + (getOperations() - count));
+
+	calculateCombosScore();
+	//debug(comboScores);
+	debug("nb instruct calculateCombosScore : " + (getOperations() - count));
+
+	sortCombosByScore();
+	//debug(sortedComboScores);
+
+	debug("Best combo : " + filteredCombosList[sortedComboScores[0][KEY]]);
+	debug("second best combo : " + filteredCombosList[sortedComboScores[1][KEY]]);
+	debug("nb instruct sortCombosByScore : " + (getOperations() - count));
+
+	//EXPERIMENTAL
+
+
 
 	//CALCULATE_LEEK_POSSIBILITIES
 	var weCanUseLightningIfMoving = canUseIfMoving(CHIP_LIGHTNING,  getCell(enemyID),  ourLeekID, true,  false);

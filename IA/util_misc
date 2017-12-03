@@ -1,0 +1,63 @@
+//-------------------------------------------------------------
+//------------------Fonctions utilitaires----------------------
+//-------------------------------------------------------------
+include("GlobalVar");
+
+
+
+
+function leekHasChip(chipID, leekID){
+	var chips = getChips(leekID);
+	
+	if (chips != null){
+		for (var chip in chips){
+			if (chip == chipID){
+				return true;
+			}
+		}
+	}
+	else {
+		debug ("chips is NULL");
+	}
+	return false;
+}
+
+
+/*******************************************************************/
+
+function isEven(number){
+	if ((number % 2) == 0){
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+
+
+/*******************************************************************/
+
+function displayArray(array, string){
+	var combination = "[";
+	for (var value in array){
+			combination = combination + value + "-";
+		}
+	combination = combination + "]";
+	debug(string + " : " + combination);
+}
+
+/*******************************************************************/
+
+function displayDoubleArray (list, string){
+	//display all the combinations
+	var combination = "";
+	for (var result in list){
+		combination = combination + "[";
+		for (var value in result){
+			combination = combination + value + "-";
+		}
+		combination = combination + "]";
+	}
+	debug(string + combination);
+}
