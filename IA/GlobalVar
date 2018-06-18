@@ -57,6 +57,7 @@ global USE_LIBERATION=		"USE_LIBERATION";
 
 
 global USE_OBJECT = 		"USE_OBJECT";
+global EQUIP_WEAPON = 		"EQUIP_WEAPON";
 
 //----Variables globales---------------------
 //Variables globales alliés
@@ -70,9 +71,11 @@ global movingArea = [];
 global dangerMap = [];
 
 // array containing the list of the cells from which skills can be used 
-// example: nodes[chipSpark] = [[CELL, TARGET_CELL, INDIRECT_CELL, PATH_LENGTH], [CELL, TARGET_CELL, INDIRECT_CELL, PATH_LENGTH], [...], ...];
-global nodes = [];
-
+// example: actionNodes[chipSpark] 	= [[CELL, TARGET_CELL, INDIRECT_CELL, PATH_LENGTH], [CELL, TARGET_CELL, INDIRECT_CELL, PATH_LENGTH], [...], ...];
+// 			actionNodes[chipPebble] = [[CELL, TARGET_CELL, INDIRECT_CELL, PATH_LENGTH], [CELL, TARGET_CELL, INDIRECT_CELL, PATH_LENGTH], [...], ...];
+// 			actionNodes[...]		= [...]
+global actionNodes = [];
+global dangerNodes = [];
 
 //Variables globales ennemies
 global enemyID;
@@ -90,8 +93,7 @@ global sortedCombosList = [];
 global filteredCombosList = [];
 global comboScores = [];
 global sortedComboScores = [];
-global chosenCombo = []; 
-global chosenNodes = []; // store the index  of the node to be used by the chosen combo
+global trajectoriesData = [];
 // Leeks carac
 
 global ourLeekCarac = [];

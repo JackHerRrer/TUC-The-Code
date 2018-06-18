@@ -2,7 +2,7 @@ include("GlobalVar");
 include("util_misc");
 include("util_filters");
 include("util_score");
-
+include("util_can_use");
 
 global BUFF = 		"BUFF";
 global ARMOR = 		"ARMOR";
@@ -16,9 +16,15 @@ global REFLECT = 	"REFLECT";
 
 global TYPE = 0;
 global SCORE_FUNCTION = 1;
+global NAME = 2;
 
 global SCORE = 0;
 global KEY = 1;
+
+global SKILL = 1;
+global CELLS = 2;
+global MVMP = 3;
+global TARGET_CELL = 4;
 
 global skills = [];						//[To sort the combos, to calculate the score]
 skills[CHIP_BURNING] =                  [DAMAGE, damage_score_function, "CHIP_BURNING"];
@@ -129,7 +135,7 @@ skills[CHIP_ROCKY_BULB] =               [BULB, default_score_function, "CHIP_ROC
 
 /**********************************************************************/
 function getSkillName(skill){
-	return skills[skill][2];
+	return skills[skill][NAME];
 }
 
 /**********************************************************************/
@@ -494,38 +500,245 @@ function sortCombosByScore(){
 
 
 /*************************************************************************/
-// This function choose the best combo that can be done.
+// This function is used to find the trajectory with the best score without 
+// using more operation than the maximum operation limit
+function find_best_trajectory(){
+	var operationThreshold = 4000000;
 
-function chooseCombo(){
-//chosenCombo
-//chosenNodes
-for (var i = 0; i < count(sortedComboScores); i++){
-	
-	// fill the actionMap and the nodes array
-	for (var j=0; j < count(sortedComboScores[i]); j++){
-		if (skills[sortedComboScores[i][j]][TYPE] == DAMAGE || skills[sortedComboScores[i][j]][TYPE] == POISON || skills[sortedComboScores[i][j]][TYPE] == DEBUFF){
-			
+	var nbOp = getOperations();
+	fill_danger_map();
+	debug("nb instruct fill_danger_map : " + (getOperations() - nbOp));
+	var countTrajectories = 0;
+
+	for (var comboScore in sortedComboScores){
+		//debug("combo: " + sortedCombosList[comboScore[KEY]]);
+		fill_action_nodes(sortedCombosList[comboScore[KEY]]);
+		generate_trajectories(sortedCombosList[comboScore[KEY]]);
+		countTrajectories++;
+
+		if (OPERATIONS_LIMIT - getOperations() < operationThreshold){
+			debug("remaing operation inferior to " + operationThreshold);
+			debug("Trajectories calculated: " + countTrajectories);
+			break;
 		}
-
 	}
-
 }
 
-} 
+/*************************************************************************/
+// This function is used to fill the danger map based on 
+//  * the chips and weapons of the enemy leek
+//  * the chips of the enemy bulbs (not implemented yet)
+function fill_danger_map(){
+	
+	var enemySkills = [];
+	pushAll(enemySkills, getChips(enemyID));
+	pushAll(enemySkills, getWeapons(enemyID));
+
+	for (var skill in enemySkills){
+		if (skills[skill][TYPE] == DEBUFF || skills[skill][TYPE] == DAMAGE || skills[skill][TYPE] == POISON){
+			if (dangerNodes[skill] == null){
+				canUseIfMoving(skill,  getCell(enemyID),  enemyID, true,  false);
+			}
+		}
+	}
+}
 
 /*************************************************************************/
-// This function defines if a combo can be realized
-// It returns a structure containing the answer and the node to use
-// ex: return [true, [node_index_0, node_index_1, node_index_2,...]]
-function try_combo(combo, origin, target){
-	var canBeDone = false;
-	var nodeList = [];
+// This function is used to find the trajectory that with the best score
+// This function doesn't handle chips cast on allies (to be improved)
+function fill_action_nodes(combo){
+	for (var skill in combo){
+		if (skill > 1000)
+			skill -= 1000;
+
+		if (getType() == ENTITY_LEEK){	
+			if (skills[skill][TYPE] == DEBUFF || skills[skill][TYPE] == DAMAGE || skills[skill][TYPE] == POISON){
+				if (actionNodes[skill] == null){
+					canUseIfMoving(skill,  getCell(enemyID),  ourLeekID, true,  false);
+				}
+			}
+		}
+		else {
+			debug("fill_action_nodes: case not handled");
+		}
+	}
+}
 
 
+/*************************************************************************/
+// This function is used to generate the different trajectories of a combo
+// There are trajectories for:
+//  * full combo + mvmt
+//  * full combo
+//  * full indirect combo + mvmt
+//  * full indirect combo
+// A trajectory can be full (all the skills can be used) or partial
+// A trajectory is an array : [[cell1, cell2, ...], [skill1, skill2, ...], [targetCell1, targetCell2, ...] remainingMP, score]
+// The number of MP depends on the casted chips (not implemented yet)
 
+function generate_trajectories(combo){
+
+	var directMvmt = [];
+	var direct = [];
+	direct[SKILL] = [];
+	direct[CELLS] = [];
+	direct[TARGET_CELL] = [];
+	direct[MVMP] = getMP();
+	var indirectMvmt = [];
+	var indirect = [];
+	indirect[SKILL] = [];
+	indirect[CELLS] = [];
+	indirect[TARGET_CELL] = [];
+	indirect[MVMP] = getMP();
+
+	// debug("combo: " + combo);
+	// generate direct trajectories without escape
+	for (var key: var skill in combo){
+		//debug("skill: " + skill);
+		var nextNodeResult = [];
+		// if the skill requires a mouvment to be executed
+		if (skills[skill][TYPE] == DEBUFF || skills[skill][TYPE] == DAMAGE || skills[skill][TYPE] == POISON){
+
+			if (key == 0){
+				nextNodeResult = find_next_node(skill, getCell(), direct, direct[MVMP]);
+			}
+			else {
+				nextNodeResult = find_next_node(skill, direct[CELLS][key - 1], direct, direct[MVMP]);
+			}
+			// if a cell can be reached then save it in the trajectory
+			if (nextNodeResult[0] == true){
+				push(direct[SKILL], skill);
+				push(direct[CELLS], nextNodeResult[1]);
+				direct[MVMP] -= nextNodeResult[2];
+				push(direct[TARGET_CELL], nextNodeResult[3]);
+			}
+		}
+		// if the skill does not require a mouvment to be executed
+		else {
+			if (key == 0){
+				push(direct[SKILL], skill);
+				push(direct[CELLS], getCell());
+				push(direct[TARGET_CELL], getCell());
+			}
+			else{
+				push(direct[SKILL], skill);
+				push(direct[CELLS], direct[CELLS][key - 1]);
+				push(direct[TARGET_CELL], direct[CELLS][key - 1]);
+			}
+		}
+	}
+
+	// generate indirect trajectories without escape
+		for (var key: var skill in combo){
+		var nextNodeResult = [];
+		// if the skill requires a mouvment to be executed
+		if (skills[skill][TYPE] == DEBUFF || skills[skill][TYPE] == DAMAGE || skills[skill][TYPE] == POISON){
+
+			if (key == 0){
+				nextNodeResult = find_next_node(skill, getCell(), indirect, indirect[MVMP]);
+			}
+			else {
+				nextNodeResult = find_next_node(skill, indirect[CELLS][key - 1], indirect, indirect[MVMP]);
+			}
+			// if a cell can be reached then save it in the trajectory
+			if (nextNodeResult[0] == true){
+				push(indirect[SKILL], skill);
+				push(indirect[CELLS], nextNodeResult[1]);
+				indirect[MVMP] -= nextNodeResult[2];
+				push(indirect[TARGET_CELL], nextNodeResult[3]);
+
+			}
+		}
+		// if the skill does not require a mouvment to be executed
+		else {
+			if (key == 0){
+				push(indirect[SKILL], skill);
+				push(indirect[CELLS], getCell());
+				push(indirect[TARGET_CELL], getCell());
+
+			}
+			else{
+				push(indirect[SKILL], skill);
+				push(indirect[CELLS], indirect[CELLS][key - 1]);
+				push(indirect[TARGET_CELL], direct[CELLS][key - 1]);
+			}
+		}
+	}
+
+
+	push(trajectoriesData, direct);
+	push(trajectoriesData, indirect);
+	//push(trajectoriesData, directMvmt);
+	//push(trajectoriesData, indirectMvmt);
+}
+
+/*************************************************************************/
+// This function is used to find the next node
+// The chosen node is the closest node
+// returns an array [cellFound, cell, MPused, targetCell]
+
+function find_next_node(skill, currentCell, direct, mpAvailable){
+	if (skill > 1000){
+		skill -= 1000;
+	}
 
 	var result = [];
-	push(result, canBeDone);
-	push(result, nodeList);
+	result[0] = false;
+	result[2] = 1000;
+
+	for (var node in actionNodes[skill]){
+		// Check if this node can do a direct hit 
+		if (direct && node["TARGET_CELL"] != node["INDIRECT_CELL"]){
+			continue;
+		}
+
+		var pathLength = getPathLength(currentCell, node["CELL"]);
+		if (pathLength != null){
+			if (pathLength < result[2] && pathLength <= mpAvailable){
+				result[3] = node["INDIRECT_CELL"];
+				result[2] = pathLength;
+				result[1] = node["CELL"];
+				result[0] = true;
+
+				if (pathLength == 0){
+					break;
+				}
+			}
+		}
+	}
+
 	return result;
+}
+
+/*************************************************************************/
+// This function is used fill the action sequence with the best trajectory
+function fill_action_sequence(){
+
+	debug(" ");
+	debug("combo: " + trajectoriesData[0]);
+	for (var key : var skill in trajectoriesData[0][SKILL]){
+		debug("skill: " + skill);
+		//move to cell
+		actionSequence[actionTotal] = [];
+		actionSequence[actionTotal][0] = MOVE_TO_CELL;	
+		actionSequence[actionTotal][1] = trajectoriesData[0][CELLS][key];			
+		actionTotal++;
+
+		//equip weapon if required
+		if (skill > 1000){		
+			skill -= 1000;
+			actionSequence[actionTotal] = [];
+			actionSequence[actionTotal][0] = EQUIP_WEAPON;	
+			actionSequence[actionTotal][1] = skill;			
+			actionTotal++;
+		}
+
+		//use skill
+		actionSequence[actionTotal] = [];
+		actionSequence[actionTotal][0] = USE_OBJECT;
+		actionSequence[actionTotal][1] = skill;	
+
+		actionSequence[actionTotal][2] = trajectoriesData[0][TARGET_CELL][key];		
+		actionTotal++;
+	}
 }

@@ -113,7 +113,7 @@ function stateMachine(){
 
 
 		else if (etat == USE_OBJECT)		{useObjectFunction();}		
-		
+		else if (etat == EQUIP_WEAPON)		{equipWeaponFunction();}
 		else {
 			debugC("ETAT INDEFINI !!!",getColor(255, 0, 0));
 			break;

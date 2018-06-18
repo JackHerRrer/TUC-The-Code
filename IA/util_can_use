@@ -152,8 +152,11 @@ function getAOE(objectID, targetCell){		// environ 400 op
 |   |   | 3 | 3 | 2 | 3 | 
 +---+---+---+---+---+---+
 
-*/
-
+*/ 
+// output (more details in globalVar):
+// 		dangerMap
+// 		actionMap
+// 		actionNodes 
 
 function canUseIfMoving(objectID, targetCell, user, useAOE, markCells) {
 
@@ -221,10 +224,17 @@ function canUseIfMoving(objectID, targetCell, user, useAOE, markCells) {
 									if (dangerMap[indirectCell] == null){
 										dangerMap[indirectCell] = [];
 									}
+
+									//Deux manières de stocker les actions 
+									// 1ère manière : On stock dans chaque case de DangerMap l'ensemble des actions possibles 
 									var data = [];
 									data["OBJECT_ID"] = objectID;
 									push(dangerMap[indirectCell], data);
-									
+
+									// 2ème manière : On stocke dans chaque noeud l'ensemble des cases possibles
+									if (dangerNodes[objectID] == null) dangerNodes[objectID] = [];
+									push(dangerNodes[objectID], indirectCell);
+
 									canUse = true;
 
 									if (markCells){
@@ -251,14 +261,14 @@ function canUseIfMoving(objectID, targetCell, user, useAOE, markCells) {
 									// 2ème manière : On stocke dans chaque noeud d'action l'ensemble des cases possibles
 									var node = [];
 
-									if (nodes[objectID] == null) nodes[objectID] = [];
+									if (actionNodes[objectID] == null) actionNodes[objectID] = [];
 
 									node["CELL"] 			= cellFromWhereToUseObject;
 									node["TARGET_CELL"]		= targetCell;
 									node["INDIRECT_CELL"]	= indirectCell;
 									node["PATH_LENGTH"] 	= pathLength;
 
-									push(nodes[objectID], node);
+									push(actionNodes[objectID], node);
 
 									canUse = true;
 								
@@ -279,12 +289,10 @@ function canUseIfMoving(objectID, targetCell, user, useAOE, markCells) {
 			}
 		}
 		else { 
-			debug("cellsFromWhereToUseObject is null");
+			//debug("cellsFromWhereToUseObject is null");
 		}
 	}	
 
-	//var instruct2 = getOperations();
-	//debug("can use if moving operation : " + (instruct2 - instruct1));
 	return canUse;
 }
 

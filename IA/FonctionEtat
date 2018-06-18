@@ -26,8 +26,8 @@ function initTurnFunction(){
 	dangerMap = [];
 	movingArea = [];
 
-	nodes = [];
-	chosenNodes = [];
+	actionNodes = [];
+	dangerNodes = [];
 
 	// raz des donnés de combo
 	skillsCostList = [];
@@ -38,7 +38,7 @@ function initTurnFunction(){
 	filteredCombosList = [];
 	comboScores = [];
 	sortedComboScores = [];
-	chosenCombo = [];
+	trajectoriesData = [];
 
 	// raz des carac des leeks
 	ourLeekCarac = [];
@@ -46,7 +46,7 @@ function initTurnFunction(){
 	ourLeekCaracTemp = [];
 	enemyLeekCaracTemp = [];
 	
-	// Choose the closest enemy
+	// Choose the closest leek enemy (not a bulb)
 	// TO BE IMPROVED
 	var enemyList = getAliveEnemies();
 	var distToNearestEnenmy = 1000;
@@ -401,16 +401,26 @@ function useObjectFunction(){
 
 function moveToCellFunction(){
 	// Parameters of this state
-	// actionSequence[0][0] =  USE_OBJECT;
+	// actionSequence[0][0] =  MOVE_TO_CELL;
 	// actionSequence[0][1] =  cell; 
 	
-	debug("Move to cell state : ");
+	debug("Move to cell state : " + actionSequence[currentAction - 1][1]);
 	moveTowardCell(actionSequence[currentAction - 1][1]);
 
 	etat = ACTION_CHOICE;
 }
 
+function equipWeaponFunction(){
+	// Parameters of this state
+	// actionSequence[0][0] =  EQUIP_WEAPON;
+	// actionSequence[0][1] =  weaponID; 
+	
+	debug("Equip weapon state : ");
+	setWeapon(actionSequence[currentAction - 1][1]); // Attention : coûte 1 PT
+	weaponID = getWeapon();
 
+	etat = ACTION_CHOICE;
+}
 
 function lastActionFunction() {
 

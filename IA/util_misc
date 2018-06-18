@@ -37,7 +37,7 @@ function isEven(number){
 
 
 /*******************************************************************/
-
+// useless since the debug function do it way better
 function displayArray(array, string){
 	var combination = "[";
 	for (var value in array){
@@ -48,7 +48,7 @@ function displayArray(array, string){
 }
 
 /*******************************************************************/
-
+// useless since the debug function do it way better
 function displayDoubleArray (list, string){
 	//display all the combinations
 	var combination = "";
