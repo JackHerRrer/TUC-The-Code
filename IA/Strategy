@@ -187,15 +187,14 @@ function fight_strategy(){
 	//EXPERIMENTAL
 
 
-//
+//    
 //    ID: 7, CHIP_ROCK, cd: 5
-//    ID: 18, CHIP_SPARK, cd: 3
 //    ID: 20, CHIP_SHIELD, cd: 4
 //    ID: 21, CHIP_HELMET, cd: 3                      [3, 4, 5]                                         [[5, 5], [5, 4], [5, 3], [4, 4], [4, 3, 3], [3, 3, 3]]
 //    ID: 37, WEAPON_PISTOL, cd: 3
 //                       +------------------------+   skillsCostList     +--------------------------+                       +-------------------------+
 //             +--------->                        +---------------------->                          |   costCombosList      |                         |
-//             |         | generateSkillsCostList |        maxTP         |  generateCostCombosList  +----------------------->  generateCombosList     |
+//             |         | generateSkillsCostList |        maxTP (10)        |  generateCostCombosList  +----------------------->  generateCombosList     |
 //             |  +------>                        |          +----------->                          |                       |                         |
 //    chips +--+  |      +------------------------+                      +--------------------------+                       |     +-----------+       |
 //             |  |                                                                                                         |     |           |       |    combosList

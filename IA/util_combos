@@ -360,6 +360,29 @@ function fillCombo(combo, depth, skillsAvailable){
 	}	
 }
 
+
+
+/*************************************************************************/
+function filterCombos(){
+	for (var combo in combosList){
+		if (filterCombo(combo)){
+			push(filteredCombosList, combo);
+		}
+	}
+}
+
+/*************************************************************************/
+// This function calls every filtering functions
+// Return false to remove the combo
+// Return true to keep the combo
+function filterCombo(combo){
+	if (!weaponFilter(combo)) {return false;}
+	// add other filters here
+
+	return true;
+}
+
+
 /*******************************************************************/
 // Call sort Combo as many time as there are combos
 // It sorts the combos themselves, not the list of the combos
@@ -373,6 +396,7 @@ function sortCombos(){
 /*******************************************************************/
 // function used to sort the skills of a combo.
 // * some skills must be played first (e.g. buff and debuff before attacks)
+// * weapons should be equiped before being used (not implemented)
 // * if a combo can only be partially executed, some skills should be executed prioritarly (not implemented)
 // * the skill execution ordrer influence the best path (not implemented)
 
@@ -413,28 +437,6 @@ function sortCombo(combo){
 		//debug("sorted combo : " + sortedCombo);
 		return sortedCombo;
 }
-
-
-/*************************************************************************/
-function filterCombos(){
-	for (var combo in combosList){
-		if (filterCombo(combo)){
-			push(filteredCombosList, combo);
-		}
-	}
-}
-
-/*************************************************************************/
-// This function calls every filtering functions
-// Return false to remove the combo
-// Return true to keep the combo
-function filterCombo(combo){
-	if (!weaponFilter(combo)) {return false;}
-	// add other filters here
-
-	return true;
-}
-
 
 /*************************************************************************/
 // For each combo this function calls calculateComboScore

@@ -2,16 +2,38 @@ include("GlobalVar");
 
 
 /*************************************************************************/
-//filter used to remove combos with useless weapon equipement
+//filter used to remove weapon basaed combos with 
+// * useless weapon equipement
+// * weapons that should be equiped but are not 
 
-// TO BE IMPROVED !!!
+// equipedWeapons = [weaponID1:true, weaponID2:true, weaponID3:true, ...]
+// usedWeapons = [weaponID1, weaponID2, weaponID1, weaponID4, ...]
+
 function weaponFilter(combo){
+
+	var equipedWeapons = [];
+	var usedWeapons = [];
+	equipedWeapons[getWeapon()] = true;
+
 	for (var skill in combo){
 		if (skill > 1000){
-			if (getWeapon() == (skill - 1000)){
+			// check if the weapon is not already equiped
+			if (equipedWeapons[skill - 1000] === true)
 				return false;
-			}
+			equipedWeapons[skill - 1000] = true;
+		}
+		else if (isWeapon(skill)){
+			push(usedWeapons, skill);
 		}
 	}
+
+	// check if all the used weapons will be equiped during the combo
+	for (var weapon in usedWeapons){
+		if (equipedWeapons[weapon] !== true)
+			return false;
+	}
+		
 	return true;
 }
+
+
