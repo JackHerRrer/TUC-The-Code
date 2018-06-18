@@ -197,7 +197,7 @@ function canUseIfMoving(objectID, targetCell, user, useAOE, markCells) {
 			for (var cellFromWhereToUseObject in cellsFromWhereToUseObject){
 				
 				//optimisation : Si une action de ce type est déjà enregistré dans actionMap on en rajoute pas (c'est une perte de donnée acceptable)
-				var cellAlreadyAnalysed = false;
+   				var cellAlreadyAnalysed = false;
 				if (!isEnemy(user)){
 					for (var action in actionMap[cellFromWhereToUseObject]){
 						if (action["OBJECT_ID"] == objectID){
@@ -235,6 +235,9 @@ function canUseIfMoving(objectID, targetCell, user, useAOE, markCells) {
 									break;
 								}
 								else{
+									//Deux manières de stocker les actions 
+
+									// 1ère manière : On stock dans chaque case de actionMap l'ensemble des actions possibles 
 									if (actionMap[cellFromWhereToUseObject] == null){
 										actionMap[cellFromWhereToUseObject] = [];
 									}
@@ -244,6 +247,18 @@ function canUseIfMoving(objectID, targetCell, user, useAOE, markCells) {
 									data["INDIRECT_CELL"]	= indirectCell;
 									data["PATH_LENGTH"] 	= pathLength;
 									push(actionMap[cellFromWhereToUseObject], data);
+
+									// 2ème manière : On stocke dans chaque noeud d'action l'ensemble des cases possibles
+									var node = [];
+
+									if (nodes[objectID] == null) nodes[objectID] = [];
+
+									node["CELL"] 			= cellFromWhereToUseObject;
+									node["TARGET_CELL"]		= targetCell;
+									node["INDIRECT_CELL"]	= indirectCell;
+									node["PATH_LENGTH"] 	= pathLength;
+
+									push(nodes[objectID], node);
 
 									canUse = true;
 								

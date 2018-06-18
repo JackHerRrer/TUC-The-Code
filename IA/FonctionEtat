@@ -1,7 +1,7 @@
 include("GlobalVar");
 include("util_can_use");
 include("Strategy");
-include("IA");
+include("IA_main");
 
 function initGameFunction(){
 	//debug("init game state");
@@ -26,14 +26,19 @@ function initTurnFunction(){
 	dangerMap = [];
 	movingArea = [];
 
+	nodes = [];
+	chosenNodes = [];
+
 	// raz des donnés de combo
 	skillsCostList = [];
 	costCombosList = [];
+	skillSortedByCosts = [];
 	combosList = [];
 	sortedCombosList = [];
 	filteredCombosList = [];
 	comboScores = [];
 	sortedComboScores = [];
+	chosenCombo = [];
 
 	// raz des carac des leeks
 	ourLeekCarac = [];

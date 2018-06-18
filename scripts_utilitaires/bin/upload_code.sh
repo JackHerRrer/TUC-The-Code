@@ -27,7 +27,11 @@ RESULT_UPLOAD=$(curl "https://leekwars.com/api/ai/save/" -H "Cookie: ${TOKEN}"  
 if [[ -z $(echo ${RESULT_UPLOAD} | jq 'select(.result[][2] != 1)' ) ]]; then
         echo -e "\033[32msuccess\033[0m"
 else
-        echo -e "\033[31m${RESULT_UPLOAD}\033[0m"
+        if [ $(echo ${RESULT_UPLOAD} | jq .result[0][1]) = $(echo ${RESULT_UPLOAD} | jq .result[0][2]) ]; then
+		echo -e "\033[31m${RESULT_UPLOAD}\033[0m"
+	else
+		echo -e "${RESULT_UPLOAD}"
+	fi
 fi
 
 }

@@ -185,36 +185,138 @@ function first_turn_strategy(){
 function fight_strategy(){
 
 	//EXPERIMENTAL
+
+
+//
+//    ID: 7, CHIP_ROCK, cd: 5
+//    ID: 18, CHIP_SPARK, cd: 3
+//    ID: 20, CHIP_SHIELD, cd: 4
+//    ID: 21, CHIP_HELMET, cd: 3                      [3, 4, 5]                                         [[5, 5], [5, 4], [5, 3], [4, 4], [4, 3, 3], [3, 3, 3]]
+//    ID: 37, WEAPON_PISTOL, cd: 3
+//                       +------------------------+   skillsCostList     +--------------------------+                       +-------------------------+
+//             +--------->                        +---------------------->                          |   costCombosList      |                         |
+//             |         | generateSkillsCostList |        maxTP         |  generateCostCombosList  +----------------------->  generateCombosList     |
+//             |  +------>                        |          +----------->                          |                       |                         |
+//    chips +--+  |      +------------------------+                      +--------------------------+                       |     +-----------+       |
+//             |  |                                                                                                         |     |           |       |    combosList
+//  weapons +-----+                                   [3 : [37, 21], 4 : [1037, 20], 5 : [7]]                               |     | fillCombo |       +-----------+
+//             |  |      +------------------------+                                                                         |     |           |       |           |
+//             +--------->                        |   skillSortedByCosts                                                    |     +-----------+       |           |
+//                |      |    sortSkillsByCost    +------------------------------------------------------------------------->                         |           |
+//                +------>                        |                                                                         |                         |           |
+//                       +------------------------+                                                                         +-------------------------+           |
+//                                                                                                                                                                |
+//                                                                                                                                                                |
+//                                                                                                                                                                |
+//                                                                                                                                                                |
+//                                                                                                                                                                |
+//     [[7], [7, 1037], [7, 20], [7, 37], [7, 21],         [[7], [7, 1037], [7, 20], [7, 37], [7, 21],            [[7], [7, 1037], [20, 7], [7, 37], [21, 7],     |
+//     [1037, 1037], [1037, 20], [20], [1037, 37, 37],     [1037, 1037], [1037, 20], [20], [1037, 37, 37],        [1037, 1037], [20, 1037], [20], [1037, 37, 37], |
+//     [1037, 37, 21], [1037, 21], [20, 37, 37],           [1037, 37, 21], [1037, 21], [20, 37, 37],              [21, 1037, 37], [21, 1037], [20, 37, 37],       |
+//     [20, 37, 21], [20, 21], [37, 37, 37],               [20, 37, 21], [20, 21], [37, 37, 37],                  [20, 21, 37], [20, 21], [37, 37, 37],           |
+//     [37, 37, 21], [37, 21], [21]]                       [37, 37, 21], [37, 21], [21]]                          [21, 37, 37], [21, 37], [21]]                   |
+//                                                                                                                                                                |
+//                +-----------------------------------------------------------------------------------------------------------------------------------------------+
+//                |
+//                |
+//                |      +------------------------+                      +--------------------------+                      +-----------------------------+
+//                |      |                        |                      |                          |   sortedCombosList   |                             |
+//                |      |                        |                      |                          +----------------------+   calculateCombosScore      |
+//                |      |      filterCombos      |                      |        sortCombos        |                      |                             |
+//                |      |                        |  filteredCombosList  |                          |          skills      | +-------------------------+ |
+//                +------>  +------------------+  +---------------------->      +------------+      |               +------+ |                         | |  comboScores
+//                       |  | filterCombo      |  |                      |      |            |      |                      | |  calculateComboScore    | +--------+
+//                       |  |   * weaponFilter |  |                      |      | sortCombo  |      |    ourLeekCarac      | |                         | |        |
+//                       |  |   * ...          |  |                      |      |            |      |               +------+ | * damage_score_function | |        |
+//                       |  |                  |  |                      |      +------------+      |                      | | * default_score_function| |        |
+//                       |  +------------------+  |                      |                          |  enemyLeekCarac      | | * buff_score_function   | |        |
+//                       |                        |                      |                          |               +------+ | * ...                   | |        |
+//                       +------------------------+                      +--------------------------+                      | +-------------------------+ |        |
+//                                                                                                                         +-----------------------------+        |
+//                                                                                                                                                                |
+//                                                                                                                                                                |
+//                                                                                                                                                                |
+//                                                                                                                                                                |
+//                                                                                                                                                                |
+//    [[30.5, 0], [30.5, 1], [30.5, 2], [48.0, 3],        [[52.5, 14], [48.0, 3], [35.0, 8], [35.0, 11],                                                          |
+//    [30.5, 4], [0, 5], [0, 6], [0, 7], [35.0, 8],       [35.0, 15], [30.5, 0], [30.5, 1], [30.5, 2],                                                            |
+//    [17.5, 9], [0, 10], [35.0, 11], [17.5, 12],         [30.5, 4], [17.5, 9], [17.5, 12], [17.5, 16],                                                           |
+//    [0, 13], [52.5, 14], [35.0, 15], [17.5, 16],        [0, 5], [0, 6], [0, 7], [0, 10], [0, 13],                                                               |
+//    [0, 17]]                                            [0, 17]]                                                                                                |
+//                                                                                                                                                                |
+//                +-----------------------------------------------------------------------------------------------------------------------------------------------+
+//                |
+//                |
+//                |      +------------------------+
+//                |      |                        |   sortedComboScores
+//                +------>  sortCombosByScore     +--------------------->
+//                       |                        |
+//                       +------------------------+
+//
+
+
+	var leekSkills = [];
+	pushAll(leekSkills, getChips());
+	pushAll(leekSkills, getWeapons());
+	for (var skill in leekSkills){
+		if (isWeapon(skill))
+			debug("ID: " + skill + ", " + getSkillName(skill) + ", cd: " + getWeaponCost(skill));
+		else
+			debug("ID: " + skill + ", " + getSkillName(skill) + ", cd: " + getChipCost(skill));
+	}
+
 	// Calcul des combos
-	var max = getTP();
+	var maxTP = getTP();
 
-	var count = getOperations();
+	var nbOp = getOperations();
 	skillsCostList = generateSkillsCostList();
-	debug("nb instruct generateSkillsCostList : " + (getOperations() - count));
+	debug("skillsCostList: " + skillsCostList);
+	debug("nb instruct generateSkillsCostList : " + (getOperations() - nbOp));
 
-	generateCostCombosList(skillsCostList, max, []);
-	debug("nb instruct generateCostCombosList : " + (getOperations() - count));
+	nbOp = getOperations();
+	generateCostCombosList(skillsCostList, maxTP, []);
+	debug("costCombosList: " + costCombosList);
+	debug("nb instruct generateCostCombosList : " + (getOperations() - nbOp));
 
+	nbOp = getOperations();
+	sortSkillsByCost();
+	debug("skillSortedByCosts: " + skillSortedByCosts);
+	debug("nb instruct sortSkillsByCost : " + (getOperations() - nbOp));
+
+	nbOp = getOperations();
 	generateCombosList();
-	debug("nb instruct generateCombosList : " + (getOperations() - count));
+	debug("combosList" + combosList);
+	debug("nb instruct generateCombosList : " + (getOperations() - nbOp));
 
-	sortCombos();
-	debug("nb instruct sortCombos : " + (getOperations() - count));
-
+	nbOp = getOperations();
 	filterCombos();
-	//debug(filteredCombosList);
-	debug("nb instruct filterCombos : " + (getOperations() - count));
+	debug("filteredCombosList: " + filteredCombosList);
+	debug("nb instruct filterCombos : " + (getOperations() - nbOp));
 
+	nbOp = getOperations();
+	sortCombos();
+	debug("sortedCombosList: " + sortedCombosList);
+	debug("nb instruct sortCombos : " + (getOperations() - nbOp));
+
+	nbOp = getOperations();
 	calculateCombosScore();
-	//debug(comboScores);
-	debug("nb instruct calculateCombosScore : " + (getOperations() - count));
+	debug("comboScores: " + comboScores);
+	debug("nb instruct calculateCombosScore : " + (getOperations() - nbOp));
 
+	nbOp = getOperations();
 	sortCombosByScore();
-	//debug(sortedComboScores);
+	debug("sortedComboScores: " + sortedComboScores);
+	debug("nb instruct sortCombosByScore : " + (getOperations() - nbOp));
+
+	debug("******************************");
+	debug("remaining operation : " + (OPERATIONS_LIMIT - getOperations()));
+
+
+	debug("total combos : " + count(filteredCombosList));
 
 	debug("Best combo : " + filteredCombosList[sortedComboScores[0][KEY]]);
 	debug("second best combo : " + filteredCombosList[sortedComboScores[1][KEY]]);
-	debug("nb instruct sortCombosByScore : " + (getOperations() - count));
+
 
 	//EXPERIMENTAL
 

@@ -86,20 +86,22 @@ function calculateDamage(userStrenght, targetCell, targetRelativeShield, targetA
 /******************************************************************************************/
 // Gather the caracteristics of leekId and store them leekCarac
 // TO BE COMPLETED
-function getLeekCarac(){
+function getLeekCarac(leekId){
 
-	//leekCarac[ID] = leekId;
-	ourLeekCarac[CELL] = getCell(ourLeekID);
-	ourLeekCarac[STRENGTH] = getStrength(ourLeekID);
-	ourLeekCarac[LIFE] = getLife(ourLeekID);
-	ourLeekCarac[RELATIVE_SHIELD] = getRelativeShield(ourLeekID);
-	ourLeekCarac[ABSOLUTE_SHIELD] = getAbsoluteShield(ourLeekID);
+	var leekCarac = [];
 
-	enemyLeekCarac[CELL] = getCell(enemyID);
-	enemyLeekCarac[STRENGTH] = getStrength(enemyID);
-	enemyLeekCarac[LIFE] = getLife(enemyID);
-	enemyLeekCarac[RELATIVE_SHIELD] = getRelativeShield(enemyID);
-	enemyLeekCarac[ABSOLUTE_SHIELD] = getAbsoluteShield(enemyID);
+	leekCarac[CELL] = 				getCell(leekId);
+	leekCarac[STRENGTH] = 			getStrength(leekId);
+	leekCarac[LIFE] = 				getLife(leekId);
+	leekCarac[RELATIVE_SHIELD] = 	getRelativeShield(leekId);
+	leekCarac[ABSOLUTE_SHIELD] = 	getAbsoluteShield(leekId);
+	leekCarac[SCIENCE] = 			getScience(leekId);
+	leekCarac[AGILITY] = 			getAgility(leekId);
+	leekCarac[MP] = 				getMP(leekId);
+	leekCarac[TP] = 				getTP(leekId);
+	leekCarac[RESISTANCE] = 		getResistance(leekId);
+
+	return leekCarac;
 }
 
 /******************************************************************************************/
@@ -115,4 +117,44 @@ function damage_score_function(skill){
 	// TO BE IMPROVED, for the moment only direct hits are handled
 	return calculateDamage(ourLeekCaracTemp[STRENGTH], enemyLeekCaracTemp[CELL], enemyLeekCaracTemp[RELATIVE_SHIELD], enemyLeekCaracTemp[ABSOLUTE_SHIELD], skill, enemyLeekCaracTemp[CELL]);
 
+}
+
+
+/******************************************************************************************/
+
+function armor_score_function(skill){
+
+
+}
+
+/*******************************************************************************************/
+
+function buff_score_function(skill){
+
+	var effects;
+	effects = getChipEffects(skill);
+
+	var boostFinal;
+	boostFinal = (effects[0][1] + effects[0][2])/2 * (1 + ourLeekCaracTemp[SCIENCE] / 100);
+
+	if (effects[0][0] == EFFECT_BUFF_FORCE){
+		ourLeekCaracTemp[STRENGTH] += boostFinal;
+	}
+	else if (effects[0][0] == EFFECT_BUFF_AGILITY){
+		ourLeekCaracTemp[AGILITY] += boostFinal;
+	}
+	else if (effects[0][0] == EFFECT_BUFF_MP){
+		ourLeekCaracTemp[MP] += boostFinal;
+	}
+	else if (effects[0][0] == EFFECT_BUFF_RESISTANCE){
+		ourLeekCaracTemp[RESISTANCE] += boostFinal;
+	}
+	else if (effects[0][0] == EFFECT_BUFF_TP){
+		ourLeekCaracTemp[TP] += boostFinal;
+	}
+	else{
+
+		debugE("buffScorefunction error: skill: " + skill + " effect: " + effects[0]);
+	}
+	return 0;
 }

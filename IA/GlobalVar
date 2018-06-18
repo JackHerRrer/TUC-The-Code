@@ -69,6 +69,11 @@ global actionMap = [];
 global movingArea = [];
 global dangerMap = [];
 
+// array containing the list of the cells from which skills can be used 
+// example: nodes[chipSpark] = [[CELL, TARGET_CELL, INDIRECT_CELL, PATH_LENGTH], [CELL, TARGET_CELL, INDIRECT_CELL, PATH_LENGTH], [...], ...];
+global nodes = [];
+
+
 //Variables globales ennemies
 global enemyID;
 
@@ -79,12 +84,14 @@ global initialisation;
 // Arrays of data used in the various steps of combos generation
 global skillsCostList = [];
 global costCombosList = [];
+global skillSortedByCosts = [];
 global combosList = [];
 global sortedCombosList = [];
 global filteredCombosList = [];
 global comboScores = [];
 global sortedComboScores = [];
-
+global chosenCombo = []; 
+global chosenNodes = []; // store the index  of the node to be used by the chosen combo
 // Leeks carac
 
 global ourLeekCarac = [];
@@ -93,12 +100,15 @@ global ourLeekCaracTemp = [];
 global enemyLeekCaracTemp = [];
 
 
-// Constantes utilisées pour rempalcer les structures 
+// Constantes utilisées pour remplacer les structures 
 //global ID = 				"ID";
 global CELL = 				"CELL";
 global STRENGTH = 			"STRENGTH";
 global LIFE = 				"LIFE";
 global RELATIVE_SHIELD =	"RELATIVE_SHIELD";
 global ABSOLUTE_SHIELD = 	"ABSOLUTE_SHIELD";
-
-
+global SCIENCE = 			"SCIENCE";
+global AGILITY = 			"AGILITY";
+global MP = 				"MP";
+global TP = 				"TP";
+global RESISTANCE = 		"RESISTANCE";

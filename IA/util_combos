@@ -20,127 +20,122 @@ global SCORE_FUNCTION = 1;
 global SCORE = 0;
 global KEY = 1;
 
-global skills = [];
-skills[CHIP_BURNING] =                  [DAMAGE, damage_score_function];
-skills[CHIP_DEVIL_STRIKE] =             [DAMAGE, damage_score_function];
-skills[CHIP_FLAME] =                    [DAMAGE, damage_score_function];
-skills[CHIP_FLASH] =                    [DAMAGE, damage_score_function];
-skills[CHIP_ICE] =                      [DAMAGE, damage_score_function];
-skills[CHIP_ICEBERG] =                  [DAMAGE, damage_score_function];
-skills[CHIP_LIGHTNING] =                [DAMAGE, damage_score_function];
-skills[CHIP_METEORITE] =                [DAMAGE, damage_score_function];
-skills[CHIP_PEBBLE] =                   [DAMAGE, damage_score_function];
-skills[CHIP_ROCK] =                     [DAMAGE, damage_score_function];
-skills[CHIP_ROCKFALL] =                 [DAMAGE, damage_score_function];
-skills[CHIP_SHOCK] =                    [DAMAGE, damage_score_function];
-skills[CHIP_SPARK] =                    [DAMAGE, damage_score_function];
-skills[CHIP_STALACTITE] =               [DAMAGE, damage_score_function];
-
-skills[WEAPON_AXE] =                    [DAMAGE, damage_score_function];
-skills[WEAPON_B_LASER] =                [DAMAGE, damage_score_function];
-skills[WEAPON_BROADSWORD] =             [DAMAGE, damage_score_function];
-skills[WEAPON_DESTROYER] =              [DAMAGE, damage_score_function];
-skills[WEAPON_DOUBLE_GUN] =             [DAMAGE, damage_score_function];
-skills[WEAPON_ELECTRISOR] =             [DAMAGE, damage_score_function];
-skills[WEAPON_FLAME_THROWER] =          [DAMAGE, damage_score_function];
-skills[WEAPON_GAZOR] =                  [DAMAGE, default_score_function];
-skills[WEAPON_GRENADE_LAUNCHER] =       [DAMAGE, damage_score_function];
-skills[WEAPON_LASER] =                  [DAMAGE, damage_score_function];
-skills[WEAPON_MACHINE_GUN] =            [DAMAGE, damage_score_function];
-skills[WEAPON_MAGNUM] =                 [DAMAGE, damage_score_function];
-skills[WEAPON_KATANA] =                 [DAMAGE, damage_score_function];
-skills[WEAPON_M_LASER] =                [DAMAGE, damage_score_function];
-skills[WEAPON_PISTOL] =                 [DAMAGE, damage_score_function];
-skills[WEAPON_SHOTGUN] =                [DAMAGE, damage_score_function];
-
-skills[WEAPON_AXE+1000] =               [DAMAGE, default_score_function];
-skills[WEAPON_B_LASER+1000] =           [DAMAGE, default_score_function];
-skills[WEAPON_BROADSWORD+1000] =        [DAMAGE, default_score_function];
-skills[WEAPON_DESTROYER+1000] =         [DAMAGE, default_score_function];
-skills[WEAPON_DOUBLE_GUN+1000] =        [DAMAGE, default_score_function];
-skills[WEAPON_ELECTRISOR+1000] =        [DAMAGE, default_score_function];
-skills[WEAPON_FLAME_THROWER+1000] =     [DAMAGE, default_score_function];
-skills[WEAPON_GAZOR+1000] =         	[DAMAGE, default_score_function];
-skills[WEAPON_GRENADE_LAUNCHER+1000] =	[DAMAGE, default_score_function];
-skills[WEAPON_KATANA+1000] =        	[DAMAGE, default_score_function];
-skills[WEAPON_LASER+1000] =         	[DAMAGE, default_score_function];
-skills[WEAPON_MACHINE_GUN+1000] =   	[DAMAGE, default_score_function];
-skills[WEAPON_MAGNUM+1000] =        	[DAMAGE, default_score_function];
-skills[WEAPON_M_LASER+1000] =       	[DAMAGE, default_score_function];
-skills[WEAPON_PISTOL+1000] =        	[DAMAGE, default_score_function];
-skills[WEAPON_SHOTGUN+1000] =       	[DAMAGE, default_score_function];
-
-skills[CHIP_ACCELERATION] =             [BUFF, default_score_function];
-skills[CHIP_ADRENALINE] =               [BUFF, default_score_function];
-skills[CHIP_ANTIDOTE] =                 [BUFF, default_score_function];
-skills[CHIP_BARK] =                     [BUFF, default_score_function];
-skills[CHIP_COLLAR] =                   [BUFF, default_score_function];
-skills[CHIP_DOPING] =                   [BUFF, default_score_function];
-skills[CHIP_FEROCITY] =                 [BUFF, default_score_function];
-skills[CHIP_LEATHER_BOOTS] =            [BUFF, default_score_function];
-skills[CHIP_MOTIVATION] =               [BUFF, default_score_function];
-skills[CHIP_PROTEIN] =                  [BUFF, default_score_function];
-skills[CHIP_RAGE] =                     [BUFF, default_score_function];
-skills[CHIP_REFLEXES] =                 [BUFF, default_score_function];
-skills[CHIP_SEVEN_LEAGUE_BOOTS] =       [BUFF, default_score_function];
-skills[CHIP_SOLIDIFICATION] =           [BUFF, default_score_function];
-skills[CHIP_STEROID] =                  [BUFF, default_score_function];
-skills[CHIP_STRETCHING] =               [BUFF, default_score_function];
-skills[CHIP_WARM_UP] =                  [BUFF, default_score_function];
-skills[CHIP_WHIP] =                     [BUFF, default_score_function];
-skills[CHIP_WINGED_BOOTS] =             [BUFF, default_score_function];
-
-skills[CHIP_MIRROR] =                   [REFLECT, default_score_function];
-skills[CHIP_THORN] =                    [REFLECT, default_score_function];
-
-skills[CHIP_PLAGUE] =                   [POISON, default_score_function];
-skills[CHIP_TOXIN] =                    [POISON, default_score_function];
-skills[CHIP_VENOM] =                    [POISON, default_score_function];
-
-skills[CHIP_BANDAGE] =                  [HEAL, default_score_function];
-skills[CHIP_CURE] =                     [HEAL, default_score_function];
-skills[CHIP_DRIP] =                     [HEAL, default_score_function];
-skills[CHIP_FERTILIZER] =               [HEAL, default_score_function];
-skills[CHIP_LOAM] =                     [HEAL, default_score_function];
-skills[CHIP_REGENERATION] =             [HEAL, default_score_function];
-skills[CHIP_REMISSION] =                [HEAL, default_score_function];
-skills[CHIP_VACCINE] =                  [HEAL, default_score_function];
-
-skills[CHIP_ARMOR] =                    [ARMOR, default_score_function];
-skills[CHIP_ARMORING] =                 [ARMOR, default_score_function];
-skills[CHIP_CARAPACE] =                 [ARMOR, default_score_function];
-skills[CHIP_FORTRESS] =                 [ARMOR, default_score_function];
-skills[CHIP_HELMET] =                   [ARMOR, default_score_function];
-skills[CHIP_RAMPART] =                  [ARMOR, default_score_function];
-skills[CHIP_SHIELD] =                   [ARMOR, default_score_function];
-skills[CHIP_WALL] =                     [ARMOR, default_score_function];
-
-skills[CHIP_BALL_AND_CHAIN] =           [DEBUFF, default_score_function];
-skills[CHIP_FRACTURE] =                 [DEBUFF, default_score_function];
-skills[CHIP_SLOW_DOWN] =                [DEBUFF, default_score_function];
-skills[CHIP_SOPORIFIC] =                [DEBUFF, default_score_function];
-skills[CHIP_TRANQUILIZER] =             [DEBUFF, default_score_function];
-
-skills[CHIP_INVERSION] =                [UTIL, default_score_function];
-skills[CHIP_LIBERATION] =               [UTIL, default_score_function];
-skills[CHIP_RESURRECTION] =             [UTIL, default_score_function];
-skills[CHIP_TELEPORTATION] =            [UTIL, default_score_function];
-
-skills[CHIP_FIRE_BULB] =                [BULB, default_score_function];
-skills[CHIP_HEALER_BULB] =              [BULB, default_score_function];
-skills[CHIP_ICED_BULB] =                [BULB, default_score_function];
-skills[CHIP_LIGHTNING_BULB] =           [BULB, default_score_function];
-skills[CHIP_METALLIC_BULB] =            [BULB, default_score_function];
-skills[CHIP_PUNY_BULB] =                [BULB, default_score_function];
-skills[CHIP_ROCKY_BULB] =               [BULB, default_score_function];
-
-
-
+global skills = [];						//[To sort the combos, to calculate the score]
+skills[CHIP_BURNING] =                  [DAMAGE, damage_score_function, "CHIP_BURNING"];
+skills[CHIP_DEVIL_STRIKE] =             [DAMAGE, damage_score_function, "CHIP_DEVIL_STRIKE"];
+skills[CHIP_FLAME] =                    [DAMAGE, damage_score_function, "CHIP_FLAME"];
+skills[CHIP_FLASH] =                    [DAMAGE, damage_score_function, "CHIP_FLASH"];
+skills[CHIP_ICE] =                      [DAMAGE, damage_score_function, "CHIP_ICE"];
+skills[CHIP_ICEBERG] =                  [DAMAGE, damage_score_function, "CHIP_ICEBERG"];
+skills[CHIP_LIGHTNING] =                [DAMAGE, damage_score_function, "CHIP_LIGHTNING"];
+skills[CHIP_METEORITE] =                [DAMAGE, damage_score_function, "CHIP_METEORITE"];
+skills[CHIP_PEBBLE] =                   [DAMAGE, damage_score_function, "CHIP_PEBBLE"];
+skills[CHIP_ROCK] =                     [DAMAGE, damage_score_function, "CHIP_ROCK"];
+skills[CHIP_ROCKFALL] =                 [DAMAGE, damage_score_function, "CHIP_ROCKFALL"];
+skills[CHIP_SHOCK] =                    [DAMAGE, damage_score_function, "CHIP_SHOCK"];
+skills[CHIP_SPARK] =                    [DAMAGE, damage_score_function, "CHIP_SPARK"];
+skills[CHIP_STALACTITE] =               [DAMAGE, damage_score_function, "CHIP_STALACTITE"];
+skills[WEAPON_AXE] =                    [DAMAGE, damage_score_function, "WEAPON_AXE"];
+skills[WEAPON_B_LASER] =                [DAMAGE, damage_score_function, "WEAPON_B_LASER"];
+skills[WEAPON_BROADSWORD] =             [DAMAGE, damage_score_function, "WEAPON_BROADSWORD"];
+skills[WEAPON_DESTROYER] =              [DAMAGE, damage_score_function, "WEAPON_DESTROYER"];
+skills[WEAPON_DOUBLE_GUN] =             [DAMAGE, damage_score_function, "WEAPON_DOUBLE_GUN"];
+skills[WEAPON_ELECTRISOR] =             [DAMAGE, damage_score_function, "WEAPON_ELECTRISOR"];
+skills[WEAPON_FLAME_THROWER] =          [DAMAGE, damage_score_function, "WEAPON_FLAME_THROWER"];
+skills[WEAPON_GAZOR] =                  [DAMAGE, default_score_function, "WEAPON_GAZOR"];
+skills[WEAPON_GRENADE_LAUNCHER] =       [DAMAGE, damage_score_function, "WEAPON_GRENADE_LAUNCHER"];
+skills[WEAPON_LASER] =                  [DAMAGE, damage_score_function, "WEAPON_LASER"];
+skills[WEAPON_MACHINE_GUN] =            [DAMAGE, damage_score_function, "WEAPON_MACHINE_GUN"];
+skills[WEAPON_MAGNUM] =                 [DAMAGE, damage_score_function, "WEAPON_MAGNUM"];
+skills[WEAPON_KATANA] =                 [DAMAGE, damage_score_function, "WEAPON_KATANA"];
+skills[WEAPON_M_LASER] =                [DAMAGE, damage_score_function, "WEAPON_M_LASER"];
+skills[WEAPON_PISTOL] =                 [DAMAGE, damage_score_function, "WEAPON_PISTOL"];
+skills[WEAPON_SHOTGUN] =                [DAMAGE, damage_score_function, "WEAPON_SHOTGUN"];
+skills[WEAPON_AXE+1000] =               [DAMAGE, default_score_function, "EQ_AND_USE_WEAPON_AXE"];
+skills[WEAPON_B_LASER+1000] =           [DAMAGE, default_score_function, "EQ_AND_USE_WEAPON_B_LASER"];
+skills[WEAPON_BROADSWORD+1000] =        [DAMAGE, default_score_function, "EQ_AND_USE_WEAPON_BROADSWORD"];
+skills[WEAPON_DESTROYER+1000] =         [DAMAGE, default_score_function, "EQ_AND_USE_WEAPON_DESTROYER"];
+skills[WEAPON_DOUBLE_GUN+1000] =        [DAMAGE, default_score_function, "EQ_AND_USE_WEAPON_DOUBLE_GUN"];
+skills[WEAPON_ELECTRISOR+1000] =        [DAMAGE, default_score_function, "EQ_AND_USE_WEAPON_ELECTRISOR"];
+skills[WEAPON_FLAME_THROWER+1000] =     [DAMAGE, default_score_function, "EQ_AND_USE_WEAPON_FLAME_THROWER"];
+skills[WEAPON_GAZOR+1000] =         	[DAMAGE, default_score_function, "EQ_AND_USE_WEAPON_GAZOR"];
+skills[WEAPON_GRENADE_LAUNCHER+1000] =	[DAMAGE, default_score_function, "EQ_AND_USE_WEAPON_GRENADE_LAUNCHER"];
+skills[WEAPON_KATANA+1000] =        	[DAMAGE, default_score_function, "EQ_AND_USE_WEAPON_KATANA"];
+skills[WEAPON_LASER+1000] =         	[DAMAGE, default_score_function, "EQ_AND_USE_WEAPON_LASER"];
+skills[WEAPON_MACHINE_GUN+1000] =   	[DAMAGE, default_score_function, "EQ_AND_USE_WEAPON_MACHINE_GUN"];
+skills[WEAPON_MAGNUM+1000] =        	[DAMAGE, default_score_function, "EQ_AND_USE_WEAPON_MAGNUM"];
+skills[WEAPON_M_LASER+1000] =       	[DAMAGE, default_score_function, "EQ_AND_USE_WEAPON_M_LASER"];
+skills[WEAPON_PISTOL+1000] =        	[DAMAGE, default_score_function, "EQ_AND_USE_WEAPON_PISTOL"];
+skills[WEAPON_SHOTGUN+1000] =			[DAMAGE, default_score_function, "EQ_AND_USE_WEAPON_SHOTGUN"];
+skills[CHIP_ACCELERATION] =             [BUFF, default_score_function, "CHIP_ACCELERATION"];
+skills[CHIP_ADRENALINE] =               [BUFF, default_score_function, "CHIP_ADRENALINE"];
+skills[CHIP_ANTIDOTE] =                 [BUFF, default_score_function, "CHIP_ANTIDOTE"];
+skills[CHIP_BARK] =                     [BUFF, default_score_function, "CHIP_BARK"];
+skills[CHIP_COLLAR] =                   [BUFF, default_score_function, "CHIP_COLLAR"];
+skills[CHIP_DOPING] =                   [BUFF, default_score_function, "CHIP_DOPING"];
+skills[CHIP_FEROCITY] =                 [BUFF, default_score_function, "CHIP_FEROCITY"];
+skills[CHIP_LEATHER_BOOTS] =            [BUFF, default_score_function, "CHIP_LEATHER_BOOTS"];
+skills[CHIP_MOTIVATION] =               [BUFF, default_score_function, "CHIP_MOTIVATION"];
+skills[CHIP_PROTEIN] =                  [BUFF, buff_score_function, "CHIP_PROTEIN"];
+skills[CHIP_RAGE] =                     [BUFF, default_score_function, "CHIP_RAGE"];
+skills[CHIP_REFLEXES] =                 [BUFF, default_score_function, "CHIP_REFLEXES"];
+skills[CHIP_SEVEN_LEAGUE_BOOTS] =       [BUFF, default_score_function, "CHIP_SEVEN_LEAGUE_BOOTS"];
+skills[CHIP_SOLIDIFICATION] =           [BUFF, default_score_function, "CHIP_SOLIDIFICATION"];
+skills[CHIP_STEROID] =                  [BUFF, default_score_function, "CHIP_STEROID"];
+skills[CHIP_STRETCHING] =               [BUFF, default_score_function, "CHIP_STRETCHING"];
+skills[CHIP_WARM_UP] =                  [BUFF, default_score_function, "CHIP_WARM_UP"];
+skills[CHIP_WHIP] =                     [BUFF, default_score_function, "CHIP_WHIP"];
+skills[CHIP_WINGED_BOOTS] =             [BUFF, default_score_function, "CHIP_WINGED_BOOTS"];
+skills[CHIP_MIRROR] =                   [REFLECT, default_score_function, "CHIP_MIRROR"];
+skills[CHIP_THORN] =                    [REFLECT, default_score_function, "CHIP_THORN"];
+skills[CHIP_PLAGUE] =                   [POISON, default_score_function, "CHIP_PLAGUE"];
+skills[CHIP_TOXIN] =                    [POISON, default_score_function, "CHIP_TOXIN"];
+skills[CHIP_VENOM] =                    [POISON, default_score_function, "CHIP_VENOM"];
+skills[CHIP_BANDAGE] =                  [HEAL, default_score_function, "CHIP_BANDAGE"];
+skills[CHIP_CURE] =                     [HEAL, default_score_function, "CHIP_CURE"];
+skills[CHIP_DRIP] =                     [HEAL, default_score_function, "CHIP_DRIP"];
+skills[CHIP_FERTILIZER] =               [HEAL, default_score_function, "CHIP_FERTILIZER"];
+skills[CHIP_LOAM] =                     [HEAL, default_score_function, "CHIP_LOAM"];
+skills[CHIP_REGENERATION] =             [HEAL, default_score_function, "CHIP_REGENERATION"];
+skills[CHIP_REMISSION] =                [HEAL, default_score_function, "CHIP_REMISSION"];
+skills[CHIP_VACCINE] =                  [HEAL, default_score_function, "CHIP_VACCINE"];
+skills[CHIP_ARMOR] =                    [ARMOR, default_score_function, "CHIP_ARMOR"];
+skills[CHIP_ARMORING] =                 [ARMOR, default_score_function, "CHIP_ARMORING"];
+skills[CHIP_CARAPACE] =                 [ARMOR, default_score_function, "CHIP_CARAPACE"];
+skills[CHIP_FORTRESS] =                 [ARMOR, default_score_function, "CHIP_FORTRESS"];
+skills[CHIP_HELMET] =                   [ARMOR, default_score_function, "CHIP_HELMET"];
+skills[CHIP_RAMPART] =                  [ARMOR, default_score_function, "CHIP_RAMPART"];
+skills[CHIP_SHIELD] =                   [ARMOR, default_score_function, "CHIP_SHIELD"];
+skills[CHIP_WALL] =                     [ARMOR, default_score_function, "CHIP_WALL"];
+skills[CHIP_BALL_AND_CHAIN] =           [DEBUFF, default_score_function, "CHIP_BALL_AND_CHAIN"];
+skills[CHIP_FRACTURE] =                 [DEBUFF, default_score_function, "CHIP_FRACTURE"];
+skills[CHIP_SLOW_DOWN] =                [DEBUFF, default_score_function, "CHIP_SLOW_DOWN"];
+skills[CHIP_SOPORIFIC] =                [DEBUFF, default_score_function, "CHIP_SOPORIFIC"];
+skills[CHIP_TRANQUILIZER] =             [DEBUFF, default_score_function, "CHIP_TRANQUILIZER"];
+skills[CHIP_INVERSION] =                [UTIL, default_score_function, "CHIP_INVERSION"];
+skills[CHIP_LIBERATION] =               [UTIL, default_score_function, "CHIP_LIBERATION"];
+skills[CHIP_RESURRECTION] =             [UTIL, default_score_function, "CHIP_RESURRECTION"];
+skills[CHIP_TELEPORTATION] =            [UTIL, default_score_function, "CHIP_TELEPORTATION"];
+skills[CHIP_FIRE_BULB] =                [BULB, default_score_function, "CHIP_FIRE_BULB"];
+skills[CHIP_HEALER_BULB] =              [BULB, default_score_function, "CHIP_HEALER_BULB"];
+skills[CHIP_ICED_BULB] =                [BULB, default_score_function, "CHIP_ICED_BULB"];
+skills[CHIP_LIGHTNING_BULB] =           [BULB, default_score_function, "CHIP_LIGHTNING_BULB"];
+skills[CHIP_METALLIC_BULB] =            [BULB, default_score_function, "CHIP_METALLIC_BULB"];
+skills[CHIP_PUNY_BULB] =                [BULB, default_score_function, "CHIP_PUNY_BULB"];
+skills[CHIP_ROCKY_BULB] =               [BULB, default_score_function, "CHIP_ROCKY_BULB"];
 
 
 /**********************************************************************/
+
+/**********************************************************************/
+function getSkillName(skill){
+	return skills[skill][2];
+}
+
+/**********************************************************************/
 // Génère un tableau de valeur avec le coût de tous les chips/weapons du leek
-// Chaque coût n'apparait qu'une fois (même si deux chips on un coup de 4, il n'y // aura qu'une seule fois la valeur 4 dans le tableau)
+// Chaque coût n'apparait qu'une fois (même si deux chips on un coup de 4, il n'y 
+// aura qu'une seule fois la valeur 4 dans le tableau)
 // Le tableau est trier par ordre croissant de coût
 // Le tableau sert comme point d'entré pour la fonction generateCostCombosList()
 /**********************************************************************/
@@ -248,16 +243,14 @@ function generateCostCombosList(initialValues, max, unfinishedCombo){
 
 
 /*************************************************************************/
-// Prepare the input parameters used by the function fillCombo and call this function as many time as there are combos
+// Prepare the input parameters used by the function fillCombo.
 // skillSortedByCosts is a two dimensionnal array. The first dimmension is the cost of the skills, the second one is the id of the skills.
 // skillSortedByCosts = (3)[a,b]
 //						(4)[c,d]
 //						(5)[e]
 
-function generateCombosList(){
-	var arrayActions = [];
-	var skillSortedByCosts = [];
-	
+function sortSkillsByCost(){
+
 	var chips = getChips();
 	var weapons = getWeapons();
 	
@@ -286,8 +279,14 @@ function generateCombosList(){
 		}
 	}
 	
-	//displayDoubleArray(skillSortedByCosts, "skills sorted by cost : ");
-	
+	//debug(skillSortedByCosts);
+}
+
+
+/*************************************************************************/
+// call fillCombo as many time as there are combos
+
+function generateCombosList(){	
 	for (var costCombo in costCombosList){
 		fillCombo(costCombo, 0, skillSortedByCosts);
 	}
@@ -366,13 +365,16 @@ function fillCombo(combo, depth, skillsAvailable){
 // It sorts the combos themselves, not the list of the combos
 
 function sortCombos(){
-	for (var combo in combosList){
+	for (var combo in filteredCombosList){
 		push(sortedCombosList, sortCombo(combo));
 	}
 }
 
 /*******************************************************************/
-//
+// function used to sort the skills of a combo.
+// * some skills must be played first (e.g. buff and debuff before attacks)
+// * if a combo can only be partially executed, some skills should be executed prioritarly (not implemented)
+// * the skill execution ordrer influence the best path (not implemented)
 
 function sortCombo(combo){
 		var buffSkills = [];
@@ -386,37 +388,36 @@ function sortCombo(combo){
 		var reflectSkills = [];
 		
 		for (var skill in combo){
-			if (skills[skill][TYPE] == BUFF) {push(buffSkills, skill);} 
-			if (skills[skill][TYPE] == ARMOR) {push(armorSkills, skill);}
-			if (skills[skill][TYPE] == HEAL) {push(healSkills, skill);}
-			if (skills[skill][TYPE] == DEBUFF) {push(debuffSkills, skill);}
-			if (skills[skill][TYPE] == DEBUFF) {push(debuffSkills, skill);}
 			if (skills[skill][TYPE] == DAMAGE) {push(damageSkills, skill);}
-			if (skills[skill][TYPE] == DEBUFF) {push(debuffSkills, skill);}
-			if (skills[skill][TYPE] == BULB) {push(bulbSkills, skill);}
-			if (skills[skill][TYPE] == POISON) {push(poisonSkills, skill);}
-			if (skills[skill][TYPE] == UTIL) {push(utilSkills, skill);}
+			if (skills[skill][TYPE] == BUFF) {push(buffSkills, skill);}
 			if (skills[skill][TYPE] == REFLECT) {push(reflectSkills, skill);}
+			if (skills[skill][TYPE] == POISON) {push(poisonSkills, skill);}
+			if (skills[skill][TYPE] == HEAL) {push(healSkills, skill);}
+			if (skills[skill][TYPE] == ARMOR) {push(armorSkills, skill);}
+			if (skills[skill][TYPE] == DEBUFF) {push(debuffSkills, skill);}
+			if (skills[skill][TYPE] == UTIL) {push(utilSkills, skill);}
+			if (skills[skill][TYPE] == BULB) {push(bulbSkills, skill);}
 		}
 		var sortedCombo = [];
 		pushAll(sortedCombo, buffSkills);
-		pushAll(sortedCombo, debuffSkills);
 		pushAll(sortedCombo, healSkills);
 		pushAll(sortedCombo, armorSkills);
 		pushAll(sortedCombo, reflectSkills);
 		pushAll(sortedCombo, utilSkills);
+		pushAll(sortedCombo, debuffSkills);
 		pushAll(sortedCombo, damageSkills);
 		pushAll(sortedCombo, poisonSkills);
+		pushAll(sortedCombo, bulbSkills);
 		
-		//displayArray(combo, "unsorted combo : ");
-		//displayArray(sortedCombo, "sorted combo : ");
+		//debug("unsorted combo : " + combo);
+		//debug("sorted combo : " + sortedCombo);
 		return sortedCombo;
 }
 
 
 /*************************************************************************/
 function filterCombos(){
-	for (var combo in sortedCombosList){
+	for (var combo in combosList){
 		if (filterCombo(combo)){
 			push(filteredCombosList, combo);
 		}
@@ -429,8 +430,8 @@ function filterCombos(){
 // Return true to keep the combo
 function filterCombo(combo){
 	if (!weaponFilter(combo)) {return false;}
-	
 	// add other filters here
+
 	return true;
 }
 
@@ -445,21 +446,22 @@ function filterCombo(combo){
  
 function calculateCombosScore(){
 
-	getLeekCarac();
+	ourLeekCarac = getLeekCarac(ourLeekID);
+	enemyLeekCarac = getLeekCarac(enemyID);
 
 	ourLeekCaracTemp = ourLeekCarac;
 	enemyLeekCaracTemp = enemyLeekCarac;
 
-	for (var key : var combo in filteredCombosList){
+	for (var key : var combo in sortedCombosList){
 		ourLeekCaracTemp = ourLeekCarac;
 		enemyLeekCaracTemp = enemyLeekCarac;
 
 		var score = calculateComboScore(combo);
-		var scoreKey = [];
-		scoreKey[SCORE] = score;
-		scoreKey[KEY] = key;
+		var scoreAndKey = [];
+		scoreAndKey[SCORE] = score;
+		scoreAndKey[KEY] = key;
 
-		push(comboScores, scoreKey);
+		push(comboScores, scoreAndKey);
 	}
 }
 
@@ -486,4 +488,42 @@ function sortCombosByScore(){
 	sortedComboScores = arraySort(comboScores, function(comboScore1, comboScore2) {
     	return comboScore2[SCORE] - comboScore1[SCORE];
 	});
+}
+
+
+/*************************************************************************/
+// This function choose the best combo that can be done.
+
+function chooseCombo(){
+//chosenCombo
+//chosenNodes
+for (var i = 0; i < count(sortedComboScores); i++){
+	
+	// fill the actionMap and the nodes array
+	for (var j=0; j < count(sortedComboScores[i]); j++){
+		if (skills[sortedComboScores[i][j]][TYPE] == DAMAGE || skills[sortedComboScores[i][j]][TYPE] == POISON || skills[sortedComboScores[i][j]][TYPE] == DEBUFF){
+			
+		}
+
+	}
+
+}
+
+} 
+
+/*************************************************************************/
+// This function defines if a combo can be realized
+// It returns a structure containing the answer and the node to use
+// ex: return [true, [node_index_0, node_index_1, node_index_2,...]]
+function try_combo(combo, origin, target){
+	var canBeDone = false;
+	var nodeList = [];
+
+
+
+
+	var result = [];
+	push(result, canBeDone);
+	push(result, nodeList);
+	return result;
 }
