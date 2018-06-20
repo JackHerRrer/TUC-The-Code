@@ -163,7 +163,9 @@ function generateSkillsCostList(){
 	}
 	//Add to costs all the chip costs
 	for (var chip in chips){
-		push(costs, getChipCost(chip));
+		if (getCooldown(chip) == 0){
+			push(costs, getChipCost(chip));
+		}
 	}
 	
 	// sort costs
@@ -285,7 +287,7 @@ function sortSkillsByCost(){
 		}
 	}
 	
-	//debug(skillSortedByCosts);
+	debug("skillSortedByCosts" + skillSortedByCosts);
 }
 
 
@@ -329,41 +331,45 @@ function generateCombosList(){
 */
 function fillCombo(combo, depth, skillsAvailable){
 	
-	//debugE("depth : "+ depth);
-	//displayArray(combo, "combo");
-	//displayDoubleArray(skillsAvailable, "skills available : ");
 	if (count(combo) == depth){
 		//displayArray(combo, "combo to push");
 		push(combosList, combo);
 	}
-	else if (count(skillsAvailable[combo[depth]]) == 0){
+	else {
+		//debug("depth: " + depth);
+		//debug("combo[depth]: " + combo[depth]);
+		//debug("combo: " + combo);
+		//debug("skillsAvailable[combo[depth]]: " + skillsAvailable[combo[depth]]);
+		//debug("skillsAvailable: " + skillsAvailable);
+		if (count(skillsAvailable[combo[depth]]) == 0){
 		
-		var nextCombo = combo;
-		//displayArray(nextCombo, "combo avant: ");
-		remove(nextCombo, depth);
-		//displayArray(nextCombo, "combo après: ");
-		fillCombo(nextCombo, depth, skillsAvailable);
-	}
-	else{
-		var partialskillsAvailable = skillsAvailable;	
-		for (var skill in skillsAvailable[combo[depth]]){
-			var skillRemoved = false;
 			var nextCombo = combo;
-			var nextDepth = depth + 1;
-			nextCombo[depth] = skill;
-			if (isChip(skill)){
-				if (getChipCooldown(skill) != 0){
-					//debug("chip : " + skill + ", cooldown : " + getChipCooldown(skill));
+			//displayArray(nextCombo, "combo avant: ");
+			remove(nextCombo, depth);
+			//displayArray(nextCombo, "combo après: ");
+			fillCombo(nextCombo, depth, skillsAvailable);
+		}
+		else{
+			var partialskillsAvailable = skillsAvailable;	
+			for (var skill in skillsAvailable[combo[depth]]){
+				var skillRemoved = false;
+				var nextCombo = combo;
+				var nextDepth = depth + 1;
+				nextCombo[depth] = skill;
+				if (isChip(skill)){
+					if (getChipCooldown(skill) != 0){
+						//debug("chip : " + skill + ", cooldown : " + getChipCooldown(skill));
+						remove(partialskillsAvailable[combo[depth]],0);
+						skillRemoved = true;
+					}
+				}
+				fillCombo(nextCombo, nextDepth, partialskillsAvailable);
+				if (skillRemoved == false){
 					remove(partialskillsAvailable[combo[depth]],0);
-					skillRemoved = true;
 				}
 			}
-			fillCombo(nextCombo, nextDepth, partialskillsAvailable);
-			if (skillRemoved == false){
-				remove(partialskillsAvailable[combo[depth]],0);
-			}
-		}
-	}	
+		}	
+	}
 }
 
 
@@ -502,11 +508,13 @@ function sortCombosByScore(){
 /*************************************************************************/
 // This function is used to find the trajectory with the best score without 
 // using more operation than the maximum operation limit
+// operationThreshold to be improved
 function find_best_trajectory(){
 	var operationThreshold = 4000000;
 
 	var nbOp = getOperations();
 	fill_danger_map();
+	fill_safe_nodes();
 	debug("nb instruct fill_danger_map : " + (getOperations() - nbOp));
 	var countTrajectories = 0;
 
@@ -517,11 +525,11 @@ function find_best_trajectory(){
 		countTrajectories++;
 
 		if (OPERATIONS_LIMIT - getOperations() < operationThreshold){
-			debug("remaing operation inferior to " + operationThreshold);
-			debug("Trajectories calculated: " + countTrajectories);
+			debug("remaing operation inferior to " + operationThreshold);			
 			break;
 		}
 	}
+	debug("Trajectories calculated: " + countTrajectories);
 }
 
 /*************************************************************************/
@@ -573,25 +581,34 @@ function fill_action_nodes(combo){
 //  * full indirect combo + mvmt
 //  * full indirect combo
 // A trajectory can be full (all the skills can be used) or partial
-// A trajectory is an array : [[cell1, cell2, ...], [skill1, skill2, ...], [targetCell1, targetCell2, ...] remainingMP, score]
+// A trajectory is an array : [[cell1, cell2, ...], [skill1, skill2, ...], [targetCell1, targetCell2, ...] [MPUsed1, MPUsed2, ...], score]
 // The number of MP depends on the casted chips (not implemented yet)
 
 function generate_trajectories(combo){
+	trajectories = [];
+	generate_basic_trajectories(combo);
+	debug("combo: " + combo);
+	debug("trajectories: " + trajectories);
+	pushAll(allTrajectories, trajectories);
+}
 
-	var directMvmt = [];
+/*************************************************************************/
+// This function is used to generate the direct and indirect trajectories of a combo
+// To be improved : copy the beginning of "direct" in "indirect" until a skill has AOE
+function generate_basic_trajectories(combo){
+
 	var direct = [];
 	direct[SKILL] = [];
 	direct[CELLS] = [];
-	direct[TARGET_CELL] = [];
-	direct[MVMP] = getMP();
-	var indirectMvmt = [];
+	direct[MVMP] = [];
+	direct[TARGET_CELL] = [];	
 	var indirect = [];
 	indirect[SKILL] = [];
 	indirect[CELLS] = [];
+	indirect[MVMP] = [];
 	indirect[TARGET_CELL] = [];
-	indirect[MVMP] = getMP();
 
-	// debug("combo: " + combo);
+	//debug("direct combo: " + combo);
 	// generate direct trajectories without escape
 	for (var key: var skill in combo){
 		//debug("skill: " + skill);
@@ -600,17 +617,17 @@ function generate_trajectories(combo){
 		if (skills[skill][TYPE] == DEBUFF || skills[skill][TYPE] == DAMAGE || skills[skill][TYPE] == POISON){
 
 			if (key == 0){
-				nextNodeResult = find_next_node(skill, getCell(), direct, direct[MVMP]);
+				nextNodeResult = find_next_node(skill, getCell(), direct, getMP());
 			}
 			else {
-				nextNodeResult = find_next_node(skill, direct[CELLS][key - 1], direct, direct[MVMP]);
+				nextNodeResult = find_next_node(skill, direct[CELLS][key - 1], direct, (getMP() - sum(direct[MVMP])));
 			}
 			// if a cell can be reached then save it in the trajectory
-			if (nextNodeResult[0] == true){
+			if (nextNodeResult[TYPE] == true){
 				push(direct[SKILL], skill);
-				push(direct[CELLS], nextNodeResult[1]);
-				direct[MVMP] -= nextNodeResult[2];
-				push(direct[TARGET_CELL], nextNodeResult[3]);
+				push(direct[CELLS], nextNodeResult[CELLS]);
+				push(direct[MVMP], nextNodeResult[MVMP]);
+				push(direct[TARGET_CELL], nextNodeResult[TARGET_CELL]);
 			}
 		}
 		// if the skill does not require a mouvment to be executed
@@ -618,16 +635,19 @@ function generate_trajectories(combo){
 			if (key == 0){
 				push(direct[SKILL], skill);
 				push(direct[CELLS], getCell());
+				push(direct[MVMP], 0);
 				push(direct[TARGET_CELL], getCell());
 			}
 			else{
 				push(direct[SKILL], skill);
 				push(direct[CELLS], direct[CELLS][key - 1]);
+				push(direct[MVMP], 0);
 				push(direct[TARGET_CELL], direct[CELLS][key - 1]);
 			}
 		}
 	}
 
+	//debug("indirect combo: " + combo);
 	// generate indirect trajectories without escape
 		for (var key: var skill in combo){
 		var nextNodeResult = [];
@@ -635,17 +655,17 @@ function generate_trajectories(combo){
 		if (skills[skill][TYPE] == DEBUFF || skills[skill][TYPE] == DAMAGE || skills[skill][TYPE] == POISON){
 
 			if (key == 0){
-				nextNodeResult = find_next_node(skill, getCell(), indirect, indirect[MVMP]);
+				nextNodeResult = find_next_node(skill, getCell(), indirect, getMP());
 			}
 			else {
-				nextNodeResult = find_next_node(skill, indirect[CELLS][key - 1], indirect, indirect[MVMP]);
+				nextNodeResult = find_next_node(skill, indirect[CELLS][key - 1], indirect, (getMP() - sum(indirect[MVMP])));
 			}
 			// if a cell can be reached then save it in the trajectory
-			if (nextNodeResult[0] == true){
+			if (nextNodeResult[TYPE] == true){
 				push(indirect[SKILL], skill);
-				push(indirect[CELLS], nextNodeResult[1]);
-				indirect[MVMP] -= nextNodeResult[2];
-				push(indirect[TARGET_CELL], nextNodeResult[3]);
+				push(indirect[CELLS], nextNodeResult[CELLS]);
+				push(indirect[MVMP], nextNodeResult[MVMP]);
+				push(indirect[TARGET_CELL], nextNodeResult[TARGET_CELL]);
 
 			}
 		}
@@ -654,22 +674,27 @@ function generate_trajectories(combo){
 			if (key == 0){
 				push(indirect[SKILL], skill);
 				push(indirect[CELLS], getCell());
+				push(indirect[MVMP], 0);
 				push(indirect[TARGET_CELL], getCell());
 
 			}
 			else{
 				push(indirect[SKILL], skill);
 				push(indirect[CELLS], indirect[CELLS][key - 1]);
+				push(indirect[MVMP], 0);
 				push(indirect[TARGET_CELL], direct[CELLS][key - 1]);
 			}
 		}
 	}
 
-
-	push(trajectoriesData, direct);
-	push(trajectoriesData, indirect);
-	//push(trajectoriesData, directMvmt);
-	//push(trajectoriesData, indirectMvmt);
+	// Check if there is at least one skill used in the trajectories 
+	if (!isEmpty(direct[SKILL])){
+		push(trajectories, direct);
+	}
+	// Check if there is at least one skill used in the trajectories 
+	if (!isEmpty(indirect[SKILL])){
+		push(trajectories, indirect);
+	}
 }
 
 /*************************************************************************/
@@ -678,27 +703,39 @@ function generate_trajectories(combo){
 // returns an array [cellFound, cell, MPused, targetCell]
 
 function find_next_node(skill, currentCell, direct, mpAvailable){
-	if (skill > 1000){
-		skill -= 1000;
-	}
+    var nodes = [];
+    // if you want to find a safe place then look in the safe nodes
+    if (skill == 2000){
+            nodes = safeNodes;
+    }
+    // otherwise look in the action nodes
+    else {
+        if (skill > 1000){
+                skill -= 1000;
+        }      
+        nodes = actionNodes[skill];
+    }
 
-	var result = [];
-	result[0] = false;
-	result[2] = 1000;
+    var result = [];
+    result[TYPE] = false;
+    result[MVMP] = 1000;
 
-	for (var node in actionNodes[skill]){
+	//debug("mpAvailable: " + mpAvailable);
+
+    for (var node in nodes){
 		// Check if this node can do a direct hit 
 		if (direct && node["TARGET_CELL"] != node["INDIRECT_CELL"]){
 			continue;
 		}
 
 		var pathLength = getPathLength(currentCell, node["CELL"]);
+		//debug("pathLength: " + pathLength);
 		if (pathLength != null){
-			if (pathLength < result[2] && pathLength <= mpAvailable){
-				result[3] = node["INDIRECT_CELL"];
-				result[2] = pathLength;
-				result[1] = node["CELL"];
-				result[0] = true;
+			if (pathLength < result[MVMP] && pathLength <= mpAvailable){
+				result[TARGET_CELL] = node["INDIRECT_CELL"];
+				result[MVMP] = pathLength;
+				result[CELLS] = node["CELL"];
+				result[TYPE] = true;
 
 				if (pathLength == 0){
 					break;
@@ -715,30 +752,46 @@ function find_next_node(skill, currentCell, direct, mpAvailable){
 function fill_action_sequence(){
 
 	debug(" ");
-	debug("combo: " + trajectoriesData[0]);
-	for (var key : var skill in trajectoriesData[0][SKILL]){
-		debug("skill: " + skill);
+	debug("combo: " + allTrajectories[0]);
+	for (var key : var skill in allTrajectories[0][SKILL]){
 		//move to cell
 		actionSequence[actionTotal] = [];
 		actionSequence[actionTotal][0] = MOVE_TO_CELL;	
-		actionSequence[actionTotal][1] = trajectoriesData[0][CELLS][key];			
+		actionSequence[actionTotal][1] = allTrajectories[0][CELLS][key];			
 		actionTotal++;
 
-		//equip weapon if required
-		if (skill > 1000){		
-			skill -= 1000;
-			actionSequence[actionTotal] = [];
-			actionSequence[actionTotal][0] = EQUIP_WEAPON;	
-			actionSequence[actionTotal][1] = skill;			
-			actionTotal++;
-		}
+            if (skill != 2000){
+                //equip weapon if required
+                if (skill > 1000){
+                        skill -= 1000;
+                        actionSequence[actionTotal] = [];
+                        actionSequence[actionTotal][0] = EQUIP_WEAPON;
+                        actionSequence[actionTotal][1] = skill;
+                        actionTotal++;
+                }
 
-		//use skill
-		actionSequence[actionTotal] = [];
-		actionSequence[actionTotal][0] = USE_OBJECT;
-		actionSequence[actionTotal][1] = skill;	
+                //use skill
+                actionSequence[actionTotal] = [];
+                actionSequence[actionTotal][0] = USE_OBJECT;
+                actionSequence[actionTotal][1] = skill;
+                actionSequence[actionTotal][2] = allTrajectories[0][TARGET_CELL][key];
 
-		actionSequence[actionTotal][2] = trajectoriesData[0][TARGET_CELL][key];		
-		actionTotal++;
+                actionTotal++;
+        }
 	}
+}
+
+/*************************************************************************/
+// This function is used fill the safeNodes with untargetable cell 
+// TO BE IMPROVED to quantify the danger
+function fill_safe_nodes(){
+        var area = getArea(getMP(), getCell());
+
+        for (var cell in area){
+                if (dangerMap[cell] == null){
+                        var node = [];
+                        node["CELL"] = cell;
+                        push(safeNodes, node);
+                }
+        }
 }

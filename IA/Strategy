@@ -191,7 +191,7 @@ function fight_strategy(){
 //    ID: 37, WEAPON_PISTOL, cd: 3
 //                       +------------------------+   skillsCostList     +--------------------------+                       +-------------------------+
 //             +--------->                        +----------------------^                          +   costCombosList      |                         +
-//             |         | generateSkillsCostList |        maxTP (10)        +  generateCostCombosList  +----------------------->  generateCombosList     +
+//             |         | generateSkillsCostList |        maxTP (10)    +  generateCostCombosList  +----------------------->  generateCombosList     +
 //             |  +------>                        |          +-----------^                          +                       |                         +
 //    chips +--+  |      +------------------------+                      +--------------------------+                       |     +-----------+       |
 //             |  |                                                                                                         |     |           |       |    combosList
@@ -307,7 +307,7 @@ function fight_strategy(){
 
 	nbOp = getOperations();
 	find_best_trajectory();
-	//debug("trajectories: " + trajectoriesData);
+	//debug("trajectories: " + allTrajectories);
 	debug("nb instruct find_best_trajectory : " + (getOperations() - nbOp));
 
 	nbOp = getOperations();

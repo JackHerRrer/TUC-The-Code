@@ -76,6 +76,7 @@ global dangerMap = [];
 // 			actionNodes[...]		= [...]
 global actionNodes = [];
 global dangerNodes = [];
+global safeNodes = [];
 
 //Variables globales ennemies
 global enemyID;
@@ -93,7 +94,8 @@ global sortedCombosList = [];
 global filteredCombosList = [];
 global comboScores = [];
 global sortedComboScores = [];
-global trajectoriesData = [];
+global allTrajectories = [];
+global trajectories = []; //used to store the trajectories of a single combo 
 // Leeks carac
 
 global ourLeekCarac = [];

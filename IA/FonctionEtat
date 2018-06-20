@@ -1,6 +1,7 @@
 include("GlobalVar");
 include("util_can_use");
 include("Strategy");
+include("util_combos");
 include("IA_main");
 
 function initGameFunction(){
@@ -28,6 +29,7 @@ function initTurnFunction(){
 
 	actionNodes = [];
 	dangerNodes = [];
+	safeNodes = [];
 
 	// raz des donnés de combo
 	skillsCostList = [];
@@ -38,7 +40,8 @@ function initTurnFunction(){
 	filteredCombosList = [];
 	comboScores = [];
 	sortedComboScores = [];
-	trajectoriesData = [];
+	allTrajectories = [];
+	trajectories = [];
 
 	// raz des carac des leeks
 	ourLeekCarac = [];
@@ -81,11 +84,14 @@ function strategyChoiceFunction(){
 	// display the list of the chosen actions
 	debug("******************************");
 	for (var i = 0; i < actionTotal; i++){
-		if (actionSequence[i][0] != USE_OBJECT){
-			debug(actionSequence[i][0]);
+		if (actionSequence[i][0] == USE_OBJECT){
+			debug(actionSequence[i][0] + " : " + getSkillName(actionSequence[i][1]));
+		}
+		else if (actionSequence[i][0] == MOVE_TO_CELL){
+			debug(actionSequence[i][0] + " : " + actionSequence[i][1]);
 		}
 		else {
-			debug(actionSequence[i][0] + " : " + actionSequence[i][1]);
+			debug(actionSequence[i][0]);			
 		}
 	}
 	debug("TP total : "+ TPTotal);
@@ -383,7 +389,7 @@ function useObjectFunction(){
 	// actionSequence[0][1] =  object_ID; 
 	// actionSequence[0][2] =  targetCell;
 
-	debug("use object state : " + actionSequence[currentAction - 1][1]);
+	debug("use object state : " + getSkillName(actionSequence[currentAction - 1][1]));
 
 	if (isWeapon(actionSequence[currentAction - 1][1])){
 		useWeaponOnCell(actionSequence[currentAction - 1][2]);
