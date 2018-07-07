@@ -96,8 +96,9 @@ global comboScores = [];
 global sortedComboScores = [];
 global allTrajectories = [];
 global trajectories = []; //used to store the trajectories of a single combo 
-// Leeks carac
+global bestTrajectoryKey;	//is the key of the trajectoy with the best score
 
+// Leeks carac
 global ourLeekCarac = [];
 global enemyLeekCarac = [];
 global ourLeekCaracTemp = [];

@@ -74,46 +74,11 @@ function stateMachine(){
 		else if (etat == ACTION_CHOICE)		{actionChoiceFunction();}
 		else if (etat == LAST_ACTION) 		{lastActionFunction();}
 
-		else if (etat == EQUIP_SHOTGUN)		{equipShotgunFunction();}
-		else if (etat == EQUIP_MAGNUM)		{equipMagnumFunction();} 
-		else if (etat == EQUIP_GRENADE_LAUNCHER){equipGrenadeLauncherFunction();} 
-		else if (etat == EQUIP_GAZOR)		{equipGazorFunction();} 
-
-
-		else if (etat == MOVE_TOWARD_ENEMY)		{moveTowardEnemyFunction();} 
-		else if (etat == MOVE_TOWARD_LEEK)		{moveTowardLeekFunction();}
-		else if (etat == MOVE_AWAY_FROM_ENEMY)	{moveAwayFromEnemyFunction();}
-		else if (etat == MOVE_TO_WEAPON_RANGE)	{moveToWeaponRangeFunction();}
-		else if (etat == MOVE_TO_LIGHTNING_RANGE){moveToLightningRangeFunction();}
-		else if (etat == MOVE_TO_STALACTITE_RANGE){moveToStalactiteRangeFunction();}
-		else if (etat == MOVE_TO_SPARK_RANGE)	{moveToSparkRangeFunction();}
-		else if (etat == MOVE_TO_HELMET_RANGE)	{moveToHelmetRangeFunction();}
-
-		else if (etat == MOVE_TO_CELL)			{moveToCellFunction();}
-
-
+		else if (etat == MOVE_TO_CELL)		{moveToCellFunction();}
 		else if (etat == SUMMON_PUNNY_BULB) {summonPunnyBulbFunction();}
-		else if (etat == USE_WEAPON)		{useWeaponFunction();}
-		else if (etat == USE_BANDAGE)		{useBandageFunction();}
-		else if (etat == USE_STALACTITE)	{useStalactiteFunction();}
-		else if (etat == USE_ROCK)			{useRockFunction();}	
-		else if (etat == USE_PEBBLE)		{usePebbleFunction();}
-		else if (etat == USE_HELMET)		{useHelmetFunction();}
-		else if (etat == USE_SHIELD)		{useShieldFunction();}		
-		else if (etat == USE_PROTEIN)		{useProteinFunction();}
-		else if (etat == USE_SPARK)			{useSparkFunction();}		
-		else if (etat == USE_LIGHTNING)		{useLightningFunction();}	
-		else if (etat == USE_FORTRESS)		{useFortressFunction();}		
-		else if (etat == USE_RAMPART)		{useRampartFunction();}	
-		else if (etat == USE_ARMORING)		{useArmoringFunction();}	
-		else if (etat == USE_ARMOR)			{useArmorFunction();}	
-		else if (etat == USE_REGENERATION)	{useRegenerationFunction();}
-		else if (etat == USE_TOXIN)			{useToxinFunction();}
-		else if (etat == USE_LIBERATION)	{useLiberationFunction();}
-
-
 		else if (etat == USE_OBJECT)		{useObjectFunction();}		
 		else if (etat == EQUIP_WEAPON)		{equipWeaponFunction();}
+
 		else {
 			debugC("ETAT INDEFINI !!!",getColor(255, 0, 0));
 			break;

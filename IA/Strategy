@@ -166,7 +166,8 @@ function first_turn_strategy(){
 
 
 	actionSequence[actionTotal] = []; 	
-	actionSequence[actionTotal][0] = EQUIP_GRENADE_LAUNCHER; 			// 1 TP
+	actionSequence[actionTotal][0] =  EQUIP_WEAPON;
+	actionSequence[actionTotal][1] =  WEAPON_GRENADE_LAUNCHER; 
 	actionTotal++;
 
 	actionSequence[actionTotal] = []; 	
@@ -174,7 +175,9 @@ function first_turn_strategy(){
 	actionTotal++;
 
 	actionSequence[actionTotal] = []; 	
-	actionSequence[actionTotal][0] = USE_ARMORING; 	// 6 TP	+ 1 MP
+	actionSequence[actionTotal][0] =  USE_OBJECT;
+	actionSequence[actionTotal][1] =  CHIP_ARMORING; 
+	actionSequence[actionTotal][2] =  getCell();
 	actionTotal++;
 
 	//actionSequence[actionTotal][0] = MOVE_AWAY_FROM_ENEMY; 		// 0-3 MP
@@ -190,9 +193,9 @@ function fight_strategy(){
 //    ID: 21, CHIP_HELMET, cd: 3                      [3, 4, 5]                                         [[5, 5], [5, 4], [5, 3], [4, 4], [4, 3, 3], [3, 3, 3]]
 //    ID: 37, WEAPON_PISTOL, cd: 3
 //                       +------------------------+   skillsCostList     +--------------------------+                       +-------------------------+
-//             +--------->                        +----------------------^                          +   costCombosList      |                         +
-//             |         | generateSkillsCostList |        maxTP (10)    +  generateCostCombosList  +----------------------->  generateCombosList     +
-//             |  +------>                        |          +-----------^                          +                       |                         +
+//             +--------->                        +---------------------->                          |   costCombosList      |                         |
+//             |         | generateSkillsCostList |        maxTP (10)    |  generateCostCombosList  +----------------------->  generateCombosList     |
+//             |  +------>                        |          +----------->                          |                       |                         |
 //    chips +--+  |      +------------------------+                      +--------------------------+                       |     +-----------+       |
 //             |  |                                                                                                         |     |           |       |    combosList
 //  weapons +-----+                                   [3 : [37, 21], 4 : [1037, 20], 5 : [7]]                               |     | fillCombo |       +-----------+
@@ -220,13 +223,13 @@ function fight_strategy(){
 //                |      |                        |                      |                          +----------------------+   calculateCombosScore      |
 //                |      |      filterCombos      |                      |        sortCombos        |                      |                             |
 //                |      |                        |  filteredCombosList  |                          |          skills      | +-------------------------+ |
-//                +------>  +------------------+  +---------------------->      +------------+      |               +------+ |                         | |  comboScores
+//                +------>  +------------------+  +---------------------->      +------------+      |               +------> |                         | |  comboScores
 //                       |  | filterCombo      |  |                      |      |            |      |                      | |  calculateComboScore    | +--------+
 //                       |  |   * weaponFilter |  |                      |      | sortCombo  |      |    ourLeekCarac      | |                         | |        |
-//                       |  |   * ...          |  |                      |      |            |      |               +------+ | * damage_score_function | |        |
+//                       |  |   * ...          |  |                      |      |            |      |               +------> | * damage_score_function | |        |
 //                       |  |                  |  |                      |      +------------+      |                      | | * default_score_function| |        |
 //                       |  +------------------+  |                      |                          |  enemyLeekCarac      | | * buff_score_function   | |        |
-//                       |                        |                      |                          |               +------+ | * ...                   | |        |
+//                       |                        |                      |                          |               +------> | * ...                   | |        |
 //                       +------------------------+                      +--------------------------+                      | +-------------------------+ |        |
 //                                                                                                                         +-----------------------------+        |
 //                                                                                                                                                                |
@@ -243,15 +246,37 @@ function fight_strategy(){
 //                +-----------------------------------------------------------------------------------------------------------------------------------------------+
 //                |
 //                |
-//                |      +------------------------+
-//                |      |                        |   sortedComboScores
-//                +------>  sortCombosByScore     +--------------------->
-//                       |                        |
-//                       +------------------------+
+//                |      +------------------------+                     +--------------------------+                   +---------------------------------+
+//                |      |                        |   sortedComboScores |                          |  allTrajectories  |                                 |   allTrajectories
+//                +------>  sortCombosByScore     +--------------------->  generate_trajectories   +------------------->  calculate_trajectories_score   +--------+
+//                       |                        |                     |                          |                   |                                 |        |
+//                       +------------------------+     enemySkills     |                          |     ourLeekCarac  |                                 |        |
+//                                                                +----->                          |            +------>                                 |        |
+//                                                                      |                          |                   |                                 |        |
+//                                                          enemyID     |                          |   enemyLeekCarac  |                                 |        |
+//                                                                +----->                                       +------+                                 |        |
+//                                                                      |                          |                   |                                 |        |
+//                                                              map     |                          |        dangerMap  |                                 |        |
+//                                                                +----->                          |            +------>                                 |        |
+//                                                                      +--------------------------+                   +---------------------------------+        |
+//                                                                                                                                                                |
+//                                                                                                                                                                |
+//                                                                                                                                                                |
+//                +-----------------------------------------------------------------------------------------------------------------------------------------------+
+//                |
+//                |
+//                |                  +---------------------------------+                           +-------------------------+
+//                |                  |                                 |    bestTrajectoryKey      |                         |  actionSequence
+//                +------------------>    find_best_trajectory_score   +--------------------------->   fill_action_sequence  +------->
+//                                   |                                 |                           |                         |
+//                                   +---------------------------------+                           +-------------------------+
+//
+//
+//
+//
 //
 
-
-
+	// displays leek skills (for debug purpose)
 	var leekSkills = [];
 	pushAll(leekSkills, getChips());
 	pushAll(leekSkills, getWeapons());
@@ -261,6 +286,7 @@ function fight_strategy(){
 		else
 			debug("ID: " + skill + ", " + getSkillName(skill) + ", cd: " + getChipCost(skill));
 	}
+	debug("");
 
 	// Calcul des combos
 	var maxTP = getTP();
@@ -306,14 +332,26 @@ function fight_strategy(){
 	debug("nb instruct sortCombosByScore : " + (getOperations() - nbOp));
 
 	nbOp = getOperations();
-	find_best_trajectory();
-	//debug("trajectories: " + allTrajectories);
-	debug("nb instruct find_best_trajectory : " + (getOperations() - nbOp));
+	generate_trajectories();
+	debug("all trajectories without score: " + allTrajectories);
+	debug("nb instruct generate_trajectories : " + (getOperations() - nbOp));
+
+	nbOp = getOperations();
+	calculate_trajectories_score();
+	debug("all trajectories with score: " + allTrajectories);
+	debug("nb instruct calculate_trajectories_score : " + (getOperations() - nbOp));
+
+	nbOp = getOperations();
+	find_best_trajectory_score();
+	debug(" ");
+	debug("best trajectory key: " + bestTrajectoryKey);
+	debug("best trajectory: " + allTrajectories[bestTrajectoryKey]);
+	debug("nb instruct generate_trajectories : " + (getOperations() - nbOp));
 
 	nbOp = getOperations();
 	fill_action_sequence();
-	debug("nb instruct fill_action_sequence : " + (getOperations() - nbOp));
-
+	debug("nb instruct find_best_trajectory_score : " + (getOperations() - nbOp));
+	debug("");
 	debug("******************************");
 	debug("remaining operation : " + (OPERATIONS_LIMIT - getOperations()));
 

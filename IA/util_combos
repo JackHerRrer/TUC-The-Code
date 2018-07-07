@@ -21,12 +21,18 @@ global NAME = 2;
 global SCORE = 0;
 global KEY = 1;
 
-global SKILL = 1;
-global CELLS = 2;
-global MVMP = 3;
-global TARGET_CELL = 4;
+global SKILL = "SKILL";
+global CELLS = "CELLS";
+global MVMP = "MVMP";
+global TARGET_CELL = "TGT_CELL";
+
+global MOVE = 200;
+
+global DIRECT = 0;
+global INDIRECT = 1;
 
 global skills = [];						//[To sort the combos, to calculate the score]
+skills[MOVE] =                  		[UTIL, default_score_function, "MOVE"];
 skills[CHIP_BURNING] =                  [DAMAGE, damage_score_function, "CHIP_BURNING"];
 skills[CHIP_DEVIL_STRIKE] =             [DAMAGE, damage_score_function, "CHIP_DEVIL_STRIKE"];
 skills[CHIP_FLAME] =                    [DAMAGE, damage_score_function, "CHIP_FLAME"];
@@ -105,14 +111,14 @@ skills[CHIP_LOAM] =                     [HEAL, default_score_function, "CHIP_LOA
 skills[CHIP_REGENERATION] =             [HEAL, default_score_function, "CHIP_REGENERATION"];
 skills[CHIP_REMISSION] =                [HEAL, default_score_function, "CHIP_REMISSION"];
 skills[CHIP_VACCINE] =                  [HEAL, default_score_function, "CHIP_VACCINE"];
-skills[CHIP_ARMOR] =                    [ARMOR, default_score_function, "CHIP_ARMOR"];
-skills[CHIP_ARMORING] =                 [ARMOR, default_score_function, "CHIP_ARMORING"];
-skills[CHIP_CARAPACE] =                 [ARMOR, default_score_function, "CHIP_CARAPACE"];
-skills[CHIP_FORTRESS] =                 [ARMOR, default_score_function, "CHIP_FORTRESS"];
-skills[CHIP_HELMET] =                   [ARMOR, default_score_function, "CHIP_HELMET"];
-skills[CHIP_RAMPART] =                  [ARMOR, default_score_function, "CHIP_RAMPART"];
-skills[CHIP_SHIELD] =                   [ARMOR, default_score_function, "CHIP_SHIELD"];
-skills[CHIP_WALL] =                     [ARMOR, default_score_function, "CHIP_WALL"];
+skills[CHIP_ARMOR] =                    [ARMOR, armor_score_function, "CHIP_ARMOR"];
+skills[CHIP_ARMORING] =                 [ARMOR, armor_score_function, "CHIP_ARMORING"];
+skills[CHIP_CARAPACE] =                 [ARMOR, armor_score_function, "CHIP_CARAPACE"];
+skills[CHIP_FORTRESS] =                 [ARMOR, armor_score_function, "CHIP_FORTRESS"];
+skills[CHIP_HELMET] =                   [ARMOR, armor_score_function, "CHIP_HELMET"];
+skills[CHIP_RAMPART] =                  [ARMOR, armor_score_function, "CHIP_RAMPART"];
+skills[CHIP_SHIELD] =                   [ARMOR, armor_score_function, "CHIP_SHIELD"];
+skills[CHIP_WALL] =                     [ARMOR, armor_score_function, "CHIP_WALL"];
 skills[CHIP_BALL_AND_CHAIN] =           [DEBUFF, default_score_function, "CHIP_BALL_AND_CHAIN"];
 skills[CHIP_FRACTURE] =                 [DEBUFF, default_score_function, "CHIP_FRACTURE"];
 skills[CHIP_SLOW_DOWN] =                [DEBUFF, default_score_function, "CHIP_SLOW_DOWN"];
@@ -287,7 +293,7 @@ function sortSkillsByCost(){
 		}
 	}
 	
-	debug("skillSortedByCosts" + skillSortedByCosts);
+	//debug("skillSortedByCosts" + skillSortedByCosts);
 }
 
 
@@ -470,7 +476,7 @@ function calculateCombosScore(){
 		ourLeekCaracTemp = ourLeekCarac;
 		enemyLeekCaracTemp = enemyLeekCarac;
 
-		var score = calculateComboScore(combo);
+		var score = calculateScore(combo);
 		var scoreAndKey = [];
 		scoreAndKey[SCORE] = score;
 		scoreAndKey[KEY] = key;
@@ -481,9 +487,9 @@ function calculateCombosScore(){
 
 
 /*************************************************************************/
-// This function calls 
+// This function calls the score functions associated to each skills
 
-function calculateComboScore(combo){
+function calculateScore(combo){
 	var score = 0;
 
 	for (var skill in combo){
@@ -505,32 +511,92 @@ function sortCombosByScore(){
 }
 
 
+//                       +---------------------------------------------------------------------------------------------------------------------------------------------------------+
+//                       | generate_trajectories                                                                                                                                   |
+//                       |                                                                                                                                                         |
+//                       |             +--------------------+                    +-------------------+                                                                             |
+//          enemySkills  |             |                    |     dangerMap      |                   | safeNodes                                                                   |
+//                  +------------------>  fill_danger_map   +-------------------->  fill_safe_nodes  +-------+                                                                     |
+//                       |             |                    |                    |                   |       |                                                                     |
+//              enemyID  |             |                    |                    +-------------------+       |                                                                     |
+//                  +------------------>                    |                                                |                                                                     |
+//                       |             |                    |                                                |                                                                     |
+//                  map  |             |                    |                                                |                                                                     |
+//                  +------------------>                    |                                                |                                                                     |
+//                       |             |                    |                                                |                                                                     |
+//                       |             +--------------------+                                                |                                                                     |
+//                       |                                                                                   |                                                                     |
+//                       |   +-------------------------------------------------------------------------------+                                                                     |
+//                       |   |                                                                                                                                                     |
+//                       |   |                                                                                                                                                     |
+//                       |   |         +-------------------------------------------+                                                                                               |
+//                       |   |         |  generate_movement_only_trajectories      |                                                                                               |
+//                       |   |         |                                           |                                                                                               |
+//                       |   |         |    * generate_escape_only_trajectory      |                                                                                               |
+//                       |   +--------->    * generate_go_toward_enemy_trajectory  +-------------------------------------------------------------------------------------------+   |
+//                       |   |         |    * ...                                  |                                                                                           |   |
+//                       |   |         |                                           |                                                                                           |   |
+//                       |   |         +-------------------------------------------+                                                                                           |   |
+//                       |   |                                                                                                                                                 |   |
+//                       |   |         +---------------------------------------------------------------------------------------------------------------------------------+     |   |
+//                       |   |         |                                                                                                                                 |     |   | allTrajectories
+//                       |   |         |         +---------------------+              +-----------------------------------------------------------------------------+    |     +-------------------->
+//                       |   |         |   combo |                     | actionNodes  | generate_trajectories_from_combo                                            |    |     |   |
+//                       |   |         |     +--->  fill_action_nodes  +-------------->                                                                             |    |     |   |
+//                       |   |         |         |                     |              |                                                                             |    |     |   |
+//                       |   |         |         +---------------------+              |                                                                             |    |     |   |
+//                       |   +--------->                                              | +------------------------------+            +----------------------------+  |    |     |   |
+//                       |             |                                combo         | |                              |trajectories|                            |  |    |     |   |
+//                       |             |                                   +----------> | generate_basic_trajectories  +--->   +----> generate_escape_trajectory |  |    +-----+   |
+//                       |             |                                              | |                              |            |                            |  |    |         |
+//     sortedCombosList  |             |                                              | |                              |result      +----------------------------+  |    |         |
+//                 +------------------->                                              | |                              +--->                                        |    |         |
+//                       |             |                                              | +------------------------------+                                            |    |         |
+//    sortedComboScores  |             |                                              |                                                                             |    |         |
+//                 +------------------->                                              |                                                                             |    |         |
+//                       |             |                                              +-----------------------------------------------------------------------------+    |         |
+//                       |             |                                                                                                                                 |         |
+//                       |             +---------------------------------------------------------------------------------------------------------------------------------+         |
+//                       |                                                                                                                                                         |
+//                       +---------------------------------------------------------------------------------------------------------------------------------------------------------+
+
+
 /*************************************************************************/
 // This function is used to find the trajectory with the best score without 
 // using more operation than the maximum operation limit
 // operationThreshold to be improved
-function find_best_trajectory(){
-	var operationThreshold = 4000000;
+function generate_trajectories(){
+	var operationThreshold = 2000000;
 
 	var nbOp = getOperations();
 	fill_danger_map();
 	fill_safe_nodes();
-	debug("nb instruct fill_danger_map : " + (getOperations() - nbOp));
-	var countTrajectories = 0;
+	generate_movement_only_trajectories();
+	var countTrajectories = 1;
 
 	for (var comboScore in sortedComboScores){
 		//debug("combo: " + sortedCombosList[comboScore[KEY]]);
 		fill_action_nodes(sortedCombosList[comboScore[KEY]]);
-		generate_trajectories(sortedCombosList[comboScore[KEY]]);
+		//debug("action Nodes: " + actionNodes);
+		generate_trajectories_from_combo(sortedCombosList[comboScore[KEY]]);
 		countTrajectories++;
 
 		if (OPERATIONS_LIMIT - getOperations() < operationThreshold){
-			debug("remaing operation inferior to " + operationThreshold);			
+			//debug("remaing operation inferior to " + operationThreshold);			
 			break;
 		}
 	}
-	debug("Trajectories calculated: " + countTrajectories);
+	debug("\nTrajectories calculated: " + countTrajectories);
 }
+
+/*************************************************************************/
+// This function is used to generate movement only trajectories
+// generate_go_toward_enemy_trajectory() to be implemented
+function generate_movement_only_trajectories(){
+	generate_escape_only_trajectory();
+	//generate_go_toward_enemy_trajectory()
+}
+
 
 /*************************************************************************/
 // This function is used to fill the danger map based on 
@@ -549,6 +615,7 @@ function fill_danger_map(){
 			}
 		}
 	}
+	//debug("danger map: "+ dangerMap);
 }
 
 /*************************************************************************/
@@ -584,16 +651,37 @@ function fill_action_nodes(combo){
 // A trajectory is an array : [[cell1, cell2, ...], [skill1, skill2, ...], [targetCell1, targetCell2, ...] [MPUsed1, MPUsed2, ...], score]
 // The number of MP depends on the casted chips (not implemented yet)
 
-function generate_trajectories(combo){
+function generate_trajectories_from_combo(combo){
 	trajectories = [];
-	generate_basic_trajectories(combo);
-	debug("combo: " + combo);
-	debug("trajectories: " + trajectories);
+
+	var result = generate_basic_trajectories(combo);
+
+	if (result[DIRECT] == true && result[INDIRECT] == true){
+		generate_escape_trajectory(trajectories[0]);
+		generate_escape_trajectory(trajectories[1]);
+	}
+	else if (result[DIRECT] == true && result[INDIRECT] == false){
+		generate_escape_trajectory(trajectories[0]);
+	}
+	else if (result[DIRECT] == false && result[INDIRECT] == true){
+		generate_escape_trajectory(trajectories[0]);
+	}	
+	else if (result[DIRECT] == false && result[INDIRECT] == false){
+		//nothing to be done in that case
+	}
+	else {
+		debug("generate_escape_trajectories unhandled case");
+	}
+
+	//debug("combo: " + combo);
+	//debug("trajectories: " + trajectories);
 	pushAll(allTrajectories, trajectories);
 }
 
 /*************************************************************************/
 // This function is used to generate the direct and indirect trajectories of a combo
+// Return an array of boolean to know if the direct and indirect trajectories have been 
+// generated 
 // To be improved : copy the beginning of "direct" in "indirect" until a skill has AOE
 function generate_basic_trajectories(combo){
 
@@ -687,13 +775,75 @@ function generate_basic_trajectories(combo){
 		}
 	}
 
+	var result = [false, false];
+
 	// Check if there is at least one skill used in the trajectories 
 	if (!isEmpty(direct[SKILL])){
 		push(trajectories, direct);
+		result[DIRECT] = true;
 	}
 	// Check if there is at least one skill used in the trajectories 
 	if (!isEmpty(indirect[SKILL])){
 		push(trajectories, indirect);
+		result[INDIRECT] = true;
+	}
+	//debug("trajectories: "+ trajectories);
+	return result;
+}
+
+/*************************************************************************/
+// This function is used to generate the direct and indirect escape trajectories of a combo
+
+function generate_escape_trajectory(trajectory){
+
+	var stop = false;
+
+	while (stop == false){
+
+		var skillNumber = count(trajectory[SKILL]);
+		var nextNodeResult = find_next_node(MOVE, trajectory[CELLS][skillNumber - 1], false, (getMP() - sum(trajectory[MVMP])));
+		//debug ("mp available: " + (getMP() - sum(trajectory[MVMP])) + ", nextNodeResult: "+ nextNodeResult);
+		if (nextNodeResult[TYPE] == true ){
+			var newTrajectory = trajectory;	
+
+			push(newTrajectory[SKILL], MOVE);
+			push(newTrajectory[CELLS], nextNodeResult[CELLS]);
+			push(newTrajectory[MVMP], nextNodeResult[MVMP]);
+			push(newTrajectory[TARGET_CELL], nextNodeResult[TARGET_CELL]);
+
+			push(allTrajectories, newTrajectory);
+			stop = true;
+		}
+		else {
+			pop(trajectory[SKILL]);
+			pop(trajectory[CELLS]);
+			pop(trajectory[MVMP]);
+			pop(trajectory[TARGET_CELL]);
+			if (skillNumber == 1)
+				stop = true;
+		}
+	}
+}
+
+
+/*************************************************************************/
+// This function is used to generate an escape only trajectory (without combo)
+
+function generate_escape_only_trajectory(){
+	var nextNodeResult = find_next_node(MOVE, getCell(), false, getMP());
+	if (nextNodeResult[TYPE] == true ){
+		var newTrajectory = [];	
+		newTrajectory[SKILL] = [];
+		newTrajectory[CELLS] = [];
+		newTrajectory[MVMP] = [];
+		newTrajectory[TARGET_CELL] = [];
+
+		push(newTrajectory[SKILL], MOVE);
+		push(newTrajectory[CELLS], nextNodeResult[CELLS]);
+		push(newTrajectory[MVMP], nextNodeResult[MVMP]);
+		push(newTrajectory[TARGET_CELL], nextNodeResult[TARGET_CELL]);
+
+		push(allTrajectories, newTrajectory);
 	}
 }
 
@@ -705,7 +855,7 @@ function generate_basic_trajectories(combo){
 function find_next_node(skill, currentCell, direct, mpAvailable){
     var nodes = [];
     // if you want to find a safe place then look in the safe nodes
-    if (skill == 2000){
+    if (skill == MOVE){
             nodes = safeNodes;
     }
     // otherwise look in the action nodes
@@ -721,6 +871,7 @@ function find_next_node(skill, currentCell, direct, mpAvailable){
     result[MVMP] = 1000;
 
 	//debug("mpAvailable: " + mpAvailable);
+	//debug("nodes: "+ nodes);
 
     for (var node in nodes){
 		// Check if this node can do a direct hit 
@@ -732,7 +883,12 @@ function find_next_node(skill, currentCell, direct, mpAvailable){
 		//debug("pathLength: " + pathLength);
 		if (pathLength != null){
 			if (pathLength < result[MVMP] && pathLength <= mpAvailable){
-				result[TARGET_CELL] = node["INDIRECT_CELL"];
+				if (skill == MOVE){
+					result[TARGET_CELL] = 0;
+				}
+				else {
+					result[TARGET_CELL] = node["INDIRECT_CELL"];
+				}
 				result[MVMP] = pathLength;
 				result[CELLS] = node["CELL"];
 				result[TYPE] = true;
@@ -747,20 +903,33 @@ function find_next_node(skill, currentCell, direct, mpAvailable){
 	return result;
 }
 
+function find_best_trajectory_score(){
+
+	var bestScore = 0;
+
+	for (var key: var trajectory in allTrajectories){
+		if (trajectory[SCORE] > bestScore){
+			bestScore = trajectory[SCORE];
+			bestTrajectoryKey = key;
+		}
+	}
+	debug("");
+	debug("best trajectory score: " + bestScore);
+}
+
+
 /*************************************************************************/
 // This function is used fill the action sequence with the best trajectory
 function fill_action_sequence(){
 
-	debug(" ");
-	debug("combo: " + allTrajectories[0]);
-	for (var key : var skill in allTrajectories[0][SKILL]){
+	for (var key : var skill in allTrajectories[bestTrajectoryKey][SKILL]){
 		//move to cell
 		actionSequence[actionTotal] = [];
 		actionSequence[actionTotal][0] = MOVE_TO_CELL;	
-		actionSequence[actionTotal][1] = allTrajectories[0][CELLS][key];			
+		actionSequence[actionTotal][1] = allTrajectories[bestTrajectoryKey][CELLS][key];			
 		actionTotal++;
 
-            if (skill != 2000){
+            if (skill != MOVE){
                 //equip weapon if required
                 if (skill > 1000){
                         skill -= 1000;
@@ -774,7 +943,7 @@ function fill_action_sequence(){
                 actionSequence[actionTotal] = [];
                 actionSequence[actionTotal][0] = USE_OBJECT;
                 actionSequence[actionTotal][1] = skill;
-                actionSequence[actionTotal][2] = allTrajectories[0][TARGET_CELL][key];
+                actionSequence[actionTotal][2] = allTrajectories[bestTrajectoryKey][TARGET_CELL][key];
 
                 actionTotal++;
         }
@@ -785,13 +954,48 @@ function fill_action_sequence(){
 // This function is used fill the safeNodes with untargetable cell 
 // TO BE IMPROVED to quantify the danger
 function fill_safe_nodes(){
-        var area = getArea(getMP(), getCell());
+    var area = getArea(getMP(), getCell());
 
-        for (var cell in area){
-                if (dangerMap[cell] == null){
-                        var node = [];
-                        node["CELL"] = cell;
-                        push(safeNodes, node);
-                }
+    //debug("dangerMap: " + dangerMap);
+    for (var cell in area){
+    	//debug("dangerMap[" + cell + "] : " + dangerMap[cell]);
+        if (dangerMap[cell] == null){
+                var node = [];
+                node["CELL"] = cell;
+                push(safeNodes, node);
         }
+    }
+    //debug("safeNodes: " + safeNodes);
+}
+
+
+/*************************************************************************/
+// This function is used to calculate the score of the trajectories
+// The score is determined:
+//  * with the score function (the one used to calculate the combo score)
+//  * with the potential damage done by the enemy on the last cell (not implemented yet)
+
+function calculate_trajectories_score(){
+	//debug("calculate_trajectories_score");
+
+	ourLeekCarac = getLeekCarac(ourLeekID);
+	enemyLeekCarac = getLeekCarac(enemyID);
+
+	ourLeekCaracTemp = ourLeekCarac;
+	enemyLeekCaracTemp = enemyLeekCarac;
+
+
+	for(var key: var trajectory in allTrajectories){
+		//debug("key: "+ key + ", trajectory: " + trajectory);
+		//debug("trajectory[SKILL]: " + trajectory[SKILL]);
+		ourLeekCaracTemp = ourLeekCarac;
+		enemyLeekCaracTemp = enemyLeekCarac;
+
+		var score = calculateScore(trajectory[SKILL]);
+		//debug("score : " + score);
+		allTrajectories[key][SCORE] = score;
+	}
+
+	//implement enemy damage (to be implemented)
+
 }

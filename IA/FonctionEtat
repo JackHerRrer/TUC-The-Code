@@ -42,6 +42,7 @@ function initTurnFunction(){
 	sortedComboScores = [];
 	allTrajectories = [];
 	trajectories = [];
+	bestTrajectoryKey = null;
 
 	// raz des carac des leeks
 	ourLeekCarac = [];
@@ -115,75 +116,6 @@ function actionChoiceFunction(){
 	
 }
 
-function equipShotgunFunction(){
-	debug("equip shotgun state"); 	
-	setWeapon(WEAPON_SHOTGUN); // Attention : coûte 1 PT
-	weaponID = getWeapon();
-
-	etat = ACTION_CHOICE;
-}
-
-function equipMagnumFunction(){
-	debug("equip magnum state"); 	
-	setWeapon(WEAPON_MAGNUM); // Attention : coûte 1 PT
-	weaponID = getWeapon();
-
-	etat = ACTION_CHOICE;
-}
-
-
-function equipGrenadeLauncherFunction(){
-	debug("equip grenadeLauncher state"); 	
-	setWeapon(WEAPON_GRENADE_LAUNCHER); // Attention : coûte 1 PT
-	weaponID = getWeapon();
-
-	etat = ACTION_CHOICE;
-}
-
-function equipGazorFunction(){
-	debug("equip gazor state"); 	
-	setWeapon(WEAPON_GAZOR); // Attention : coûte 1 PT
-	weaponID = getWeapon();
-
-	etat = ACTION_CHOICE;
-}
-
-
-function moveTowardEnemyFunction (){
-	debug("move toward enemy state"); 	
-	moveToward(enemyID);
-
-	etat = ACTION_CHOICE;
-}
-
-function moveAwayFromEnemyFunction(){
-	debug("move away from enemy state"); 	
-	
-	var closestCell;
-	var shortestPath=-1;
-	for (var cell in movingArea){
-		if (dangerMap[cell] == null){
-			mark(cell, getColor(20, 235, 20));
-			var pathLength = getPathLength(getCell(), cell);
-			if (pathLength <= getMP()){
-				if (shortestPath == -1 || pathLength < shortestPath){
-					shortestPath = pathLength;
-					closestCell = cell;
-				}
-			}
-		}
-
-	}
-
-	if (shortestPath != -1){
-		moveTowardCell(closestCell);
-	}
-	else {
-		moveAwayFrom(enemyID);
-	}
-
-	etat = LAST_ACTION;
-}
 
 function summonPunnyBulbFunction(){
 	debug("summon punny bulb state"); 	
@@ -191,193 +123,6 @@ function summonPunnyBulbFunction(){
 	var summoningCell = getCell();
 	moveToward(enemyID, 1);
 	summon(CHIP_PUNY_BULB, summoningCell, stateMachine);
-
-	etat = ACTION_CHOICE;
-}
-
-function moveTowardLeekFunction(){
-	debug("move toward leek state"); 	
-
-	moveToward(ourLeekID);
-
-	etat = ACTION_CHOICE;	
-}
-
-function moveToWeaponRangeFunction(){
-	debug("move to weapon range state"); 	
-
-	moveTowardCell(canUseIfMoving((weaponID),  getCell(enemyID),  getLeek(), true,  false));
-
-	etat = ACTION_CHOICE;
-}
-
-function moveToLightningRangeFunction(){
-	debug("move to lightning range state"); 	
-
-	moveTowardCell(canUseIfMoving(CHIP_LIGHTNING,  getCell(enemyID),  getLeek(), true,  false));
-
-	etat = ACTION_CHOICE;
-}
-
-function moveToStalactiteRangeFunction(){
-	debug("move to stalactite range state"); 	
-
-	moveTowardCell(canUseIfMoving(CHIP_STALACTITE,  getCell(enemyID),  getLeek(), true,  false));
-
-	etat = ACTION_CHOICE;
-
-}
-
-function moveToSparkRangeFunction(){
-	debug("move to spark range state"); 	
-
-	moveTowardCell(canUseIfMoving(CHIP_SPARK,  getCell(enemyID),  getLeek(), true,  false));
-
-	etat = ACTION_CHOICE;
-
-}
-
-function moveToHelmetRangeFunction(){
-	debug("move to helmet range state"); 	
-
-	moveTowardCell(canUseIfMoving(CHIP_HELMET,  ourLeekID,  getLeek(), true,  false));
-
-	etat = ACTION_CHOICE;
-}
-
-function useWeaponFunction(){
-	debug("use weapon state"); 	
-
-	useWeapon(enemyID);
-
-	etat = ACTION_CHOICE;	
-}
-
-function useBandageFunction(){
-	debug("use bandage state");
-
-	useChip(CHIP_BANDAGE, ourLeekID);
-
-	etat = ACTION_CHOICE;	
-}
-
-function useStalactiteFunction(){
-	debug("use stalactite state");
-
-	useChip(CHIP_STALACTITE, enemyID);
-
-	etat = ACTION_CHOICE;
-}
-
-function useRockFunction(){
-	debug("use rock state");
-
-	useChip(CHIP_ROCK, enemyID);
-
-	etat = ACTION_CHOICE;
-}
-
-function usePebbleFunction(){
-	debug("use pebble state");
-
-	useChip(CHIP_PEBBLE, enemyID);
-
-	etat = ACTION_CHOICE;
-}
-
-function useToxinFunction(){
-	debug("use toxin state");
-
-	useChip(CHIP_TOXIN, enemyID);
-
-	etat = ACTION_CHOICE;
-}
-
-function useLiberationFunction(){
-	debug("use liberation state");
-
-	useChip(CHIP_LIBERATION, enemyID);
-
-	etat = ACTION_CHOICE;
-}
-
-
-function useHelmetFunction(){
-	debug("use helmet state");
-
-	useChip(CHIP_HELMET, ourLeekID);
-
-	etat = ACTION_CHOICE;
-}
-
-function useShieldFunction(){
-	debug("use SHIELD state");
-
-	useChip(CHIP_SHIELD, ourLeekID);
-
-	etat = ACTION_CHOICE;
-}
-
-function useFortressFunction(){
-	debug("use fortress state");
-
-	useChip(CHIP_FORTRESS, ourLeekID);
-
-	etat = ACTION_CHOICE;
-}
-
-function useRampartFunction(){
-	debug("use rampart state");
-
-	useChip(CHIP_RAMPART, ourLeekID);
-
-	etat = ACTION_CHOICE;
-}
-
-function useProteinFunction(){
-	debug("use protein state");
-
-	useChip(CHIP_PROTEIN, ourLeekID);
-
-	etat = ACTION_CHOICE;
-}
-
-function useSparkFunction(){
-	debug("use spark state");
-
-	useChip(CHIP_SPARK, enemyID);
-
-	etat = ACTION_CHOICE;
-}
-
-function useLightningFunction(){
-	debug("use lightning state");
-
-	useChip(CHIP_LIGHTNING, enemyID);
-
-	etat = ACTION_CHOICE;
-}
-
-function useArmoringFunction(){
-	debug("use armoring state");
-
-	useChip(CHIP_ARMORING, ourLeekID);
-
-	etat = ACTION_CHOICE;
-}
-
-function useArmorFunction(){
-	debug("use armor state");
-
-	useChip(CHIP_ARMOR, ourLeekID);
-
-	etat = ACTION_CHOICE;
-}
-
-function useRegenerationFunction(){
-	debug("use regeneration state");
-
-	useChip(CHIP_REGENERATION, ourLeekID);
 
 	etat = ACTION_CHOICE;
 }
@@ -403,7 +148,6 @@ function useObjectFunction(){
 
 	etat = ACTION_CHOICE;
 }
-
 
 function moveToCellFunction(){
 	// Parameters of this state

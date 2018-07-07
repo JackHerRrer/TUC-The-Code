@@ -36,8 +36,27 @@ function getDamage(ID, strength) {
 	return damage;
 }
 
-/******************************************************************************************/
+/********************************************************************************************/
+// function used to return the average armor buff of a skill 
+function getArmorBuff(ID, resistance) {	
+	var averageDamage = 0;
 
+	if(isChip(ID)) {
+	
+		var chipEffect = getChipEffects(ID);
+		
+		if(chipEffect[0][0] == EFFECT_ABSOLUTE_SHIELD || chipEffect[0][0] == EFFECT_RELATIVE_SHIELD){
+			averageDamage = ((chipEffect[0][2] * (1+resistance/100))+(chipEffect[0][2] * (1+resistance/100)))/2;
+		}
+	} else {
+		debug("getArmorBuff: Not a chip");
+	}
+	return averageDamage;
+}
+
+/******************************************************************************************/
+// Fonction used to calculate the average damage of a skill
+// every parameters are managed
 function calculateDamage(userStrenght, targetCell, targetRelativeShield, targetAbsoluteShield, objectID, cellID) {	
 
 	var area;
@@ -75,6 +94,7 @@ function calculateDamage(userStrenght, targetCell, targetRelativeShield, targetA
 			return null;
 		}
 
+		// calculate the average damage. If the result is inferior to 0, then 0 is returned 
 		return max(0, (damage["MAX"] + damage["MIN"])/2 * ratioDistance * (1 - targetRelativeShield / 100) - targetAbsoluteShield);
 	}
 	else {
@@ -115,6 +135,7 @@ function default_score_function(skill){
 function damage_score_function(skill){
 
 	// TO BE IMPROVED, for the moment only direct hits are handled
+	// calculateDamage return the average damage value, not the exact value.
 	return calculateDamage(ourLeekCaracTemp[STRENGTH], enemyLeekCaracTemp[CELL], enemyLeekCaracTemp[RELATIVE_SHIELD], enemyLeekCaracTemp[ABSOLUTE_SHIELD], skill, enemyLeekCaracTemp[CELL]);
 
 }
@@ -124,7 +145,16 @@ function damage_score_function(skill){
 
 function armor_score_function(skill){
 
-
+	var effects = getChipEffects(skill);
+	if (effects[0] == RELATIVE_SHIELD){
+		ourLeekCaracTemp[RELATIVE_SHIELD] = getArmorBuff(skill, ourLeekCaracTemp[RESISTANCE]);
+	}
+	else if (effects[0] == ABSOLUTE_SHIELD){		
+		ourLeekCaracTemp[ABSOLUTE_SHIELD] = getArmorBuff(skill, ourLeekCaracTemp[RESISTANCE]);
+	}
+	else debug("armor score function error");
+	
+	return 0;
 }
 
 /*******************************************************************************************/
