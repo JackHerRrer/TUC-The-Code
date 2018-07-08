@@ -1,5 +1,5 @@
 include("GlobalVar");
-
+include("util_combos");
 
 /********************************************************************************************/
 
@@ -104,6 +104,14 @@ function calculateDamage(userStrenght, targetCell, targetRelativeShield, targetA
 }
 
 /******************************************************************************************/
+// stub score function. Used whenever the score function of a skill has not been implemented yet.
+function default_score_function(){
+
+	//var skill = analyzedTrajectory[skillKey][SKILL];
+	return 0;
+}
+
+/******************************************************************************************/
 // Gather the caracteristics of leekId and store them leekCarac
 // TO BE COMPLETED
 function getLeekCarac(leekId){
@@ -124,16 +132,17 @@ function getLeekCarac(leekId){
 	return leekCarac;
 }
 
-/******************************************************************************************/
-
-function default_score_function(skill){
-	return 0;
-}
 
 /******************************************************************************************/
 
-function damage_score_function(skill){
+function damage_score_function(){
 
+	// retrieve the information associated to the skill being analyzed
+	var skill = analyzedTrajectory[SKILL][skillKey];
+	if (skill === null){
+		debugE("damage_score_function: skill is null");
+		return 0;
+	}
 	// TO BE IMPROVED, for the moment only direct hits are handled
 	// calculateDamage return the average damage value, not the exact value.
 	return calculateDamage(ourLeekCaracTemp[STRENGTH], enemyLeekCaracTemp[CELL], enemyLeekCaracTemp[RELATIVE_SHIELD], enemyLeekCaracTemp[ABSOLUTE_SHIELD], skill, enemyLeekCaracTemp[CELL]);
@@ -143,13 +152,20 @@ function damage_score_function(skill){
 
 /******************************************************************************************/
 
-function armor_score_function(skill){
+function armor_score_function(){
+
+	// retrieve the information associated to the skill being analyzed
+	var skill = analyzedTrajectory[SKILL][skillKey];
+	if (skill === null){
+		debugE("damage_score_function: skill is null");
+		return 0;
+	}
 
 	var effects = getChipEffects(skill);
-	if (effects[0] == RELATIVE_SHIELD){
+	if (effects[0][0] == EFFECT_RELATIVE_SHIELD){
 		ourLeekCaracTemp[RELATIVE_SHIELD] = getArmorBuff(skill, ourLeekCaracTemp[RESISTANCE]);
 	}
-	else if (effects[0] == ABSOLUTE_SHIELD){		
+	else if (effects[0][0] == EFFECT_ABSOLUTE_SHIELD){		
 		ourLeekCaracTemp[ABSOLUTE_SHIELD] = getArmorBuff(skill, ourLeekCaracTemp[RESISTANCE]);
 	}
 	else debug("armor score function error");
@@ -159,7 +175,14 @@ function armor_score_function(skill){
 
 /*******************************************************************************************/
 
-function buff_score_function(skill){
+function buff_score_function(){
+
+	// retrieve the information associated to the skill being analyzed
+	var skill = analyzedTrajectory[SKILL][skillKey];
+	if (skill === null){
+		debugE("damage_score_function: skill is null");
+		return 0;
+	}
 
 	var effects;
 	effects = getChipEffects(skill);

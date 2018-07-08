@@ -1,24 +1,32 @@
 /********************************************************************************************
                           
-                                 strategy_choice
-                                        +
-                                        |
-                                        |
-           +----------------------------v----------------------------+
-           +---------------------------------------------------------+
-           |                            |                            |
-           +- is_leek                   +- is_punny_bulb             +- is_..._bulb
-           |                            |                            |
-+----------v-----------+   +------------v-------------+  +-----------v--------------+
-| LEEK_STRATEGY_CHOICE |   |PUNNY_BULB_STRATEGY_CHOICE|  | ..._BULB_STRATEGY_CHOICE |
-+----------+-----------+   +------------+-------------+  +-----------+--------------+
-           |                            |                            |
-           |                            |                            |
-          +v----------------------------v----------------------------v-+
-                                        |
-                                        |
-                                        v
-                                  action_choice
+
+
+                    leek_strategy_choice
+                             +
+                             |
+                             |
+            +----------------------------------+
+            +----------------------------------+
+            |                                  |
+            |                                  |
+            ++  turn 1                         ++  not turn 1
+            |                                  |
+     +------v-----+                     +------v---------+
+     |EQUIP_WEAPON|                     | fight_strategy |
+     +------------+                     +----------------+
+            |                                  |
+            |                                  |
+     +------v-----+                            |
+     |SUMMON_BULB |                            |
+     +------------+                            |
+            |                                  |
+            +----------------------------------+
+                            |
+                            |
+                            v
+
+                      action_choice
 
 ********************************************************************************************/
 
@@ -36,10 +44,6 @@ function leekStrategyChoice(){
 		first_turn_strategy();
 	}
 
-	//else if (getTurn() > 1 && getTurn() < 5){
-	//	running_away_strategy();
-	//}
-	
 	else {
 		fight_strategy();
 	}
@@ -48,6 +52,8 @@ function leekStrategyChoice(){
 
 function punnyBulbStrategyChoice(){
 
+	debug("Bulb not handled");
+	/*
 	var bulbCanUseHelmetIfMoving = canUseIfMoving(CHIP_HELMET,  getCell(ourLeekID),  getLeek(), true,  false);
 	var enemyCanUseWeaponIfMoving;
 	
@@ -96,20 +102,9 @@ function punnyBulbStrategyChoice(){
 		actionSequence[actionTotal][0] = USE_PROTEIN; 
 		actionTotal++;
 	}
+	*/
 }
 
-
-function running_away_strategy(){
-	actionSequence[actionTotal] = []; 	
-	actionSequence[actionTotal][0] = MOVE_AWAY_FROM_ENEMY; 		// 0-3 MP
-	actionTotal++;
-
-	if (getCooldown(CHIP_PUNY_BULB) == 0 ){ 		// 6 on vérifie qu'on est pas en cooldown et qu'on a pas déjà invoqué un bulbes
-			actionSequence[actionTotal] = []; 	
-			actionSequence[actionTotal][0] = SUMMON_PUNNY_BULB; 	// 6 TP	+ 1 MP
-			actionTotal++;
-		}
-}
 
 /********************************************************************************************
 
@@ -314,6 +309,7 @@ function fight_strategy(){
 	nbOp = getOperations();
 	filterCombos();
 	//debug("filteredCombosList: " + filteredCombosList);
+	debug("total filtered combos: " + count(filteredCombosList));
 	debug("nb instruct filterCombos : " + (getOperations() - nbOp));
 
 	nbOp = getOperations();
@@ -333,7 +329,7 @@ function fight_strategy(){
 
 	nbOp = getOperations();
 	generate_trajectories();
-	debug("all trajectories without score: " + allTrajectories);
+	//debug("all trajectories without score: " + allTrajectories);
 	debug("nb instruct generate_trajectories : " + (getOperations() - nbOp));
 
 	nbOp = getOperations();

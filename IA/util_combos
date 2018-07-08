@@ -469,14 +469,19 @@ function calculateCombosScore(){
 	ourLeekCarac = getLeekCarac(ourLeekID);
 	enemyLeekCarac = getLeekCarac(enemyID);
 
-	ourLeekCaracTemp = ourLeekCarac;
-	enemyLeekCaracTemp = enemyLeekCarac;
+	// We will analyze a combo not a trajectory 
+	isCombo = true;
 
 	for (var key : var combo in sortedCombosList){
+		
 		ourLeekCaracTemp = ourLeekCarac;
 		enemyLeekCaracTemp = enemyLeekCarac;
 
+		// score functions uses a trajectory. Therefore, we fill a trajectory with the combo
+		analyzedTrajectory[SKILL] = combo;
+
 		var score = calculateScore(combo);
+
 		var scoreAndKey = [];
 		scoreAndKey[SCORE] = score;
 		scoreAndKey[KEY] = key;
@@ -491,9 +496,10 @@ function calculateCombosScore(){
 
 function calculateScore(combo){
 	var score = 0;
-
+	skillKey = 0;
 	for (var skill in combo){
-			score += skills[skill][SCORE_FUNCTION](skill);
+		score += skills[skill][SCORE_FUNCTION]();
+		skillKey++;
 	}
 
 	return score;
@@ -511,6 +517,15 @@ function sortCombosByScore(){
 }
 
 
+// A trajectory is an array containing:
+// * the list of the skills that will be used (it is a combo)
+// * the cell from where the skill will be casted
+// * the MP used to go to this cell
+// * the cell target by the skill
+// * the score of the combo
+//
+// [[cell1, cell2, ...], [skill1, skill2, ...], [targetCell1, targetCell2, ...] [MPUsed1, MPUsed2, ...], score]
+//
 //                       +---------------------------------------------------------------------------------------------------------------------------------------------------------+
 //                       | generate_trajectories                                                                                                                                   |
 //                       |                                                                                                                                                         |
@@ -903,6 +918,9 @@ function find_next_node(skill, currentCell, direct, mpAvailable){
 	return result;
 }
 
+/*************************************************************************/
+// This function is used to find the best trajectory
+// Only the key of the best trajectory is stored
 function find_best_trajectory_score(){
 
 	var bestScore = 0;
@@ -981,15 +999,16 @@ function calculate_trajectories_score(){
 	ourLeekCarac = getLeekCarac(ourLeekID);
 	enemyLeekCarac = getLeekCarac(enemyID);
 
-	ourLeekCaracTemp = ourLeekCarac;
-	enemyLeekCaracTemp = enemyLeekCarac;
-
+	// We will analyze a trajectory not a combo 
+	isCombo = false;
 
 	for(var key: var trajectory in allTrajectories){
 		//debug("key: "+ key + ", trajectory: " + trajectory);
 		//debug("trajectory[SKILL]: " + trajectory[SKILL]);
 		ourLeekCaracTemp = ourLeekCarac;
 		enemyLeekCaracTemp = enemyLeekCarac;
+
+		analyzedTrajectory = trajectory;
 
 		var score = calculateScore(trajectory[SKILL]);
 		//debug("score : " + score);

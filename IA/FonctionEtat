@@ -49,6 +49,15 @@ function initTurnFunction(){
 	enemyLeekCarac = [];
 	ourLeekCaracTemp = [];
 	enemyLeekCaracTemp = [];
+
+	// variables and signals used to calculate the scores
+	isCombo = true;
+	skillKey = 0;
+	analyzedTrajectory = [];
+		analyzedTrajectory[SKILL] = [];
+		analyzedTrajectory[CELLS] = [];
+		analyzedTrajectory[MVMP] = [];
+		analyzedTrajectory[TARGET_CELL] = [];
 	
 	// Choose the closest leek enemy (not a bulb)
 	// TO BE IMPROVED

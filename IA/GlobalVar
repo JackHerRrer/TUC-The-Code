@@ -21,41 +21,9 @@ global ACTION_CHOICE = 		"ACTION_CHOICE";
 global LAST_ACTION = 		"LAST_ACTION";
 global END_TURN = 			"END_TURN";
 
-global MOVE_TOWARD_ENEMY = 		"MOVE_TOWARD_ENEMY";
-global MOVE_AWAY_FROM_ENEMY=	"MOVE_AWAY_FROM_ENEMY";
-global MOVE_TO_WEAPON_RANGE=	"MOVE_TO_WEAPON_RANGE";
-global MOVE_TO_LIGHTNING_RANGE=	"MOVE_TO_LIGHTNING_RANGE";
-global MOVE_TO_STALACTITE_RANGE="MOVE_TO_STALACTITE_RANGE";
-global MOVE_TO_SPARK_RANGE=		"MOVE_TO_SPARK_RANGE";
-global MOVE_TO_HELMET_RANGE=	"MOVE_TO_HELMET_RANGE";
-global MOVE_TO_CELL=			"MOVE_TO_CELL";
 
-global EQUIP_SHOTGUN = 			"EQUIP_SHOTGUN";
-global EQUIP_MAGNUM = 			"EQUIP_MAGNUM";
-global EQUIP_GRENADE_LAUNCHER=	"EQUIP_GRENADE_LAUNCHER";
-global EQUIP_GAZOR= 			"EQUIP_GAZOR";
-global USE_WEAPON=	 			"USE_WEAPON";
-
+global MOVE_TO_CELL=		"MOVE_TO_CELL";
 global SUMMON_PUNNY_BULB =  "SUMMON_PUNNY_BULB";
-global MOVE_TOWARD_LEEK= 	"MOVE_TOWARD_LEEK";
-global USE_BANDAGE= 		"USE_BANDAGE";
-global USE_STALACTITE= 		"USE_STALACTITE";
-global USE_ROCK= 			"USE_ROCK";
-global USE_PEBBLE=			"USE_PEBBLE";
-global USE_HELMET=			"USE_HELMET";
-global USE_SHIELD=			"USE_SHIELD";
-global USE_PROTEIN = 		"USE_PROTEIN";
-global USE_SPARK =	 		"USE_SPARK";
-global USE_LIGHTNING = 		"USE_LIGHTNING";
-global USE_RAMPART =		"USE_RAMPART";
-global USE_FORTRESS =		"USE_FORTRESS";
-global USE_ARMORING =		"USE_ARMORING";
-global USE_ARMOR =			"USE_ARMOR";
-global USE_REGENERATION =	"USE_REGENERATION";
-global USE_TOXIN =			"USE_TOXIN";
-global USE_LIBERATION=		"USE_LIBERATION";
-
-
 global USE_OBJECT = 		"USE_OBJECT";
 global EQUIP_WEAPON = 		"EQUIP_WEAPON";
 
@@ -94,8 +62,8 @@ global sortedCombosList = [];
 global filteredCombosList = [];
 global comboScores = [];
 global sortedComboScores = [];
-global allTrajectories = [];
-global trajectories = []; //used to store the trajectories of a single combo 
+global allTrajectories = [];	// trajecories description in util_combo
+global trajectories = [];   //used to store the trajectories of a single combo 
 global bestTrajectoryKey;	//is the key of the trajectoy with the best score
 
 // Leeks carac
@@ -117,3 +85,8 @@ global AGILITY = 			"AGILITY";
 global MP = 				"MP";
 global TP = 				"TP";
 global RESISTANCE = 		"RESISTANCE";
+
+// variables and signals used to calculate the scores
+global isCombo = true;  // used to know if we are calculating the score of a combo or of a trajectory
+global skillKey = 0;	// counter used to know whicj skill we are currently evaluating
+global analyzedTrajectory = []; // array used to store the trajectory currently being evaluated, even if we are avaluate a combo.
