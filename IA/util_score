@@ -57,6 +57,7 @@ function getArmorBuff(ID, resistance) {
 /******************************************************************************************/
 // Fonction used to calculate the average damage of a skill
 // every parameters are managed
+// except poison: to be improved
 function calculateDamage(userStrenght, targetCell, targetRelativeShield, targetAbsoluteShield, objectID, cellID) {	
 
 	var area;
@@ -143,10 +144,15 @@ function damage_score_function(){
 		debugE("damage_score_function: skill is null");
 		return 0;
 	}
-	// TO BE IMPROVED, for the moment only direct hits are handled
-	// calculateDamage return the average damage value, not the exact value.
-	return calculateDamage(ourLeekCaracTemp[STRENGTH], enemyLeekCaracTemp[CELL], enemyLeekCaracTemp[RELATIVE_SHIELD], enemyLeekCaracTemp[ABSOLUTE_SHIELD], skill, enemyLeekCaracTemp[CELL]);
-
+	
+	// If the current combo
+	if (isCombo == true){
+		// calculateDamage return the average damage value, not the exact value.
+		return calculateDamage(ourLeekCaracTemp[STRENGTH], enemyLeekCaracTemp[CELL], enemyLeekCaracTemp[RELATIVE_SHIELD], enemyLeekCaracTemp[ABSOLUTE_SHIELD], skill, enemyLeekCaracTemp[CELL]);
+	}
+	else {
+		return calculateDamage(ourLeekCaracTemp[STRENGTH], analyzedTrajectory[TARGET_CELL][skillKey], enemyLeekCaracTemp[RELATIVE_SHIELD], enemyLeekCaracTemp[ABSOLUTE_SHIELD], skill, enemyLeekCaracTemp[CELL]);
+	}
 }
 
 
@@ -210,4 +216,22 @@ function buff_score_function(){
 		debugE("buffScorefunction error: skill: " + skill + " effect: " + effects[0]);
 	}
 	return 0;
+}
+
+// function used to calculate the score of the cell postion (to be improved)
+//  * doesn't handle indirect hit
+//  * approximate the damages: only takes the highest damage skill once
+
+function calculatePositionScore(cell){
+	
+	var highestDamage = 0;
+	 
+	for (var skill in dangerMap[cell]){
+		var damage = calculateDamage(ourLeekCaracTemp[STRENGTH], cell, ourLeekCaracTemp[RELATIVE_SHIELD], ourLeekCaracTemp[ABSOLUTE_SHIELD], skill["OBJECT_ID"], cell);
+		if (damage > highestDamage){
+			highestDamage = damage;
+		}
+	}
+
+	return -highestDamage;
 }

@@ -584,8 +584,10 @@ function generate_trajectories(){
 	var operationThreshold = 2000000;
 
 	var nbOp = getOperations();
-	fill_danger_map();
-	fill_safe_nodes();
+	fill_danger_map(true);
+	//debug("danger map: " + dangerMap);
+	debug("nb instruct fill danger map : " + (getOperations() - nbOp));
+	fill_safe_nodes(true);
 	generate_movement_only_trajectories();
 	var countTrajectories = 1;
 
@@ -617,18 +619,61 @@ function generate_movement_only_trajectories(){
 // This function is used to fill the danger map based on 
 //  * the chips and weapons of the enemy leek
 //  * the chips of the enemy bulbs (not implemented yet)
-function fill_danger_map(){
+function fill_danger_map(show){
 	
-	var enemySkills = [];
-	pushAll(enemySkills, getChips(enemyID));
-	pushAll(enemySkills, getWeapons(enemyID));
-
-	for (var skill in enemySkills){
-		if (skills[skill][TYPE] == DEBUFF || skills[skill][TYPE] == DAMAGE || skills[skill][TYPE] == POISON){
-			if (dangerNodes[skill] == null){
-				canUseIfMoving(skill,  getCell(enemyID),  enemyID, true,  false);
-			}
+	// retrieve all the cell where our leek can go
+	var area = getArea(getMP(), getCell());
+	if (show == true){	
+		for (var cell in area){
+			mark(cell, getColor(200,25,150));
 		}
+	}
+
+	// Choose which skills should be analyzed
+	// this is a data loss, but it is required to limit the number of operations
+
+	// variable used to store the skills that will be analyzed
+	var enemySkills = [];
+
+	// only analyze the weapon currently being equiped
+	push(enemySkills, getWeapon(enemyID));
+
+
+	// variables used to find the chip that deals the most damage
+	var maxDamage = 0;
+	var chosenChip = null;
+
+	// retrieve the chips that deals damages
+	for (var chip in getChips(enemyID)){	
+		// if the chip doesn't deal damages, drop it 
+		if (skills[chip][TYPE] != DAMAGE && skills[chip][TYPE] != POISON){
+			continue;
+		}
+		var damage = getDamage(chip, getStrength(enemyID));
+		if ((damage["Max"] + damage["Min"] / 2) > maxDamage){
+			chosenChip = chip;
+			maxDamage = (damage["Max"] + damage["Min"] / 2);
+		}
+	}
+
+	if (chosenChip != null){
+		push(enemySkills, chosenChip);
+	}
+
+	// for each cell the leek can reach, check if the cell can be targeted by the chosen enemy skills
+	for (var key : var cell in area){
+		var nbOp = getOperations();
+		for (var skill in enemySkills){
+				// if the skill is a chip, check its cooldown. If it is on cooldown, don't bother calculate the danger.
+				if (isChip(skill) && getCooldown(skill, enemyID) != 0){
+					debug("on cooldownn");
+					continue;
+				}
+				if (dangerMap[cell] == null){
+					canUseIfMoving(skill, cell, enemyID, false,  false);
+				}
+			}
+	//debug("cell: " + cell + ", nb instruct " + key + "/" + count(area)+ ": " + (getOperations() - nbOp));
 	}
 	//debug("danger map: "+ dangerMap);
 }
@@ -971,13 +1016,16 @@ function fill_action_sequence(){
 /*************************************************************************/
 // This function is used fill the safeNodes with untargetable cell 
 // TO BE IMPROVED to quantify the danger
-function fill_safe_nodes(){
+function fill_safe_nodes(show){
     var area = getArea(getMP(), getCell());
 
     //debug("dangerMap: " + dangerMap);
     for (var cell in area){
     	//debug("dangerMap[" + cell + "] : " + dangerMap[cell]);
         if (dangerMap[cell] == null){
+        		if (show == true) {
+        			mark(cell, COLOR_GREEN);
+        		}
                 var node = [];
                 node["CELL"] = cell;
                 push(safeNodes, node);
@@ -1002,6 +1050,9 @@ function calculate_trajectories_score(){
 	// We will analyze a trajectory not a combo 
 	isCombo = false;
 
+	// for each trajectory, calculate its score:
+	//  * the score based on the skills
+	//  * plus the score based on the final cell
 	for(var key: var trajectory in allTrajectories){
 		//debug("key: "+ key + ", trajectory: " + trajectory);
 		//debug("trajectory[SKILL]: " + trajectory[SKILL]);
@@ -1011,6 +1062,7 @@ function calculate_trajectories_score(){
 		analyzedTrajectory = trajectory;
 
 		var score = calculateScore(trajectory[SKILL]);
+		score += calculatePositionScore(trajectory[CELLS][count(trajectory[CELLS])-1]);
 		//debug("score : " + score);
 		allTrajectories[key][SCORE] = score;
 	}

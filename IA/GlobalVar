@@ -66,12 +66,6 @@ global allTrajectories = [];	// trajecories description in util_combo
 global trajectories = [];   //used to store the trajectories of a single combo 
 global bestTrajectoryKey;	//is the key of the trajectoy with the best score
 
-// Leeks carac
-global ourLeekCarac = [];
-global enemyLeekCarac = [];
-global ourLeekCaracTemp = [];
-global enemyLeekCaracTemp = [];
-
 
 // Constantes utilisées pour remplacer les structures 
 //global ID = 				"ID";
@@ -90,3 +84,9 @@ global RESISTANCE = 		"RESISTANCE";
 global isCombo = true;  // used to know if we are calculating the score of a combo or of a trajectory
 global skillKey = 0;	// counter used to know whicj skill we are currently evaluating
 global analyzedTrajectory = []; // array used to store the trajectory currently being evaluated, even if we are avaluate a combo.
+
+global ourLeekCarac = [];		// base carac of our leek
+global enemyLeekCarac = [];		// base carac of the enemy leek
+global ourLeekCaracTemp = [];	// carac of our leek with the buffs
+global enemyLeekCaracTemp = []; // carac of the enemy leek with the debuffs
+

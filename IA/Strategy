@@ -275,6 +275,7 @@ function fight_strategy(){
 	var leekSkills = [];
 	pushAll(leekSkills, getChips());
 	pushAll(leekSkills, getWeapons());
+	debug("Our Leek");
 	for (var skill in leekSkills){
 		if (isWeapon(skill))
 			debug("ID: " + skill + ", " + getSkillName(skill) + ", cd: " + getWeaponCost(skill));
@@ -282,7 +283,17 @@ function fight_strategy(){
 			debug("ID: " + skill + ", " + getSkillName(skill) + ", cd: " + getChipCost(skill));
 	}
 	debug("");
-
+	debug("Enemy Leek");
+	leekSkills = [];
+	pushAll(leekSkills, getChips(enemyID));
+	pushAll(leekSkills, getWeapons(enemyID));
+	for (var skill in leekSkills){
+		if (isWeapon(skill))
+			debug("ID: " + skill + ", " + getSkillName(skill) + ", cd: " + getWeaponCost(skill));
+		else
+			debug("ID: " + skill + ", " + getSkillName(skill) + ", cd: " + getChipCost(skill));
+	}
+	debug("");
 	// Calcul des combos
 	var maxTP = getTP();
 
