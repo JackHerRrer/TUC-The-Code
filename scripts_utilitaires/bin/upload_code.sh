@@ -8,9 +8,14 @@ echo
 echo -----------
 echo upload du fichier : $1
 echo get ID
-IA_ID=$(curl "https://leekwars.com/api/ai/get-farmer-ais/$" -H "Cookie: ${TOKEN}"  \
-							--data "token="%"24" \
-							2>/dev/null \
+#curl "https://leekwars.com/api/ai/get-farmer-ais" -H "Cookie: ${TOKEN}"  -H "Authorization: Bearer $"
+
+echo ---- 
+echo
+IA_ID=$(curl "https://leekwars.com/api/ai/get-farmer-ais" \
+		-H "Cookie: ${TOKEN}"  \
+		-H "Authorization: Bearer $"\
+		2>/dev/null \
 	| jq ".ais | map(select(.name == \"$1\") | .id)" \
 	| grep -oP "\d*")
 
@@ -19,8 +24,8 @@ echo IA_ID $IA_ID
 echo Charge code 
 
 RESULT_UPLOAD=$(curl "https://leekwars.com/api/ai/save/" -H "Cookie: ${TOKEN}"  \
+					-H "Authorization: Bearer $"\
 					--data "ai_id=${IA_ID}" \
-					--data "token="%"24" \
 					--data-urlencode "code@$2"\
 					2>/dev/null)
 
