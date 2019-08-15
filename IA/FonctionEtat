@@ -9,6 +9,8 @@ function initGameFunction(){
 
     ourLeekID = getLeek();
 
+    generateGroundScoreMap();
+
 	etat = INIT_TURN;
 }
 
@@ -30,7 +32,9 @@ function initTurnFunction(){
 	actionNodes = [];
 	dangerNodes = [];
 	safeNodes = [];
-
+	
+	processedActions = [];
+	
 	// raz des donnés de combo
 	skillsCostList = [];
 	costCombosList = [];
@@ -40,6 +44,7 @@ function initTurnFunction(){
 	filteredCombosList = [];
 	comboScores = [];
 	sortedComboScores = [];
+	nbComboUsed = 0;
 	allTrajectories = [];
 	trajectories = [];
 	bestTrajectoryKey = null;
@@ -50,7 +55,7 @@ function initTurnFunction(){
 	ourLeekCaracTemp = [];
 	enemyLeekCaracTemp = [];
 
-	// variables and signals used to calculate the scores
+	// raz des variables and signals used to calculate the scores
 	isCombo = true;
 	skillKey = 0;
 	analyzedTrajectory = [];
@@ -58,19 +63,27 @@ function initTurnFunction(){
 		analyzedTrajectory[CELLS] = [];
 		analyzedTrajectory[MVMP] = [];
 		analyzedTrajectory[TARGET_CELL] = [];
-	
+		analyzedTrajectory[SCORE] = [];
+		analyzedTrajectory[TOTAL_SCORE] = 0;
+
+
 	// Choose the closest leek enemy (not a bulb)
 	// TO BE IMPROVED
-	var enemyList = getAliveEnemies();
-	var distToNearestEnenmy = 1000;
-	for (var i = 0; i < count(enemyList); i++){
-		if (getType(enemyList[i]) == ENTITY_LEEK){
-			var distToEnemy = getPathLength(getCell(ourLeekID), getCell(enemyList[i]));
-			if (distToEnemy < distToNearestEnenmy){
-				enemyID = enemyList[i];
-				distToNearestEnenmy = distToEnemy;
+	if (getType() == ENTITY_LEEK) {
+		var enemyList = getAliveEnemies();
+		var distToNearestEnenmy = 1000;
+		for (var i = 0; i < count(enemyList); i++){
+			if (getType(enemyList[i]) == ENTITY_LEEK){
+				var distToEnemy = getPathLength(getCell(ourLeekID), getCell(enemyList[i]));
+				if (distToEnemy < distToNearestEnenmy){
+					enemyID = enemyList[i];
+					distToNearestEnenmy = distToEnemy;
+				}
 			}
 		}
+	}
+	else{
+		enemyID = getNearestEnemy();
 	}
 
 	if (enemyID == null){
@@ -84,7 +97,7 @@ function initTurnFunction(){
 function strategyChoiceFunction(){
 	//debug("strategy choice state"); 
 
-	if (getType() == ENTITY_LEEK){
+	if (getType() == ENTITY_LEEK || getType() == ENTITY_BULB ){
 		leekStrategyChoice();
 	}
 	else {
@@ -110,7 +123,6 @@ function strategyChoiceFunction(){
 	etat = ACTION_CHOICE;	
 }
 
-
 function actionChoiceFunction(){
 	//debug("action choice state"); 
 
@@ -125,6 +137,36 @@ function actionChoiceFunction(){
 	
 }
 
+function summonLightningBulbFunction(){
+	debug("summon lightnong bulb state"); 	
+	
+	if (getType() == ENTITY_LEEK){
+		var summoningCell = getCell();
+		moveAwayFrom(enemyID, 2);
+		debug("summon result: " +summon(CHIP_LIGHTNING_BULB, summoningCell, stateMachine));
+	}
+	else{
+		moveToward(enemyID);
+	}
+
+	etat = ACTION_CHOICE;
+}
+
+
+function summonFireBulbFunction(){
+	debug("summon fire bulb state"); 	
+	
+	if (getType() == ENTITY_LEEK){
+		var summoningCell = getCell();
+		moveAwayFrom(enemyID, 2);
+		debug("summon result: " +summon(CHIP_FIRE_BULB, summoningCell, stateMachine));
+	}
+	else{
+		moveToward(enemyID);
+	}
+
+	etat = ACTION_CHOICE;
+}
 
 function summonPunnyBulbFunction(){
 	debug("summon punny bulb state"); 	
@@ -145,11 +187,27 @@ function useObjectFunction(){
 
 	debug("use object state : " + getSkillName(actionSequence[currentAction - 1][1]));
 
+	// if the current action is a weapon then use the weapon
 	if (isWeapon(actionSequence[currentAction - 1][1])){
 		useWeaponOnCell(actionSequence[currentAction - 1][2]);
-	}
+	} 
+	// if the current action is a chip then use the chip
 	else if (isChip(actionSequence[currentAction - 1][1])){
-		useChipOnCell(actionSequence[currentAction - 1][1], actionSequence[currentAction - 1][2]);
+		// if the current chip is a summoning, then summon it
+		if (actionSequence[currentAction - 1][1] == CHIP_FIRE_BULB || 
+			actionSequence[currentAction - 1][1] == CHIP_HEALER_BULB ||
+			actionSequence[currentAction - 1][1] == CHIP_ICED_BULB ||
+			actionSequence[currentAction - 1][1] == CHIP_LIGHTNING_BULB ||
+			actionSequence[currentAction - 1][1] == CHIP_METALLIC_BULB ||
+			actionSequence[currentAction - 1][1] == CHIP_PUNY_BULB ||
+			actionSequence[currentAction - 1][1] == CHIP_PUNY_BULB
+			){
+			summon(actionSequence[currentAction - 1][1], actionSequence[currentAction - 1][2], stateMachine);
+		}
+		// otherwise, simply use the chip
+		else{
+			useChipOnCell(actionSequence[currentAction - 1][1], actionSequence[currentAction - 1][2]);
+		}	
 	}
 	else{
 		debug("error : this is not an object");
@@ -183,8 +241,9 @@ function equipWeaponFunction(){
 
 function lastActionFunction() {
 
-	debug("Total operation : " + getOperations());
-	debug("remaining operation : " + (OPERATIONS_LIMIT - getOperations()));
+	debug("Total operation : " + prettyPrintNb(getOperations()));
+	debug("remaining operation : " + prettyPrintNb(OPERATIONS_LIMIT - getOperations()));
+	debug("remaining TP: " + getTP());
 
 	if (isDead(enemyID)){say ("Reviens gamin !! C'était pour rire ");}
 	else if (getTurn() == 2){
@@ -192,7 +251,7 @@ function lastActionFunction() {
 			say("Une larme de gin. Une rivière de tonic... Et ensuite la p'tite victime");
 		}
 		else {
-			say("Pigeon, oiseau à la grise robe, dans l'enfer des villes, à mon regard tu te dérobes...Tu es vraiment le plus agile. ");
+			say("Pigeon, oiseau à la grise robe,\ndans l'enfer des villes, à mon regard tu te dérobes...\nTu es vraiment le plus agile. ");
 		}
 	}
 

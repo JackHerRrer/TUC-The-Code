@@ -108,7 +108,7 @@ function getAOE(objectID, targetCell){		// environ 400 op
 
 
 	//check that the type of the area is not NULL
-	if (area == null){
+	if (area === null){
 		debug("area is null");
 	}
 	else {
@@ -121,11 +121,13 @@ function getAOE(objectID, targetCell){		// environ 400 op
 		else if (area == AREA_CIRCLE_3){
 			indirectCells = getArea(3, targetCell);
 		}
-		else {
-			indirectCells = targetCell;
+		else { // AREA_POINT or AREA_LASER_LINE
+			push(indirectCells, targetCell);
 		}
 	}
 	
+	//debug("getAOE(): area: " + area);
+	//debug("getAOE(): indirectCells: " + indirectCells);
 	return indirectCells;
 }
 
@@ -160,6 +162,10 @@ function getAOE(objectID, targetCell){		// environ 400 op
 
 function canUseIfMoving(objectID, targetCell, user, useAOE, markCells) {
 
+	// Check that we did not received a custom objectID 
+	if (objectID >= 1000)
+		debug("canUseIfMoving(): objectID is > 1000 : " + objectID);
+
 	var instruct1 = getOperations();
 	var indirectCells = [];
 
@@ -173,10 +179,13 @@ function canUseIfMoving(objectID, targetCell, user, useAOE, markCells) {
 
 	var canUse = false;
 
-	if (indirectCells === []){
-		debug("indirectCells is null");
+	// this should not happen
+	if (isEmpty(indirectCells)){
+		debug("indirectCells is empty");
 		push(indirectCells, targetCell);
 	}
+
+	// debug("canUseIfMoving() : indirectCells: " + indirectCells);
 
 	var MPAvailable = getMP(user);
 	var cellsFromWhereToUseObject = [];
@@ -191,11 +200,13 @@ function canUseIfMoving(objectID, targetCell, user, useAOE, markCells) {
 			cellsFromWhereToUseObject = getCellsToUseChipOnCell(objectID, indirectCell);	
 		}
 		else {
-			debug("Object is not a chip or a weapon");
+			debug("canUseIfMoving() : Object is not a chip or a weapon");
 			return null;
 		}
 
-		if (!isEmpty(cellsFromWhereToUseObject)){ 
+
+
+		if (!isEmpty(cellsFromWhereToUseObject)){
 			//Boucle parcourant l'ensemble des cases (cellsFromWhereToUseObject) depuis lesquelles il est possible d'atteindre cette indirectCell
 			for (var cellFromWhereToUseObject in cellsFromWhereToUseObject){
 				
@@ -257,11 +268,12 @@ function canUseIfMoving(objectID, targetCell, user, useAOE, markCells) {
 									data["INDIRECT_CELL"]	= indirectCell;
 									data["PATH_LENGTH"] 	= pathLength;
 									push(actionMap[cellFromWhereToUseObject], data);
-
+									// debug("canUseIfMoving(): data : " + data);
 									// 2ème manière : On stocke dans chaque noeud d'action l'ensemble des cases possibles
 									var node = [];
 
-									if (actionNodes[objectID] == null) actionNodes[objectID] = [];
+									if (actionNodes[objectID] == null) 
+										actionNodes[objectID] = [];
 
 									node["CELL"] 			= cellFromWhereToUseObject;
 									node["TARGET_CELL"]		= targetCell;
@@ -269,6 +281,7 @@ function canUseIfMoving(objectID, targetCell, user, useAOE, markCells) {
 									node["PATH_LENGTH"] 	= pathLength;
 
 									push(actionNodes[objectID], node);
+									// debug("canUseIfMoving(): node : " + node);
 
 									canUse = true;
 								
@@ -289,7 +302,7 @@ function canUseIfMoving(objectID, targetCell, user, useAOE, markCells) {
 			}
 		}
 		else { 
-			//debug("cellsFromWhereToUseObject is null");
+			// debug("cellsFromWhereToUseObject is null");
 		}
 	}	
 

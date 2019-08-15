@@ -43,7 +43,6 @@ function leekStrategyChoice(){
 	if (getTurn() == 1){
 		first_turn_strategy();
 	}
-
 	else {
 		fight_strategy();
 	}
@@ -163,16 +162,18 @@ function first_turn_strategy(){
 	actionSequence[actionTotal] = []; 	
 	actionSequence[actionTotal][0] =  EQUIP_WEAPON;
 	actionSequence[actionTotal][1] =  WEAPON_GRENADE_LAUNCHER; 
+	//actionSequence[actionTotal][1] =  WEAPON_KATANA; 
+	//actionSequence[actionTotal][1] =  WEAPON_PISTOL; 
 	actionTotal++;
 
+	//actionSequence[actionTotal] = []; 	
+	//actionSequence[actionTotal][0] =  USE_OBJECT;
+	//actionSequence[actionTotal][1] =  CHIP_ARMORING; 
+	//actionSequence[actionTotal][2] =  getCell();
+	//actionTotal++;
+	
 	actionSequence[actionTotal] = []; 	
-	actionSequence[actionTotal][0] = SUMMON_PUNNY_BULB; 	// 6 TP	+ 1 MP
-	actionTotal++;
-
-	actionSequence[actionTotal] = []; 	
-	actionSequence[actionTotal][0] =  USE_OBJECT;
-	actionSequence[actionTotal][1] =  CHIP_ARMORING; 
-	actionSequence[actionTotal][2] =  getCell();
+	actionSequence[actionTotal][0] = SUMMON_LIGHTNING_BULB; 	// 6 TP	+ 1 MP
 	actionTotal++;
 
 	//actionSequence[actionTotal][0] = MOVE_AWAY_FROM_ENEMY; 		// 0-3 MP
@@ -180,13 +181,23 @@ function first_turn_strategy(){
 
 }
 
+function second_turn_strategy(){
+
+	actionSequence[actionTotal] = []; 	
+	actionSequence[actionTotal][0] = SUMMON_FIRE_BULB; 	// 6 TP	+ 1 MP
+	actionTotal++;
+}
+
 function fight_strategy(){
 
+// TO BE IMPROVED : discard the skills that cannot be casted at the very begining. The less skill, the less operation later on.
+// - Remove antidote if no poison on leek
+// 
 //
-//    ID: 7, CHIP_ROCK, cd: 5
-//    ID: 20, CHIP_SHIELD, cd: 4
-//    ID: 21, CHIP_HELMET, cd: 3                      [3, 4, 5]                                         [[5, 5], [5, 4], [5, 3], [4, 4], [4, 3, 3], [3, 3, 3]]
-//    ID: 37, WEAPON_PISTOL, cd: 3
+//    ID: 7, CHIP_ROCK, cost: 5
+//    ID: 20, CHIP_SHIELD, cost: 4
+//    ID: 21, CHIP_HELMET, cost: 3                    [3, 4, 5]                                         [[5, 5], [5, 4], [5, 3], [4, 4], [4, 3, 3], [3, 3, 3]]
+//    ID: 37, WEAPON_PISTOL, cost: 3
 //                       +------------------------+   skillsCostList     +--------------------------+                       +-------------------------+
 //             +--------->                        +---------------------->                          |   costCombosList      |                         |
 //             |         | generateSkillsCostList |        maxTP (10)    |  generateCostCombosList  +----------------------->  generateCombosList     |
@@ -278,9 +289,11 @@ function fight_strategy(){
 	debug("Our Leek");
 	for (var skill in leekSkills){
 		if (isWeapon(skill))
-			debug("ID: " + skill + ", " + getSkillName(skill) + ", cd: " + getWeaponCost(skill));
-		else
-			debug("ID: " + skill + ", " + getSkillName(skill) + ", cd: " + getChipCost(skill));
+			debug("ID: " + skill + ", " + getSkillName(skill) + ", cost: " + getWeaponCost(skill));
+		else{
+			if (getCooldown(skill) == 0)
+				debug("ID: " + skill + ", " + getSkillName(skill) + ", cost: " + getChipCost(skill));
+		}
 	}
 	debug("");
 	debug("Enemy Leek");
@@ -289,82 +302,99 @@ function fight_strategy(){
 	pushAll(leekSkills, getWeapons(enemyID));
 	for (var skill in leekSkills){
 		if (isWeapon(skill))
-			debug("ID: " + skill + ", " + getSkillName(skill) + ", cd: " + getWeaponCost(skill));
-		else
-			debug("ID: " + skill + ", " + getSkillName(skill) + ", cd: " + getChipCost(skill));
+			debug("ID: " + skill + ", " + getSkillName(skill) + ", cost: " + getWeaponCost(skill));
+		else{
+			if (getCooldown(skill, enemyID) == 0)
+				debug("ID: " + skill + ", " + getSkillName(skill) + ", cost: " + getChipCost(skill));
+		}
 	}
 	debug("");
+
 	// Calcul des combos
 	var maxTP = getTP();
 
 	var nbOp = getOperations();
 	skillsCostList = generateSkillsCostList();
 	//debug("skillsCostList: " + skillsCostList);
-	debug("nb instruct generateSkillsCostList : " + (getOperations() - nbOp));
+	debug("nb instruct generateSkillsCostList : " + prettyPrintNb(getOperations() - nbOp));
 
 	nbOp = getOperations();
 	generateCostCombosList(skillsCostList, maxTP, []);
 	//debug("costCombosList: " + costCombosList);
-	debug("nb instruct generateCostCombosList : " + (getOperations() - nbOp));
+	debug("nb instruct generateCostCombosList : " + prettyPrintNb(getOperations() - nbOp));
 
 	nbOp = getOperations();
 	sortSkillsByCost();
 	//debug("skillSortedByCosts: " + skillSortedByCosts);
-	debug("nb instruct sortSkillsByCost : " + (getOperations() - nbOp));
+	debug("nb instruct sortSkillsByCost : " + prettyPrintNb(getOperations() - nbOp));
 
 	nbOp = getOperations();
 	generateCombosList();
 	//debug("combosList" + combosList);
-	debug("nb instruct generateCombosList : " + (getOperations() - nbOp));
+	debug("nb instruct generateCombosList : " + prettyPrintNb(getOperations() - nbOp));
 
 	nbOp = getOperations();
 	filterCombos();
 	//debug("filteredCombosList: " + filteredCombosList);
-	debug("total filtered combos: " + count(filteredCombosList));
-	debug("nb instruct filterCombos : " + (getOperations() - nbOp));
+	debug("nb instruct filterCombos : " + prettyPrintNb(getOperations() - nbOp));
 
 	nbOp = getOperations();
 	sortCombos();
 	//debug("sortedCombosList: " + sortedCombosList);
-	debug("nb instruct sortCombos : " + (getOperations() - nbOp));
+	debug("nb instruct sortCombos : " + prettyPrintNb(getOperations() - nbOp));
 
 	nbOp = getOperations();
 	calculateCombosScore();
 	//debug("comboScores: " + comboScores);
-	debug("nb instruct calculateCombosScore : " + (getOperations() - nbOp));
+	debug("nb instruct calculateCombosScore : " + prettyPrintNb(getOperations() - nbOp));
 
 	nbOp = getOperations();
 	sortCombosByScore();
+
 	//debug("sortedComboScores: " + sortedComboScores);
-	debug("nb instruct sortCombosByScore : " + (getOperations() - nbOp));
+	debug("nb instruct sortCombosByScore : " + prettyPrintNb(getOperations() - nbOp));
 
 	nbOp = getOperations();
 	generate_trajectories();
 	//debug("all trajectories without score: " + allTrajectories);
-	debug("nb instruct generate_trajectories : " + (getOperations() - nbOp));
+	debug("nb instruct generate_trajectories : " + prettyPrintNb(getOperations() - nbOp));
 
 	nbOp = getOperations();
 	calculate_trajectories_score();
-	debug("all trajectories with score: " + allTrajectories);
-	debug("nb instruct calculate_trajectories_score : " + (getOperations() - nbOp));
+	debug("nb instruct calculate_trajectories_score : " + prettyPrintNb(getOperations() - nbOp));
 
 	nbOp = getOperations();
 	find_best_trajectory_score();
-	debug(" ");
-	debug("best trajectory key: " + bestTrajectoryKey);
-	debug("best trajectory: " + allTrajectories[bestTrajectoryKey]);
-	debug("nb instruct generate_trajectories : " + (getOperations() - nbOp));
+	debug("nb instruct find_best_trajectory_score : " + prettyPrintNb(getOperations() - nbOp));
 
 	nbOp = getOperations();
 	fill_action_sequence();
-	debug("nb instruct find_best_trajectory_score : " + (getOperations() - nbOp));
+	debug("nb instruct fill_action_sequence : " + prettyPrintNb(getOperations() - nbOp));
 	debug("");
+	debugC("remaining operation: " + prettyPrintNb(OPERATIONS_LIMIT - getOperations()), getColor(106, 68, 181));
+
 	debug("******************************");
-	debug("remaining operation : " + (OPERATIONS_LIMIT - getOperations()));
+	debugC("[STRAT] total unfiltered combos: " + count(combosList), getColor(81, 144, 34));
+	debugC("[STRAT] total combos : " + count(filteredCombosList), getColor(81, 144, 34));
+	debugC("[STRAT] number of combos used to calculate the trajectories: " + (nbComboUsed - 1) + " / " + count(filteredCombosList), getColor(81, 144, 34));
+	//debugC("[STRAT] Best combo : " + filteredCombosList[sortedComboScores[0][KEY]], getColor(81, 144, 34));
+	//debugC("[STRAT] second best combo : " + filteredCombosList[sortedComboScores[1][KEY]], getColor(81, 144, 34));
+	debugC("[STRAT] total trajectories : " + count(allTrajectories), getColor(81, 144, 34));
+	//debugC("[STRAT] all trajectories with score: " + allTrajectories, getColor(81, 144, 34));
+	debugC("[STRAT] best trajectory key: " + bestTrajectoryKey, getColor(81, 144, 34));
+	debugC("[STRAT] best trajectory: " + allTrajectories[bestTrajectoryKey], getColor(81, 144, 34));
 
-	debug("total combos : " + count(filteredCombosList));
-	debug("Best combo : " + filteredCombosList[sortedComboScores[0][KEY]]);
-	debug("second best combo : " + filteredCombosList[sortedComboScores[1][KEY]]);
+	var TPUsed = 0;
+	for (var skill in allTrajectories[bestTrajectoryKey][SKILL]){
+		if (isWeapon(skill%1000))
+			TPUsed += getWeaponCost(skill%1000);
+		else if (isChip(skill))
+			TPUsed += getChipCost(skill);
+	}
+	debugC("[STRAT] best trajectory total TP: " + TPUsed + " / " + getTotalTP(), getColor(81, 144, 34));
 
+	//debugC("[STRAT] Action Map: " + actionMap, getColor(81, 144, 34));
+	//debug("");
+	//debugC("[STRAT] Action nodes: " + actionNodes, getColor(81, 144, 34));
 
 }

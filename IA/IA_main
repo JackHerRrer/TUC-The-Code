@@ -67,6 +67,7 @@ function stateMachine(){
 	}
 
 // Boucle appellant les fonctions de la machine état
+// Toutes ces fonctions sont définis dans le fichier "FonctionEtat"
 	while (etat != END_TURN){
 		if 		(etat == INIT_GAME) 		{initGameFunction();}
 		else if (etat == INIT_TURN) 		{initTurnFunction();}
@@ -74,8 +75,11 @@ function stateMachine(){
 		else if (etat == ACTION_CHOICE)		{actionChoiceFunction();}
 		else if (etat == LAST_ACTION) 		{lastActionFunction();}
 
+		// ces 4 fonctions sont tous ce que peux faire un poireau ou un bulb
 		else if (etat == MOVE_TO_CELL)		{moveToCellFunction();}
 		else if (etat == SUMMON_PUNNY_BULB) {summonPunnyBulbFunction();}
+		else if (etat == SUMMON_FIRE_BULB)  {summonFireBulbFunction();}
+		else if (etat == SUMMON_LIGHTNING_BULB)  {summonLightningBulbFunction();}
 		else if (etat == USE_OBJECT)		{useObjectFunction();}		
 		else if (etat == EQUIP_WEAPON)		{equipWeaponFunction();}
 

@@ -1,40 +1,103 @@
 include("GlobalVar");
 include("util_combos");
 
+// TO BE IMPROVED: add metrics for each score function, so we know which one is the most used, so we know wich one to improve
+
 /********************************************************************************************/
-
-
-function getDamage(ID, strength) {	
+// Return the min and minimum of an effect
+// consider :
+// - base min effect
+// - base max effect
+// - the amplification due to the caracteristic
+// - The duration of the effect
+function getEffectImpact(min, max, turn, stat) {	
 	var damage = [];
 	
-	if(isChip(ID)) {
+	damage["MIN"] = min * (1+stat/100) * turn;
+	damage["MAX"] = max * (1+stat/100) * turn;
 	
-		var chipEffects = getChipEffects(ID);
-		
-		for (var chipEffect in chipEffects) {
-			if(chipEffect[0] == EFFECT_DAMAGE) {
-				var chipDamage = [];
-				damage["MIN"] = chipEffect[1] * (1+strength/100);
-				damage["MAX"] = chipEffect[2] * (1+strength/100);
-				//push(damage, chipDamage);
-			}
-		}
-	} else if (isWeapon(ID)) {
-		var weaponEffects = getWeaponEffects(ID);
-		
-		for (var weaponEffect in weaponEffects) {
-			if(weaponEffect[0] == EFFECT_DAMAGE) {
-				var weaponDamage = [];
-				damage["MIN"] = weaponEffect[1] * (1+strength/100);
-				damage["MAX"] = weaponEffect[2] * (1+strength/100);
-				//push(damage, weaponDamage);
-			}	
-		}
-	} else {
-		debug("Ni puce ni arme !!");
-	}
+	//debug("getMinMaxEffect(): damage[MIN]: "+ damage["MIN"]);
+	//debug("getMinMaxEffect(): damage[MAX]: "+ damage["MAX"]);
+
 	return damage;
 }
+
+/********************************************************************************************/
+
+function getObjectPoisonDamage(ID, magic) {	
+	var damage = [];
+	var effects;
+
+	if(isChip(ID)) {
+		effects = getChipEffects(ID);	
+	} else if (isWeapon(ID)) {
+		effects = getWeaponEffects(ID);
+	} else {
+		debug("getObjectPoisonDamage(): Ni puce ni arme !!: " + ID);
+	}
+
+	for (var effect in effects) {
+		if(effect[0] == EFFECT_POISON) {
+			damage = getEffectImpact(effect[1], effect[2], effect[3], magic);
+		}
+	}
+	
+	//debug("getObjectPoisonDamage(): damage[MIN]: "+ damage["MIN"]);
+	//debug("getObjectPoisonDamage(): damage[MAX]: "+ damage["MAX"]);
+
+	return damage;
+}
+
+/********************************************************************************************/
+// TO BE IMPROVED does not handle properly the weapons with multiple damage effects
+function getObjectDamage(ID, strength) {	
+	var damages = [];
+	damages["MIN"] = 0;
+	damages["MAX"] = 0;	
+
+	var effects;
+
+	if(isChip(ID)) {
+		effects = getChipEffects(ID);	
+	} else if (isWeapon(ID)) {
+		effects = getWeaponEffects(ID);
+	} else {
+		debug("getObjectDamage(): Ni puce ni arme !!: " + ID);
+	}
+
+	for (var effect in effects) {
+		if(effect[0] == EFFECT_DAMAGE) {
+			var damage = getEffectImpact(effect[1], effect[2], 1, strength);
+			damages["MIN"] += damage["MIN"];
+			damages["MAX"] += damage["MAX"];	
+		}
+	}
+
+	return damages;
+}
+
+/********************************************************************************************/
+// function used to return the average heal boost of a skill 
+function getHealAmount(ID, wisdom) {	
+	var healBoost = 0;
+
+	if(isChip(ID)) {
+	
+		var chipEffect = getChipEffects(ID);
+		
+		if(chipEffect[0][0] == EFFECT_BOOST_MAX_LIFE || chipEffect[0][0] == EFFECT_HEAL){
+			healBoost = ((chipEffect[0][1] * (1+wisdom/100))+(chipEffect[0][2] * (1+wisdom/100)))/2;
+		}
+		else{
+			debug("getHealAmount: Not a chip with EFFECT_BOOST_MAX_LIFE or EFFECT_HEAL effects");
+		}
+	} else {
+		debug("getHealAmount: Not a chip");
+	}
+
+	return healBoost;
+}
+
 
 /********************************************************************************************/
 // function used to return the average armor buff of a skill 
@@ -46,19 +109,25 @@ function getArmorBuff(ID, resistance) {
 		var chipEffect = getChipEffects(ID);
 		
 		if(chipEffect[0][0] == EFFECT_ABSOLUTE_SHIELD || chipEffect[0][0] == EFFECT_RELATIVE_SHIELD){
-			averageDamage = ((chipEffect[0][2] * (1+resistance/100))+(chipEffect[0][2] * (1+resistance/100)))/2;
+			averageDamage = ((chipEffect[0][1] * (1+resistance/100))+(chipEffect[0][2] * (1+resistance/100)))/2;
+		}
+		else{
+			debug("getArmorBuff: Not a chip with EFFECT_ABSOLUTE_SHIELD or EFFECT_RELATIVE_SHIELD effects");
 		}
 	} else {
 		debug("getArmorBuff: Not a chip");
 	}
+
 	return averageDamage;
 }
 
-/******************************************************************************************/
-// Fonction used to calculate the average damage of a skill
-// every parameters are managed
-// except poison: to be improved
-function calculateDamage(userStrenght, targetCell, targetRelativeShield, targetAbsoluteShield, objectID, cellID) {	
+/********************************************************************************************/
+// TO BE IMPROVED: We don't handle the self inflicted poison
+
+function calculateObjectPoisonDamage(userMagic, targetCell, objectID, cellID){
+	// Check that we did not received a custom objectID 
+	if (objectID >= 1000)
+		debug("calculateObjectPoisonDamage(): objectID is > 1000 : " + objectID);
 
 	var area;
 	if(isWeapon(objectID)) {
@@ -79,17 +148,85 @@ function calculateDamage(userStrenght, targetCell, targetRelativeShield, targetA
 		else if (area == AREA_CIRCLE_3){
 			zoneMaxExtent = 3;
 		}
-		else {
-			//Vérifier que la condition est vrai dans le cas du laser
-			if (getCellDistance(cellID, targetCell)){
-				debug("The object wont hit the target");	
-				return null;	
+		else { // AREA_POINT or AREA_LASER_LINE
+			if (targetCell != cellID){
+				debug("calculateObjectPoisonDamage(): targetCell should be equal to cellID since we are using a laser or a weapon with no AOE (objectID: " + objectID +")");
+			}
+			zoneMaxExtent = 1;
+		}
+		var ratioDistance = 1 - (getCellDistance(cellID, targetCell) / zoneMaxExtent * 0.5);
+
+		var damage = getObjectPoisonDamage(objectID, userMagic);
+
+		if (damage == null){
+			debug ("damage is null");
+			return null;
+		}
+
+		// calculate the average damage. If the result is inferior to 0, then 0 is returned 
+		return max(0, (damage["MAX"] + damage["MIN"])/2 * ratioDistance);
+	}
+	else {
+		debug("Area is null");
+		return null;
+	}
+}
+
+
+/******************************************************************************************/
+// Fonction used to calculate the average damage of a skill
+// every parameters are managed
+// except poison: TO BE IMPROVED
+// targetCell => cell where we are shooting
+// cellID => the cell for which we calculate the damages
+function calculateDamage(userStrenght, targetCell, targetRelativeShield, targetAbsoluteShield, objectID, cellID) {	
+
+	// check used to debug this function
+	if (cellID === null or targetCell === null){
+		debug("calculateDamage(), userStrenght : " + userStrenght);
+		debug("calculateDamage(), targetCell : " + targetCell);
+		debug("calculateDamage(), targetRelativeShield : " + targetRelativeShield);
+		debug("calculateDamage(), targetAbsoluteShield : " + targetAbsoluteShield);
+		debug("calculateDamage(), objectID : " + objectID);
+		debug("calculateDamage(), cellID : " + cellID);		
+	}
+
+	// Check that we did not received a custom objectID 
+	if (objectID >= 1000)
+		debug("calculateDamage(): objectID is > 1000 : " + objectID);
+
+	// If we are not targeting the cell we want to damage (targetCell != cellID)
+	// We need to consider the damage reduction due to the undirect hit.
+	// Since the damage reduction depends on the area type (http://leekwarswiki.net/index.php?title=Aire_d%27effet), 
+	// we need to retrieve the type of area of the skill first. 
+	var area;
+	if(isWeapon(objectID)) {
+		area = getWeaponArea(objectID);
+	}
+	else if(isChip(objectID)) {
+		area = getChipArea(objectID);
+	}
+
+	if (area != null){
+		var zoneMaxExtent;
+		if (area == AREA_CIRCLE_1){
+			zoneMaxExtent = 1;
+		}
+		else if (area == AREA_CIRCLE_2){
+			zoneMaxExtent = 2;
+		}
+		else if (area == AREA_CIRCLE_3){
+			zoneMaxExtent = 3;
+		}
+		else { // AREA_POINT or AREA_LASER_LINE
+			if (targetCell != cellID){
+				debug("calculateDamage(): targetCell should be equal to cellID since we are using a laser or a weapon with no AOE (objectID: " + objectID +")");
 			}
 			zoneMaxExtent = 1;
 
 		}
 		var ratioDistance = 1 - (getCellDistance(cellID, targetCell) / zoneMaxExtent * 0.5);
-		var damage = getDamage(objectID, userStrenght);
+		var damage = getObjectDamage(objectID, userStrenght);
 		if (damage == null){
 			debug ("damage is null");
 			return null;
@@ -114,7 +251,7 @@ function default_score_function(){
 
 /******************************************************************************************/
 // Gather the caracteristics of leekId and store them leekCarac
-// TO BE COMPLETED
+// TO BE IMPROVED : TO BE COMPLETED
 function getLeekCarac(leekId){
 
 	var leekCarac = [];
@@ -122,6 +259,7 @@ function getLeekCarac(leekId){
 	leekCarac[CELL] = 				getCell(leekId);
 	leekCarac[STRENGTH] = 			getStrength(leekId);
 	leekCarac[LIFE] = 				getLife(leekId);
+	leekCarac[TOTAL_LIFE] = 		getTotalLife(leekId);
 	leekCarac[RELATIVE_SHIELD] = 	getRelativeShield(leekId);
 	leekCarac[ABSOLUTE_SHIELD] = 	getAbsoluteShield(leekId);
 	leekCarac[SCIENCE] = 			getScience(leekId);
@@ -129,54 +267,115 @@ function getLeekCarac(leekId){
 	leekCarac[MP] = 				getMP(leekId);
 	leekCarac[TP] = 				getTP(leekId);
 	leekCarac[RESISTANCE] = 		getResistance(leekId);
+	leekCarac[WISDOM] = 			getWisdom(leekId);
+	leekCarac[MAGIC] = 				getMagic(leekId);
+	leekCarac[DAMAGE_RETURN] = 		getDamageReturn(leekId);
 
 	return leekCarac;
 }
 
 
 /******************************************************************************************/
-
+// TO BE IMPROVED: 
+// - life steal is not considered yet
+// - reflection is npt considered yet
 function damage_score_function(){
 
 	// retrieve the information associated to the skill being analyzed
-	var skill = analyzedTrajectory[SKILL][skillKey];
+	var skill = analyzedTrajectory[SKILL][skillKey] % 1000;
 	if (skill === null){
 		debugE("damage_score_function: skill is null");
 		return 0;
 	}
-	
-	// If the current combo
+	 
+	var damageAfterArmor;
+	// If we are analyzing a combo or a trajectory
 	if (isCombo == true){
-		// calculateDamage return the average damage value, not the exact value.
-		return calculateDamage(ourLeekCaracTemp[STRENGTH], enemyLeekCaracTemp[CELL], enemyLeekCaracTemp[RELATIVE_SHIELD], enemyLeekCaracTemp[ABSOLUTE_SHIELD], skill, enemyLeekCaracTemp[CELL]);
+		// calculateDamage returns the average damage value, not the exact value.
+		damageAfterArmor = calculateDamage(ourLeekCaracTemp[STRENGTH], enemyLeekCaracTemp[CELL], enemyLeekCaracTemp[RELATIVE_SHIELD], enemyLeekCaracTemp[ABSOLUTE_SHIELD], skill, enemyLeekCaracTemp[CELL]);
 	}
 	else {
-		return calculateDamage(ourLeekCaracTemp[STRENGTH], analyzedTrajectory[TARGET_CELL][skillKey], enemyLeekCaracTemp[RELATIVE_SHIELD], enemyLeekCaracTemp[ABSOLUTE_SHIELD], skill, enemyLeekCaracTemp[CELL]);
+		damageAfterArmor = calculateDamage(ourLeekCaracTemp[STRENGTH], analyzedTrajectory[TARGET_CELL][skillKey], enemyLeekCaracTemp[RELATIVE_SHIELD], enemyLeekCaracTemp[ABSOLUTE_SHIELD], skill, enemyLeekCaracTemp[CELL]);
 	}
+
+	var damageReturn = 0;
+
+	// consider the damage reflexion only if we are a leek
+	// Bulbs are only there to be choped, MOUHA HA HA !
+	if (getType() == ENTITY_LEEK){
+		var damageBeforeArmor = getObjectDamage(skill, ourLeekCaracTemp[STRENGTH]);
+		// debug("damage_score_function(): enemyLeekCaracTemp[DAMAGE_RETURN]: " + enemyLeekCaracTemp[DAMAGE_RETURN]);
+		// debug("damage_score_function(): damageBeforeArmor: " + damageBeforeArmor);
+		damageReturn = (damageBeforeArmor["MIN"] + damageBeforeArmor["MAX"])/2 * enemyLeekCaracTemp[DAMAGE_RETURN] / 100;
+	}
+	// debug("damage_score_function(): damageAfterArmor: " + damageAfterArmor + "; damageBeforeArmor: " + damageBeforeArmor + "; reflection: " + enemyLeekCaracTemp[DAMAGE_RETURN] + "; damageReturn: "+ damageReturn);
+
+	return damageAfterArmor - damageReturn;
+}
+
+/******************************************************************************************/
+// TO BE IMPROVED: 
+
+function poison_score_function(){
+
+	// retrieve the information associated to the skill being analyzed
+	var skill = analyzedTrajectory[SKILL][skillKey] % 1000;
+	if (skill === null){
+		debugE("damage_score_function: skill is null");
+		return 0;
+	}
+	 
+	// If we are analyzing a combo or a trajectory
+	if (isCombo == true){
+		// calculateDamage returns the average damage value, not the exact value.
+		return calculateObjectPoisonDamage(ourLeekCaracTemp[MAGIC], enemyLeekCaracTemp[CELL], skill, enemyLeekCaracTemp[CELL]);
+	}
+	else {
+		return calculateObjectPoisonDamage(ourLeekCaracTemp[MAGIC], analyzedTrajectory[TARGET_CELL][skillKey], skill, enemyLeekCaracTemp[CELL]);
+	}
+
 }
 
 
 /******************************************************************************************/
-
+// TO BE IMPROVED
 function armor_score_function(){
 
 	// retrieve the information associated to the skill being analyzed
 	var skill = analyzedTrajectory[SKILL][skillKey];
 	if (skill === null){
-		debugE("damage_score_function: skill is null");
+		debugE("armor_score_function: skill is null");
 		return 0;
 	}
 
 	var effects = getChipEffects(skill);
+	// retrieve the armor buff, whether it is absolute or relative
+	var armorBuff = getArmorBuff(skill, ourLeekCaracTemp[RESISTANCE]);
+
+	// store the armor buff in the corresponding temporary leek caracteristic
 	if (effects[0][0] == EFFECT_RELATIVE_SHIELD){
-		ourLeekCaracTemp[RELATIVE_SHIELD] = getArmorBuff(skill, ourLeekCaracTemp[RESISTANCE]);
+		ourLeekCaracTemp[RELATIVE_SHIELD] += armorBuff;
 	}
 	else if (effects[0][0] == EFFECT_ABSOLUTE_SHIELD){		
-		ourLeekCaracTemp[ABSOLUTE_SHIELD] = getArmorBuff(skill, ourLeekCaracTemp[RESISTANCE]);
+		ourLeekCaracTemp[ABSOLUTE_SHIELD] += armorBuff;
 	}
 	else debug("armor score function error");
 	
-	return 0;
+	// return a score depending on the kind of shield
+	if (effects[0][0] == EFFECT_RELATIVE_SHIELD){
+		// if the enemy has no weapon, return the percentage of reduction (this is rather bad)
+		if (getWeapon(enemyID) === null)
+			return armorBuff;
+
+		// otherwise, return how much damage will be avoided from one hit of the enemy weapon
+		var enemyDamage = getObjectDamage(getWeapon(enemyID), enemyLeekCaracTemp[STRENGTH]);
+		return armorBuff * (enemyDamage["MIN"]+enemyDamage["MAX"]) / 2 / 100;
+	}
+	else if (effects[0][0] == EFFECT_ABSOLUTE_SHIELD){		
+		return armorBuff;
+	}
+	else 
+		return 0;
 }
 
 /*******************************************************************************************/
@@ -215,19 +414,145 @@ function buff_score_function(){
 
 		debugE("buffScorefunction error: skill: " + skill + " effect: " + effects[0]);
 	}
-	return 0;
+	// Return 1, so the skill is not discarded
+	return 1;
 }
 
-// function used to calculate the score of the cell postion (to be improved)
+
+/*******************************************************************************************/
+
+function boost_max_life_score_function(){
+	var boost = 0;
+	// retrieve the information associated to the skill being analyzed
+	var skill = analyzedTrajectory[SKILL][skillKey];
+	if (skill === null){
+		debugE("boost_max_life_score_function(): skill is null");
+		return 0;
+	}
+
+	var effects = getChipEffects(skill);
+	if (effects[0][0] == EFFECT_BOOST_MAX_LIFE){
+		boost = getHealAmount(skill, ourLeekCaracTemp[WISDOM]);
+	}
+	else debug("boost_max_life_score_function error");
+
+	// update the carac of our leek with the heal boost
+	ourLeekCaracTemp[LIFE] += boost;
+	ourLeekCaracTemp[TOTAL_LIFE] += boost;
+
+	// return the average boost of life
+	return boost;
+}
+
+/*******************************************************************************************/
+
+function heal_score_function(){
+	var healAmount = 0;
+	// retrieve the information associated to the skill being analyzed
+	var skill = analyzedTrajectory[SKILL][skillKey];
+	if (skill === null){
+		debugE("heal_score_function(): skill is null");
+		return 0;
+	}
+
+	// retrieve the average heal ammount of the skill
+	var effects = getChipEffects(skill);
+	if (effects[0][0] == EFFECT_HEAL){
+		healAmount = getHealAmount(skill, ourLeekCaracTemp[WISDOM]);
+	}
+	else debug("boost_max_life_score_function error");
+
+	// update the carac of our leek with the heal ammount
+	ourLeekCaracTemp[LIFE] += healAmount;
+
+	// retrieve how much life we lost 
+	var lifeLost = ourLeekCaracTemp[TOTAL_LIFE] - ourLeekCaracTemp[LIFE];	
+
+	// if the heal ammount is superior to the life we lost we don't want to heal
+	if (healAmount > lifeLost)
+		return 0;
+	else 
+		return healAmount;
+}
+
+/*******************************************************************************************/
+// TO BE IMPROVED : So many things are missing here
+// We could actualy be helping the enemy leek if they have poison
+function liberation_score_function(){
+	enemyLeekCaracTemp[RELATIVE_SHIELD] = enemyLeekCaracTemp[RELATIVE_SHIELD] * 0.4;
+	enemyLeekCaracTemp[ABSOLUTE_SHIELD] = enemyLeekCaracTemp[ABSOLUTE_SHIELD] * 0.4;
+	enemyLeekCaracTemp[DAMAGE_RETURN] = enemyLeekCaracTemp[DAMAGE_RETURN] * 0.4;
+
+	// If liberation has no effect, in other words, if the enemy has no effect applied on him
+	// return 0, so the skill is discarded 
+	if (enemyLeekCaracTemp[RELATIVE_SHIELD] == 0 &&
+		enemyLeekCaracTemp[ABSOLUTE_SHIELD] == 0 &&
+		enemyLeekCaracTemp[DAMAGE_RETURN] == 0){
+		//debug("liberation_score_function(): RELATIVE_SHIELD: " + enemyLeekCaracTemp[RELATIVE_SHIELD] + "; ABSOLUTE_SHIELD: " + ABSOLUTE_SHIELD + "; DAMAGE_RETURN: " + DAMAGE_RETURN);
+		return 0;
+	}
+	
+	return 1;
+}
+
+/*******************************************************************************************/
+// TO BE IMPROVED 
+function bulb_score_function(){
+	var skill = analyzedTrajectory[SKILL][skillKey];
+	if (skill === null){
+		debugE("bulb_score_function(): skill is null");
+		return 0;
+	}
+
+	if (skill == CHIP_HEALER_BULB){
+		return 0;
+	}
+	else if (skill == CHIP_LIGHTNING_BULB){ 
+		return 250;
+	}
+	else if (skill == CHIP_FIRE_BULB){ 
+		return 200;
+	}
+		//; CHIP_HEALER_BULB; CHIP_ICED_BULB; CHIP_METALLIC_BULB; CHIP_PUNY_BULB; CHIP_ROCKY_BULB; 
+	else{ 
+		return 150;
+	}
+
+}
+
+/*******************************************************************************************/
+function antidote_score_function(){
+	var damagesAvoided = 0;
+
+	for (var effect in getEffects()){
+		if (effect[0] == EFFECT_POISON ){
+			var damages = getEffectImpact(effect[1], effect[1], effect[3], 0);
+			//debug("antidote_score_function(): effect: " + effect);
+			//debug("antidote_score_function(): damages: " + damages);
+			damagesAvoided += damages["MIN"];
+		}
+	}
+
+	//debug("damagesAvoided: " + damagesAvoided);
+	return damagesAvoided;
+}
+
+/*******************************************************************************************/
+
+// function used to calculate the score of the cell postion (TO BE IMPROVED)
 //  * doesn't handle indirect hit
 //  * approximate the damages: only takes the highest damage skill once
-
+//  * doesn't consider the dammages we will reflect
 function calculatePositionScore(cell){
 	
+	// check for debug purpose
+	if (cell === null)
+		debug("calculatePositionScore(); cell is null");
+
 	var highestDamage = 0;
 	 
 	for (var skill in dangerMap[cell]){
-		var damage = calculateDamage(ourLeekCaracTemp[STRENGTH], cell, ourLeekCaracTemp[RELATIVE_SHIELD], ourLeekCaracTemp[ABSOLUTE_SHIELD], skill["OBJECT_ID"], cell);
+		var damage = calculateDamage(enemyLeekCaracTemp[STRENGTH], cell, ourLeekCaracTemp[RELATIVE_SHIELD], ourLeekCaracTemp[ABSOLUTE_SHIELD], skill["OBJECT_ID"], cell);
 		if (damage > highestDamage){
 			highestDamage = damage;
 		}

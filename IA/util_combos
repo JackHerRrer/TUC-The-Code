@@ -18,8 +18,9 @@ global TYPE = 0;
 global SCORE_FUNCTION = 1;
 global NAME = 2;
 
-global SCORE = 0;
-global KEY = 1;
+global SCORE = "SCORE";
+global TOTAL_SCORE = "TOTAL_SCORE";
+global KEY = "KEY";
 
 global SKILL = "SKILL";
 global CELLS = "CELLS";
@@ -54,7 +55,7 @@ skills[WEAPON_DESTROYER] =              [DAMAGE, damage_score_function, "WEAPON_
 skills[WEAPON_DOUBLE_GUN] =             [DAMAGE, damage_score_function, "WEAPON_DOUBLE_GUN"];
 skills[WEAPON_ELECTRISOR] =             [DAMAGE, damage_score_function, "WEAPON_ELECTRISOR"];
 skills[WEAPON_FLAME_THROWER] =          [DAMAGE, damage_score_function, "WEAPON_FLAME_THROWER"];
-skills[WEAPON_GAZOR] =                  [DAMAGE, default_score_function, "WEAPON_GAZOR"];
+skills[WEAPON_GAZOR] =                  [POISON, poison_score_function, "WEAPON_GAZOR"];
 skills[WEAPON_GRENADE_LAUNCHER] =       [DAMAGE, damage_score_function, "WEAPON_GRENADE_LAUNCHER"];
 skills[WEAPON_LASER] =                  [DAMAGE, damage_score_function, "WEAPON_LASER"];
 skills[WEAPON_MACHINE_GUN] =            [DAMAGE, damage_score_function, "WEAPON_MACHINE_GUN"];
@@ -63,25 +64,37 @@ skills[WEAPON_KATANA] =                 [DAMAGE, damage_score_function, "WEAPON_
 skills[WEAPON_M_LASER] =                [DAMAGE, damage_score_function, "WEAPON_M_LASER"];
 skills[WEAPON_PISTOL] =                 [DAMAGE, damage_score_function, "WEAPON_PISTOL"];
 skills[WEAPON_SHOTGUN] =                [DAMAGE, damage_score_function, "WEAPON_SHOTGUN"];
-skills[WEAPON_AXE+1000] =               [DAMAGE, default_score_function, "EQ_AND_USE_WEAPON_AXE"];
-skills[WEAPON_B_LASER+1000] =           [DAMAGE, default_score_function, "EQ_AND_USE_WEAPON_B_LASER"];
-skills[WEAPON_BROADSWORD+1000] =        [DAMAGE, default_score_function, "EQ_AND_USE_WEAPON_BROADSWORD"];
-skills[WEAPON_DESTROYER+1000] =         [DAMAGE, default_score_function, "EQ_AND_USE_WEAPON_DESTROYER"];
-skills[WEAPON_DOUBLE_GUN+1000] =        [DAMAGE, default_score_function, "EQ_AND_USE_WEAPON_DOUBLE_GUN"];
-skills[WEAPON_ELECTRISOR+1000] =        [DAMAGE, default_score_function, "EQ_AND_USE_WEAPON_ELECTRISOR"];
-skills[WEAPON_FLAME_THROWER+1000] =     [DAMAGE, default_score_function, "EQ_AND_USE_WEAPON_FLAME_THROWER"];
-skills[WEAPON_GAZOR+1000] =         	[DAMAGE, default_score_function, "EQ_AND_USE_WEAPON_GAZOR"];
-skills[WEAPON_GRENADE_LAUNCHER+1000] =	[DAMAGE, default_score_function, "EQ_AND_USE_WEAPON_GRENADE_LAUNCHER"];
-skills[WEAPON_KATANA+1000] =        	[DAMAGE, default_score_function, "EQ_AND_USE_WEAPON_KATANA"];
-skills[WEAPON_LASER+1000] =         	[DAMAGE, default_score_function, "EQ_AND_USE_WEAPON_LASER"];
-skills[WEAPON_MACHINE_GUN+1000] =   	[DAMAGE, default_score_function, "EQ_AND_USE_WEAPON_MACHINE_GUN"];
-skills[WEAPON_MAGNUM+1000] =        	[DAMAGE, default_score_function, "EQ_AND_USE_WEAPON_MAGNUM"];
-skills[WEAPON_M_LASER+1000] =       	[DAMAGE, default_score_function, "EQ_AND_USE_WEAPON_M_LASER"];
-skills[WEAPON_PISTOL+1000] =        	[DAMAGE, default_score_function, "EQ_AND_USE_WEAPON_PISTOL"];
-skills[WEAPON_SHOTGUN+1000] =			[DAMAGE, default_score_function, "EQ_AND_USE_WEAPON_SHOTGUN"];
+skills[WEAPON_AXE+1000] =               [DAMAGE, damage_score_function, "EQ_AND_USE_WEAPON_AXE"];
+skills[WEAPON_B_LASER+1000] =           [DAMAGE, damage_score_function, "EQ_AND_USE_WEAPON_B_LASER"];
+skills[WEAPON_BROADSWORD+1000] =        [DAMAGE, damage_score_function, "EQ_AND_USE_WEAPON_BROADSWORD"];
+skills[WEAPON_DESTROYER+1000] =         [DAMAGE, damage_score_function, "EQ_AND_USE_WEAPON_DESTROYER"];
+skills[WEAPON_DOUBLE_GUN+1000] =        [DAMAGE, damage_score_function, "EQ_AND_USE_WEAPON_DOUBLE_GUN"];
+skills[WEAPON_ELECTRISOR+1000] =        [DAMAGE, damage_score_function, "EQ_AND_USE_WEAPON_ELECTRISOR"];
+skills[WEAPON_FLAME_THROWER+1000] =     [DAMAGE, damage_score_function, "EQ_AND_USE_WEAPON_FLAME_THROWER"];
+skills[WEAPON_GAZOR+1000] =         	[DAMAGE, poison_score_function, "EQ_AND_USE_WEAPON_GAZOR"];
+skills[WEAPON_GRENADE_LAUNCHER+1000] =	[DAMAGE, damage_score_function, "EQ_AND_USE_WEAPON_GRENADE_LAUNCHER"];
+skills[WEAPON_KATANA+1000] =        	[DAMAGE, damage_score_function, "EQ_AND_USE_WEAPON_KATANA"];
+skills[WEAPON_LASER+1000] =         	[DAMAGE, damage_score_function, "EQ_AND_USE_WEAPON_LASER"];
+skills[WEAPON_MACHINE_GUN+1000] =   	[DAMAGE, damage_score_function, "EQ_AND_USE_WEAPON_MACHINE_GUN"];
+skills[WEAPON_MAGNUM+1000] =        	[DAMAGE, damage_score_function, "EQ_AND_USE_WEAPON_MAGNUM"];
+skills[WEAPON_M_LASER+1000] =       	[DAMAGE, damage_score_function, "EQ_AND_USE_WEAPON_M_LASER"];
+skills[WEAPON_PISTOL+1000] =        	[DAMAGE, damage_score_function, "EQ_AND_USE_WEAPON_PISTOL"];
+skills[WEAPON_SHOTGUN+1000] =			[DAMAGE, damage_score_function, "EQ_AND_USE_WEAPON_SHOTGUN"];
+
+skills[CHIP_ARMORING] =                 [HEAL, boost_max_life_score_function, "CHIP_ARMORING"];
+skills[CHIP_FERTILIZER] =               [HEAL, boost_max_life_score_function, "CHIP_FERTILIZER"];
+skills[CHIP_LOAM] =                     [HEAL, boost_max_life_score_function, "CHIP_LOAM"];
+
+skills[CHIP_BANDAGE] =                  [HEAL, heal_score_function, "CHIP_BANDAGE"];
+skills[CHIP_CURE] =                     [HEAL, heal_score_function, "CHIP_CURE"];
+skills[CHIP_DRIP] =                     [HEAL, default_score_function, "CHIP_DRIP"];
+skills[CHIP_REGENERATION] =             [HEAL, heal_score_function, "CHIP_REGENERATION"];
+skills[CHIP_REMISSION] =                [HEAL, default_score_function, "CHIP_REMISSION"];
+skills[CHIP_VACCINE] =                  [HEAL, default_score_function, "CHIP_VACCINE"];
+
 skills[CHIP_ACCELERATION] =             [BUFF, default_score_function, "CHIP_ACCELERATION"];
 skills[CHIP_ADRENALINE] =               [BUFF, default_score_function, "CHIP_ADRENALINE"];
-skills[CHIP_ANTIDOTE] =                 [BUFF, default_score_function, "CHIP_ANTIDOTE"];
+skills[CHIP_ANTIDOTE] =                 [BUFF, antidote_score_function, "CHIP_ANTIDOTE"];
 skills[CHIP_BARK] =                     [BUFF, default_score_function, "CHIP_BARK"];
 skills[CHIP_COLLAR] =                   [BUFF, default_score_function, "CHIP_COLLAR"];
 skills[CHIP_DOPING] =                   [BUFF, default_score_function, "CHIP_DOPING"];
@@ -100,19 +113,11 @@ skills[CHIP_WHIP] =                     [BUFF, default_score_function, "CHIP_WHI
 skills[CHIP_WINGED_BOOTS] =             [BUFF, default_score_function, "CHIP_WINGED_BOOTS"];
 skills[CHIP_MIRROR] =                   [REFLECT, default_score_function, "CHIP_MIRROR"];
 skills[CHIP_THORN] =                    [REFLECT, default_score_function, "CHIP_THORN"];
-skills[CHIP_PLAGUE] =                   [POISON, default_score_function, "CHIP_PLAGUE"];
-skills[CHIP_TOXIN] =                    [POISON, default_score_function, "CHIP_TOXIN"];
-skills[CHIP_VENOM] =                    [POISON, default_score_function, "CHIP_VENOM"];
-skills[CHIP_BANDAGE] =                  [HEAL, default_score_function, "CHIP_BANDAGE"];
-skills[CHIP_CURE] =                     [HEAL, default_score_function, "CHIP_CURE"];
-skills[CHIP_DRIP] =                     [HEAL, default_score_function, "CHIP_DRIP"];
-skills[CHIP_FERTILIZER] =               [HEAL, default_score_function, "CHIP_FERTILIZER"];
-skills[CHIP_LOAM] =                     [HEAL, default_score_function, "CHIP_LOAM"];
-skills[CHIP_REGENERATION] =             [HEAL, default_score_function, "CHIP_REGENERATION"];
-skills[CHIP_REMISSION] =                [HEAL, default_score_function, "CHIP_REMISSION"];
-skills[CHIP_VACCINE] =                  [HEAL, default_score_function, "CHIP_VACCINE"];
+skills[CHIP_PLAGUE] =                   [POISON, poison_score_function, "CHIP_PLAGUE"];
+skills[CHIP_TOXIN] =                    [POISON, poison_score_function, "CHIP_TOXIN"];
+skills[CHIP_VENOM] =                    [POISON, poison_score_function, "CHIP_VENOM"];
+
 skills[CHIP_ARMOR] =                    [ARMOR, armor_score_function, "CHIP_ARMOR"];
-skills[CHIP_ARMORING] =                 [ARMOR, armor_score_function, "CHIP_ARMORING"];
 skills[CHIP_CARAPACE] =                 [ARMOR, armor_score_function, "CHIP_CARAPACE"];
 skills[CHIP_FORTRESS] =                 [ARMOR, armor_score_function, "CHIP_FORTRESS"];
 skills[CHIP_HELMET] =                   [ARMOR, armor_score_function, "CHIP_HELMET"];
@@ -125,16 +130,16 @@ skills[CHIP_SLOW_DOWN] =                [DEBUFF, default_score_function, "CHIP_S
 skills[CHIP_SOPORIFIC] =                [DEBUFF, default_score_function, "CHIP_SOPORIFIC"];
 skills[CHIP_TRANQUILIZER] =             [DEBUFF, default_score_function, "CHIP_TRANQUILIZER"];
 skills[CHIP_INVERSION] =                [UTIL, default_score_function, "CHIP_INVERSION"];
-skills[CHIP_LIBERATION] =               [UTIL, default_score_function, "CHIP_LIBERATION"];
+skills[CHIP_LIBERATION] =               [DEBUFF, liberation_score_function, "CHIP_LIBERATION"]; //TO BE IMPROVED: could also be used as a util
 skills[CHIP_RESURRECTION] =             [UTIL, default_score_function, "CHIP_RESURRECTION"];
 skills[CHIP_TELEPORTATION] =            [UTIL, default_score_function, "CHIP_TELEPORTATION"];
-skills[CHIP_FIRE_BULB] =                [BULB, default_score_function, "CHIP_FIRE_BULB"];
-skills[CHIP_HEALER_BULB] =              [BULB, default_score_function, "CHIP_HEALER_BULB"];
-skills[CHIP_ICED_BULB] =                [BULB, default_score_function, "CHIP_ICED_BULB"];
-skills[CHIP_LIGHTNING_BULB] =           [BULB, default_score_function, "CHIP_LIGHTNING_BULB"];
-skills[CHIP_METALLIC_BULB] =            [BULB, default_score_function, "CHIP_METALLIC_BULB"];
-skills[CHIP_PUNY_BULB] =                [BULB, default_score_function, "CHIP_PUNY_BULB"];
-skills[CHIP_ROCKY_BULB] =               [BULB, default_score_function, "CHIP_ROCKY_BULB"];
+skills[CHIP_FIRE_BULB] =                [BULB, bulb_score_function, "CHIP_FIRE_BULB"];
+skills[CHIP_HEALER_BULB] =              [BULB, bulb_score_function, "CHIP_HEALER_BULB"];
+skills[CHIP_ICED_BULB] =                [BULB, bulb_score_function, "CHIP_ICED_BULB"];
+skills[CHIP_LIGHTNING_BULB] =           [BULB, bulb_score_function, "CHIP_LIGHTNING_BULB"];
+skills[CHIP_METALLIC_BULB] =            [BULB, bulb_score_function, "CHIP_METALLIC_BULB"];
+skills[CHIP_PUNY_BULB] =                [BULB, bulb_score_function, "CHIP_PUNY_BULB"];
+skills[CHIP_ROCKY_BULB] =               [BULB, bulb_score_function, "CHIP_ROCKY_BULB"];
 
 
 /**********************************************************************/
@@ -307,7 +312,7 @@ function generateCombosList(){
 }
 
 /************************************************************************/
-// Fonction itérative générant tous les combos possibles à partir d'un combo de coût
+// Fonction récursive générant tous les combos possibles à partir d'un combo de coût
 // Gère les cooldowns
 
 /* exemple d'execution de la fonction
@@ -412,6 +417,7 @@ function sortCombos(){
 }
 
 /*******************************************************************/
+// TO BE IMPROVED
 // function used to sort the skills of a combo.
 // * some skills must be played first (e.g. buff and debuff before attacks)
 // * weapons should be equiped before being used (not implemented)
@@ -477,13 +483,13 @@ function calculateCombosScore(){
 		ourLeekCaracTemp = ourLeekCarac;
 		enemyLeekCaracTemp = enemyLeekCarac;
 
-		// score functions uses a trajectory. Therefore, we fill a trajectory with the combo
+		// calculateComboScore function calculates the score of the "analyzedTrajectory" global variable 
+		// Therefore, we fill a "analyzedTrajectory" with the current combo
 		analyzedTrajectory[SKILL] = combo;
-
-		var score = calculateScore(combo);
+		calculateComboScore();
 
 		var scoreAndKey = [];
-		scoreAndKey[SCORE] = score;
+		scoreAndKey[TOTAL_SCORE] = analyzedTrajectory[TOTAL_SCORE];
 		scoreAndKey[KEY] = key;
 
 		push(comboScores, scoreAndKey);
@@ -493,16 +499,22 @@ function calculateCombosScore(){
 
 /*************************************************************************/
 // This function calls the score functions associated to each skills
-
-function calculateScore(combo){
+// The input of this function is the "analyzedTrajectory" global variable 
+function calculateComboScore(){
 	var score = 0;
 	skillKey = 0;
-	for (var skill in combo){
-		score += skills[skill][SCORE_FUNCTION]();
+	for (var skill in analyzedTrajectory[SKILL]){
+		// this is the call to the function. Check the top of the file. You're welcome ;)
+		var skillScore = skills[skill][SCORE_FUNCTION]();
+
+		// stores the score of the skill
+		push(analyzedTrajectory[SCORE], skillScore);
+
+		// Add the score of the skill to the total score of the trajectory
+		analyzedTrajectory[TOTAL_SCORE] += skillScore;
+
 		skillKey++;
 	}
-
-	return score;
 }
 
 
@@ -512,7 +524,7 @@ function calculateScore(combo){
 function sortCombosByScore(){
 	// sort costs
 	sortedComboScores = arraySort(comboScores, function(comboScore1, comboScore2) {
-    	return comboScore2[SCORE] - comboScore1[SCORE];
+    	return comboScore2[TOTAL_SCORE] - comboScore1[TOTAL_SCORE];
 	});
 }
 
@@ -521,13 +533,13 @@ function sortCombosByScore(){
 // * the list of the skills that will be used (it is a combo)
 // * the cell from where the skill will be casted
 // * the MP used to go to this cell
-// * the cell target by the skill
+// * the cell targeted by the skill
 // * the score of the combo
 //
 // [[cell1, cell2, ...], [skill1, skill2, ...], [targetCell1, targetCell2, ...] [MPUsed1, MPUsed2, ...], score]
 //
 //                       +---------------------------------------------------------------------------------------------------------------------------------------------------------+
-//                       | generate_trajectories                                                                                                                                   |
+//             nbOp +----| generate_trajectories                                                                                                                                   |
 //                       |                                                                                                                                                         |
 //                       |             +--------------------+                    +-------------------+                                                                             |
 //          enemySkills  |             |                    |     dangerMap      |                   | safeNodes                                                                   |
@@ -576,12 +588,68 @@ function sortCombosByScore(){
 //                       +---------------------------------------------------------------------------------------------------------------------------------------------------------+
 
 
+function generateGroundScoreMap(){
+    // generate the groundScoreMap
+    // The point of this map is to attribute a lower score to dead-ends
+    // Initiate each cell of the map with a 0 score
+    for (var i = 0; i <= 612; i++){
+    	groundScoreMap[i] = 0;
+    }
+
+    // retrieve the obstacles. For each obstacle we will reduce the score of the adjacent cells by 1
+    // note: the score of the cells that are obstacles are not well handled, but we don't care since we will never use them
+    var obstacles = getObstacles();
+    for (var obstacle in obstacles){
+    	var adjacentCells = getArea(1, obstacle);
+    	if (adjacentCells !== null){
+    		for (var adjacentCell in adjacentCells){
+    			groundScoreMap[adjacentCell] -= 1;
+    		}
+    	}
+    }
+
+    // Reduce the score of the top and bottom row
+    for (var i = 1; i <= 16; i++){
+    	groundScoreMap[i] -= 2;
+    	groundScoreMap[i + 595] -= 2;
+    }
+
+    // Reduce the score of the left and right column
+    for (var i = 35; i <= 560; i+=35){
+    	groundScoreMap[i] -= 2;
+    	groundScoreMap[i + 17] -= 2;
+    }
+
+    // Reduce the score of the corners 
+    groundScoreMap[0] -= 3;
+    groundScoreMap[17] -= 3;
+    groundScoreMap[595] -= 3;
+    groundScoreMap[612] -= 3;
+
+
+    // Display the groundScoreMap for debug purpose 
+    for (var i = 0; i <= 612; i++){
+    	if (!isObstacle(i)){
+    		mark(i, getColor(255, (255 + groundScoreMap[i] * 55), (255 + groundScoreMap[i] * 55)));
+    	}
+    }
+
+    pause();
+}
+
+function generateEntityScoreMap(){
+
+	// copy of the groundScoreMap
+	entityScoreMap = groundScoreMap;
+
+	getCell(enemyID);
+}
 /*************************************************************************/
-// This function is used to find the trajectory with the best score without 
-// using more operation than the maximum operation limit
-// operationThreshold to be improved
+// This function is used to calculate a maximum of the trajectory from the combos with the best score
+// without using more operation than the maximum operation limit
+// operationThreshold: TO BE IMPROVED
 function generate_trajectories(){
-	var operationThreshold = 2000000;
+	var operationThreshold = 3000000;
 
 	var nbOp = getOperations();
 	fill_danger_map(true);
@@ -589,26 +657,26 @@ function generate_trajectories(){
 	debug("nb instruct fill danger map : " + (getOperations() - nbOp));
 	fill_safe_nodes(true);
 	generate_movement_only_trajectories();
-	var countTrajectories = 1;
+	nbComboUsed = 1;
 
 	for (var comboScore in sortedComboScores){
 		//debug("combo: " + sortedCombosList[comboScore[KEY]]);
 		fill_action_nodes(sortedCombosList[comboScore[KEY]]);
 		//debug("action Nodes: " + actionNodes);
 		generate_trajectories_from_combo(sortedCombosList[comboScore[KEY]]);
-		countTrajectories++;
+		nbComboUsed++;
 
 		if (OPERATIONS_LIMIT - getOperations() < operationThreshold){
 			//debug("remaing operation inferior to " + operationThreshold);			
 			break;
 		}
 	}
-	debug("\nTrajectories calculated: " + countTrajectories);
+	//debug((nbComboUsed - 1) +" combos has been used to calculate the trajectories"  );
 }
 
 /*************************************************************************/
 // This function is used to generate movement only trajectories
-// generate_go_toward_enemy_trajectory() to be implemented
+// generate_go_toward_enemy_trajectory() TO BE IMPROVED
 function generate_movement_only_trajectories(){
 	generate_escape_only_trajectory();
 	//generate_go_toward_enemy_trajectory()
@@ -618,7 +686,8 @@ function generate_movement_only_trajectories(){
 /*************************************************************************/
 // This function is used to fill the danger map based on 
 //  * the chips and weapons of the enemy leek
-//  * the chips of the enemy bulbs (not implemented yet)
+//  * the chips of the enemy bulbs : TO BE IMPROVED
+// Many things can be improved here: TO BE IMPROVED
 function fill_danger_map(show){
 	
 	// retrieve all the cell where our leek can go
@@ -636,8 +705,8 @@ function fill_danger_map(show){
 	var enemySkills = [];
 
 	// only analyze the weapon currently being equiped
-	push(enemySkills, getWeapon(enemyID));
-
+	if (getWeapon(enemyID) != null )
+		push(enemySkills, getWeapon(enemyID));
 
 	// variables used to find the chip that deals the most damage
 	var maxDamage = 0;
@@ -649,7 +718,7 @@ function fill_danger_map(show){
 		if (skills[chip][TYPE] != DAMAGE && skills[chip][TYPE] != POISON){
 			continue;
 		}
-		var damage = getDamage(chip, getStrength(enemyID));
+		var damage = getObjectDamage(chip, getStrength(enemyID));
 		if ((damage["Max"] + damage["Min"] / 2) > maxDamage){
 			chosenChip = chip;
 			maxDamage = (damage["Max"] + damage["Min"] / 2);
@@ -660,21 +729,24 @@ function fill_danger_map(show){
 		push(enemySkills, chosenChip);
 	}
 
-	// for each cell the leek can reach, check if the cell can be targeted by the chosen enemy skills
-	for (var key : var cell in area){
-		var nbOp = getOperations();
-		for (var skill in enemySkills){
-				// if the skill is a chip, check its cooldown. If it is on cooldown, don't bother calculate the danger.
-				if (isChip(skill) && getCooldown(skill, enemyID) != 0){
-					debug("on cooldownn");
-					continue;
+	if (isEmpty(enemySkills) == false ){
+		// for each cell the leek can reach, check if the cell can be targeted by the chosen enemy skills
+		// There is a lot of data loss here, we have a maximum of 1 skill stored by cell : TO BE IMPROVED 
+		for (var key : var cell in area){
+			var nbOp = getOperations();
+			for (var skill in enemySkills){
+					// if the skill is a chip, check its cooldown. If it is on cooldown, don't bother calculate the danger.
+					if (isChip(skill) && getCooldown(skill, enemyID) != 0){
+						debug("on cooldownn");
+						continue;
+					}
+					if (dangerMap[cell] == null){
+						canUseIfMoving(skill, cell, enemyID, false,  false);
+					}
 				}
-				if (dangerMap[cell] == null){
-					canUseIfMoving(skill, cell, enemyID, false,  false);
-				}
-			}
-	//debug("cell: " + cell + ", nb instruct " + key + "/" + count(area)+ ": " + (getOperations() - nbOp));
-	}
+		//debug("cell: " + cell + ", nb instruct " + key + "/" + count(area)+ ": " + (getOperations() - nbOp));
+		}
+	}	
 	//debug("danger map: "+ dangerMap);
 }
 
@@ -686,10 +758,13 @@ function fill_action_nodes(combo){
 		if (skill > 1000)
 			skill -= 1000;
 
-		if (getType() == ENTITY_LEEK){	
+		if (getType() == ENTITY_LEEK || getType() == ENTITY_BULB){	
 			if (skills[skill][TYPE] == DEBUFF || skills[skill][TYPE] == DAMAGE || skills[skill][TYPE] == POISON){
-				if (actionNodes[skill] == null){
+
+				if (processedActions[skill] === null){
+					// debug("fill_action_nodes(): fill the action map with : " + skill);
 					canUseIfMoving(skill,  getCell(enemyID),  ourLeekID, true,  false);
+					processedActions[skill] = true;
 				}
 			}
 		}
@@ -708,8 +783,16 @@ function fill_action_nodes(combo){
 //  * full indirect combo + mvmt
 //  * full indirect combo
 // A trajectory can be full (all the skills can be used) or partial
-// A trajectory is an array : [[cell1, cell2, ...], [skill1, skill2, ...], [targetCell1, targetCell2, ...] [MPUsed1, MPUsed2, ...], score]
-// The number of MP depends on the casted chips (not implemented yet)
+
+// A trajectory is an array : 
+// [	[cell1, cell2, ...], 
+//		[skill1, skill2, ...], 
+//		[targetCell1, targetCell2, ...],
+//		[MPUsed1, MPUsed2, ...], 
+//		[score1, score2, ...], 
+//		totalScore
+// ]
+// The number of MP used to calculate the trajectory considers the skills that increases the number of MP (not implemented yet) TO BE IMPROVED
 
 function generate_trajectories_from_combo(combo){
 	trajectories = [];
@@ -739,101 +822,120 @@ function generate_trajectories_from_combo(combo){
 }
 
 /*************************************************************************/
-// This function is used to generate the direct and indirect trajectories of a combo
-// Return an array of boolean to know if the direct and indirect trajectories have been 
-// generated 
-// To be improved : copy the beginning of "direct" in "indirect" until a skill has AOE
-function generate_basic_trajectories(combo){
+// This function is used to generate a trajectory from a combo
+// TO BE IMPROVED : The target are always ourself or the enemy leek, we don't handle cast on allies right now
+// TO BE IMPROVED : we use getpath each time we want to summon a bulb
+function generate_basic_trajectory(isItDirect, combo){
 
-	var direct = [];
-	direct[SKILL] = [];
-	direct[CELLS] = [];
-	direct[MVMP] = [];
-	direct[TARGET_CELL] = [];	
-	var indirect = [];
-	indirect[SKILL] = [];
-	indirect[CELLS] = [];
-	indirect[MVMP] = [];
-	indirect[TARGET_CELL] = [];
+	var trajectory = [];
+	trajectory[SKILL] = [];
+	trajectory[CELLS] = [];
+	trajectory[MVMP] = [];
+	trajectory[TARGET_CELL] = [];
+	trajectory[SCORE] = [];
+	trajectory[TOTAL_SCORE] = 0;	
 
-	//debug("direct combo: " + combo);
-	// generate direct trajectories without escape
-	for (var key: var skill in combo){
-		//debug("skill: " + skill);
-		var nextNodeResult = [];
-		// if the skill requires a mouvment to be executed
-		if (skills[skill][TYPE] == DEBUFF || skills[skill][TYPE] == DAMAGE || skills[skill][TYPE] == POISON){
-
-			if (key == 0){
-				nextNodeResult = find_next_node(skill, getCell(), direct, getMP());
-			}
-			else {
-				nextNodeResult = find_next_node(skill, direct[CELLS][key - 1], direct, (getMP() - sum(direct[MVMP])));
-			}
-			// if a cell can be reached then save it in the trajectory
-			if (nextNodeResult[TYPE] == true){
-				push(direct[SKILL], skill);
-				push(direct[CELLS], nextNodeResult[CELLS]);
-				push(direct[MVMP], nextNodeResult[MVMP]);
-				push(direct[TARGET_CELL], nextNodeResult[TARGET_CELL]);
-			}
-		}
-		// if the skill does not require a mouvment to be executed
-		else {
-			if (key == 0){
-				push(direct[SKILL], skill);
-				push(direct[CELLS], getCell());
-				push(direct[MVMP], 0);
-				push(direct[TARGET_CELL], getCell());
-			}
-			else{
-				push(direct[SKILL], skill);
-				push(direct[CELLS], direct[CELLS][key - 1]);
-				push(direct[MVMP], 0);
-				push(direct[TARGET_CELL], direct[CELLS][key - 1]);
-			}
-		}
-	}
-
+	var	nbSkillInTrajectory = 0;
 	//debug("indirect combo: " + combo);
 	// generate indirect trajectories without escape
-		for (var key: var skill in combo){
+	for (var key: var skill in combo){
 		var nextNodeResult = [];
 		// if the skill requires a mouvment to be executed
 		if (skills[skill][TYPE] == DEBUFF || skills[skill][TYPE] == DAMAGE || skills[skill][TYPE] == POISON){
 
-			if (key == 0){
-				nextNodeResult = find_next_node(skill, getCell(), indirect, getMP());
+			if (nbSkillInTrajectory == 0){
+				nextNodeResult = find_next_node(skill%1000, getCell(), isItDirect, getMP());
 			}
 			else {
-				nextNodeResult = find_next_node(skill, indirect[CELLS][key - 1], indirect, (getMP() - sum(indirect[MVMP])));
+				nextNodeResult = find_next_node(skill%1000, trajectory[CELLS][key - 1], isItDirect, (getMP() - sum(trajectory[MVMP])));
 			}
 			// if a cell can be reached then save it in the trajectory
 			if (nextNodeResult[TYPE] == true){
-				push(indirect[SKILL], skill);
-				push(indirect[CELLS], nextNodeResult[CELLS]);
-				push(indirect[MVMP], nextNodeResult[MVMP]);
-				push(indirect[TARGET_CELL], nextNodeResult[TARGET_CELL]);
+				push(trajectory[SKILL], skill);
+				push(trajectory[CELLS], nextNodeResult[CELLS]);
+				push(trajectory[MVMP], nextNodeResult[MVMP]);
+				push(trajectory[TARGET_CELL], nextNodeResult[TARGET_CELL]);
+				nbSkillInTrajectory++;
 
 			}
 		}
 		// if the skill does not require a mouvment to be executed
 		else {
-			if (key == 0){
-				push(indirect[SKILL], skill);
-				push(indirect[CELLS], getCell());
-				push(indirect[MVMP], 0);
-				push(indirect[TARGET_CELL], getCell());
+			// if the skill is a summoning, we need to find the target cell differently
+			if (skills[skill][TYPE] == BULB){
+				// debug("generate_basic_trajectories(): summoning cell not handled yet");
 
+				// TO BE IMPROVED: 
+				// we will summon the bulb at the place we are.
+				// So, we try to find a path toward the enemy
+				// if there is one, we summon the bulb
+
+				// We find how much distance we must travell
+				var distance = 1;
+				if (skill == CHIP_FIRE_BULB){
+					distance = 2;
+				}
+				// We find the path toward the enemy
+				var path;
+				if (nbSkillInTrajectory == 0){
+					path = getPath(getCell(), getCell(enemyID));
+				}
+				else {
+					path = getPath(trajectory[CELLS][nbSkillInTrajectory - 1], getCell(enemyID));
+				}
+					
+				if (path !==  null){
+					// If there is a long enough path, then save it in the trajectory
+					if (count(path) >= distance + 2){
+						if (nbSkillInTrajectory == 0){
+							push(trajectory[SKILL], skill);
+							push(trajectory[CELLS], path[distance]);
+							push(trajectory[MVMP], 0);
+							push(trajectory[TARGET_CELL], getCell());
+							nbSkillInTrajectory++;
+						}
+						else{
+							push(trajectory[SKILL], skill);
+							push(trajectory[CELLS], path[distance]);
+							push(trajectory[MVMP], 0);
+							push(trajectory[TARGET_CELL], trajectory[CELLS][nbSkillInTrajectory - 1]);
+							nbSkillInTrajectory++;
+						}
+					}
+				}
 			}
-			else{
-				push(indirect[SKILL], skill);
-				push(indirect[CELLS], indirect[CELLS][key - 1]);
-				push(indirect[MVMP], 0);
-				push(indirect[TARGET_CELL], direct[CELLS][key - 1]);
+			else {
+				if (nbSkillInTrajectory == 0){
+					push(trajectory[SKILL], skill);
+					push(trajectory[CELLS], getCell());
+					push(trajectory[MVMP], 0);
+					push(trajectory[TARGET_CELL], getCell());
+					nbSkillInTrajectory++;
+				}
+				else{
+					push(trajectory[SKILL], skill);
+					push(trajectory[CELLS], trajectory[CELLS][nbSkillInTrajectory - 1]);
+					push(trajectory[MVMP], 0);
+					push(trajectory[TARGET_CELL], trajectory[CELLS][nbSkillInTrajectory - 1]);
+					nbSkillInTrajectory++;
+				}
 			}
+
 		}
 	}
+
+	return trajectory;
+}
+
+/*************************************************************************/
+// This function is used to generate a direct and an indirect trajectory from a combo
+// Return an array of boolean to know if the direct and indirect trajectories have been 
+// generated 
+// TO BE IMPROVED : copy the beginning of "direct" in "indirect" until a skill has AOE
+function generate_basic_trajectories(combo){
+
+	var direct = generate_basic_trajectory(true, combo);
+	var indirect = generate_basic_trajectory(false, combo);
 
 	var result = [false, false];
 
@@ -853,7 +955,7 @@ function generate_basic_trajectories(combo){
 
 /*************************************************************************/
 // This function is used to generate the direct and indirect escape trajectories of a combo
-
+// If there is not enough MP to go to a safe point, discard the last skills one by one until there is enough MP
 function generate_escape_trajectory(trajectory){
 
 	var stop = false;
@@ -897,6 +999,8 @@ function generate_escape_only_trajectory(){
 		newTrajectory[CELLS] = [];
 		newTrajectory[MVMP] = [];
 		newTrajectory[TARGET_CELL] = [];
+		newTrajectory[SCORE] = [];
+		newTrajectory[TOTAL_SCORE] = 0;
 
 		push(newTrajectory[SKILL], MOVE);
 		push(newTrajectory[CELLS], nextNodeResult[CELLS]);
@@ -968,21 +1072,24 @@ function find_next_node(skill, currentCell, direct, mpAvailable){
 // Only the key of the best trajectory is stored
 function find_best_trajectory_score(){
 
-	var bestScore = 0;
+	var bestScore = -999999999;
+	if (isEmpty(allTrajectories) == true)
+		debug("find_best_trajectory_score(): allTrajectories[] is empty !");
 
 	for (var key: var trajectory in allTrajectories){
-		if (trajectory[SCORE] > bestScore){
-			bestScore = trajectory[SCORE];
+		if (trajectory[TOTAL_SCORE] > bestScore){
+			bestScore = trajectory[TOTAL_SCORE];
 			bestTrajectoryKey = key;
 		}
 	}
-	debug("");
-	debug("best trajectory score: " + bestScore);
+	
+	//debug("best trajectory score: " + bestScore);
 }
 
 
 /*************************************************************************/
 // This function is used fill the action sequence with the best trajectory
+// TO BE IMPROVED: we don't handle only equiping a weapon
 function fill_action_sequence(){
 
 	for (var key : var skill in allTrajectories[bestTrajectoryKey][SKILL]){
@@ -992,7 +1099,10 @@ function fill_action_sequence(){
 		actionSequence[actionTotal][1] = allTrajectories[bestTrajectoryKey][CELLS][key];			
 		actionTotal++;
 
-            if (skill != MOVE){
+        if (skill != MOVE){
+        	// discard the skills with a negativ or null score 
+			// (for example if antidote does not remove some poison we want to keep it for later)
+        	if (allTrajectories[bestTrajectoryKey][SCORE][key] > 0){
                 //equip weapon if required
                 if (skill > 1000){
                         skill -= 1000;
@@ -1009,13 +1119,18 @@ function fill_action_sequence(){
                 actionSequence[actionTotal][2] = allTrajectories[bestTrajectoryKey][TARGET_CELL][key];
 
                 actionTotal++;
+        	}
+        	else{
+        		debug("fill_action_sequence(): skills : " + allTrajectories[bestTrajectoryKey][SKILL]);
+        		debug("fill_action_sequence(): discarded skill: " + allTrajectories[bestTrajectoryKey][SKILL][key]);
+        	}
         }
 	}
 }
 
 /*************************************************************************/
 // This function is used fill the safeNodes with untargetable cell 
-// TO BE IMPROVED to quantify the danger
+// TO BE IMPROVED : currently we only consider the cell containing no enemy skill, when we should quantify the danger
 function fill_safe_nodes(show){
     var area = getArea(getMP(), getCell());
 
@@ -1039,15 +1154,17 @@ function fill_safe_nodes(show){
 // This function is used to calculate the score of the trajectories
 // The score is determined:
 //  * with the score function (the one used to calculate the combo score)
-//  * with the potential damage done by the enemy on the last cell (not implemented yet)
+//  * with the damage done by the enemies on the last cell 
 
 function calculate_trajectories_score(){
-	//debug("calculate_trajectories_score");
+	//debug("calculate_trajectories_score()");
+	if (isEmpty(allTrajectories) == true )
+		debug("calculate_trajectories_score(): allTrajectories[] is empty");
 
 	ourLeekCarac = getLeekCarac(ourLeekID);
 	enemyLeekCarac = getLeekCarac(enemyID);
 
-	// We will analyze a trajectory not a combo 
+	// We will analyze a trajectory not a combo (basically it means, that we consider indirect cells)
 	isCombo = false;
 
 	// for each trajectory, calculate its score:
@@ -1059,14 +1176,23 @@ function calculate_trajectories_score(){
 		ourLeekCaracTemp = ourLeekCarac;
 		enemyLeekCaracTemp = enemyLeekCarac;
 
+		// calculateComboScore function calculates the score of the "analyzedTrajectory" global variable 
+		// Therefore, we fill "analyzedTrajectory" with the current trajectory
 		analyzedTrajectory = trajectory;
+		calculateComboScore();
 
-		var score = calculateScore(trajectory[SKILL]);
-		score += calculatePositionScore(trajectory[CELLS][count(trajectory[CELLS])-1]);
+		// debug test
+		if (trajectory[CELLS][count(trajectory[CELLS])-1] === null)
+			debug("calculate_trajectories_score: key: " + key + ", trajectory: " + trajectory);
+		// decreases the score depending on the damage dealt by the enemies
+		analyzedTrajectory[TOTAL_SCORE] += calculatePositionScore(analyzedTrajectory[CELLS][count(analyzedTrajectory[CELLS])-1]);
+		
 		//debug("score : " + score);
-		allTrajectories[key][SCORE] = score;
+		// Currently the score of the trajectory is only stored in "analyzedTrajectory"
+		// Therefore, stores the results in allTrajectories 
+		allTrajectories[key][SCORE] = analyzedTrajectory[SCORE];
+		allTrajectories[key][TOTAL_SCORE] = analyzedTrajectory[TOTAL_SCORE];
 	}
-
-	//implement enemy damage (to be implemented)
-
 }
+
+

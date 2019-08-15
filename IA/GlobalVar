@@ -24,6 +24,8 @@ global END_TURN = 			"END_TURN";
 
 global MOVE_TO_CELL=		"MOVE_TO_CELL";
 global SUMMON_PUNNY_BULB =  "SUMMON_PUNNY_BULB";
+global SUMMON_FIRE_BULB = 	"SUMMON_FIRE_BULB";
+global SUMMON_LIGHTNING_BULB = 	"SUMMON_LIGHTNING_BULB";
 global USE_OBJECT = 		"USE_OBJECT";
 global EQUIP_WEAPON = 		"EQUIP_WEAPON";
 
@@ -34,9 +36,14 @@ global ourLeekID;
 global vieMax;
 
 //array of the map containing the calculated possible actions on the cells 
+// actionMap[cell]	= [[OBJECT_ID, TARGET_CELL, INDIRECT_CELL, PATH_LENGTH], [OBJECT_ID, TARGET_CELL, INDIRECT_CELL, PATH_LENGTH], [...], ...];
 global actionMap = [];
 global movingArea = [];
+// deangeMap[cell] = [[OBJECT_ID], [OBJECT_ID], [...], ...];
 global dangerMap = [];
+
+global groundScoreMap = [];	// The score map considering the obstacles and borders
+global entityScoreMap = [];	//	The score map considering the entities (allied and enemies)
 
 // array containing the list of the cells from which skills can be used 
 // example: actionNodes[chipSpark] 	= [[CELL, TARGET_CELL, INDIRECT_CELL, PATH_LENGTH], [CELL, TARGET_CELL, INDIRECT_CELL, PATH_LENGTH], [...], ...];
@@ -46,6 +53,7 @@ global actionNodes = [];
 global dangerNodes = [];
 global safeNodes = [];
 
+global processedActions = [];  // stores the action we already send to the canUseIfMoving() function. To only call it once.
 //Variables globales ennemies
 global enemyID;
 
@@ -62,6 +70,7 @@ global sortedCombosList = [];
 global filteredCombosList = [];
 global comboScores = [];
 global sortedComboScores = [];
+global nbComboUsed;			//used to count how many combos has been used to calculate the trajectories
 global allTrajectories = [];	// trajecories description in util_combo
 global trajectories = [];   //used to store the trajectories of a single combo 
 global bestTrajectoryKey;	//is the key of the trajectoy with the best score
@@ -72,6 +81,7 @@ global bestTrajectoryKey;	//is the key of the trajectoy with the best score
 global CELL = 				"CELL";
 global STRENGTH = 			"STRENGTH";
 global LIFE = 				"LIFE";
+global TOTAL_LIFE = 		"TOTAL_LIFE";
 global RELATIVE_SHIELD =	"RELATIVE_SHIELD";
 global ABSOLUTE_SHIELD = 	"ABSOLUTE_SHIELD";
 global SCIENCE = 			"SCIENCE";
@@ -79,12 +89,23 @@ global AGILITY = 			"AGILITY";
 global MP = 				"MP";
 global TP = 				"TP";
 global RESISTANCE = 		"RESISTANCE";
+global WISDOM = 			"WISDOM";
+global MAGIC = 				"MAGIC";
+global DAMAGE_RETURN= 		"DAMAGE_RETURN";
+
 
 // variables and signals used to calculate the scores
 global isCombo = true;  // used to know if we are calculating the score of a combo or of a trajectory
 global skillKey = 0;	// counter used to know whicj skill we are currently evaluating
+// A trajectory is an array : 
+// [	[cell1, cell2, ...], 
+//		[skill1, skill2, ...], 
+//		[targetCell1, targetCell2, ...],
+//		[MPUsed1, MPUsed2, ...], 
+//		[score1, score2, ...], 
+//		totalScore
+// ]
 global analyzedTrajectory = []; // array used to store the trajectory currently being evaluated, even if we are avaluate a combo.
-
 global ourLeekCarac = [];		// base carac of our leek
 global enemyLeekCarac = [];		// base carac of the enemy leek
 global ourLeekCaracTemp = [];	// carac of our leek with the buffs

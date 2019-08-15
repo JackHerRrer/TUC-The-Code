@@ -61,3 +61,61 @@ function displayDoubleArray (list, string){
 	}
 	debug(string + combination);
 }
+
+/*******************************************************************/
+// Pretty print a number
+// eg: 14563294 becomes "14 563 294"
+function prettyPrintNb(number){
+	var string;
+
+	var millions = floor(number / 1000000);
+	var thousands = floor((number % 1000000) / 1000);
+	var base = number % 1000;
+
+	var thousandWithPadding;
+	var baseWithPadding;
+
+	var numberStr;
+
+	
+	// Handle thousands '0' padding
+	if (thousands < 0){
+		thousandWithPadding = "000";
+	}
+	else if (thousands < 10){
+		thousandWithPadding = "00" + thousands;
+	}
+	else if (thousands < 100){
+		thousandWithPadding = "0" + thousands;
+	}
+	else{
+		thousandWithPadding = "" + thousands;
+	} 
+
+	// Handle base '0' padding
+	if (base < 0){
+		baseWithPadding = "000";
+	}
+	else if (base < 10){
+		baseWithPadding = "00" + base;
+	}
+	else if (base < 100){
+		baseWithPadding = "0" + base;
+	}
+	else{
+		baseWithPadding = "" + base;
+	} 
+
+	if (number >= 1000000){
+		numberStr = millions + " " + thousandWithPadding + " " + baseWithPadding;
+	}
+	else if (number >= 1000){
+		numberStr = thousands + " " + baseWithPadding;
+	}
+	else{
+		numberStr = base;
+	}
+
+	return numberStr;
+}
+

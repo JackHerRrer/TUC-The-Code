@@ -1,17 +1,20 @@
 HTTP/1.1 200 OK
 Server: nginx
-Date: Mon, 30 Apr 2018 19:55:44 GMT
-Content-Type: text/html; charset=UTF-8
+Date: Wed, 14 Aug 2019 21:58:18 GMT
+Content-Type: application/json
 Transfer-Encoding: chunked
 Connection: keep-alive
 Vary: Accept-Encoding
 Access-Control-Allow-Origin: *
-Set-Cookie: PHPSESSID=pf03ssint5rlf7kj6sir8nlc52; path=/; HttpOnly
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS
+Access-Control-Allow-Headers: Origin,Content-Type,Accept,Authorization
+Access-Control-Allow-Credentials: true
+Set-Cookie: PHPSESSID=hq0n780fn8otik4p0jod9mc0g5; path=/; HttpOnly
 Expires: Thu, 19 Nov 1981 08:52:00 GMT
 Cache-Control: no-store, no-cache, must-revalidate
 Pragma: no-cache
-Set-Cookie: token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC9sZWVrd2Fycy5jb20iLCJhdWQiOiJodHRwOlwvXC9sZWVrd2Fycy5jb20iLCJleHAiOjE1MjUxMjUzNDQsImlkIjo0NzkwOCwia2VlcCI6ZmFsc2UsImhhc2giOiIxZTZjMzQ5MzJlNjI2NWZhZjZiNyJ9.S5nJc3L4imlXqej3QVIjGXdfVO5ybBEe7wZlgpeJskE; expires=Mon, 30-Apr-2018 21:55:44 GMT; Max-Age=7200; path=/; domain=leekwars.com; HttpOnly
+Set-Cookie: token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC9sZWVrd2Fycy5jb20iLCJhdWQiOiJodHRwOlwvXC9sZWVrd2Fycy5jb20iLCJleHAiOjE1NjU4MjcwOTcsImlkIjo0NzkwOCwia2VlcCI6ZmFsc2UsImhhc2giOiI2ZDYyNTRhYjFlMzBjY2M2ZGFiYSJ9.zCMpRgGaEz2qh9aoHSAbJGxLi-GjcTKbFUlmeqneHYQ; expires=Wed, 14-Aug-2019 23:58:17 GMT; Max-Age=7200; path=/; domain=leekwars.com; HttpOnly
 X-Frame-Options: DENY
 X-Content-Type-Options: nosniff
 
-{"success":true,"opponents":[{"id":33574,"name":"KogMaw","level":300,"talent":1155,"skin":1,"hat":6,"fights":0},{"id":12550,"name":"pXBenZette","level":300,"talent":1142,"skin":1,"hat":null,"fights":0},{"id":19240,"name":"Mozo","level":300,"talent":1152,"skin":1,"hat":1,"fights":0},{"id":32734,"name":"BatounouThe3rd","level":300,"talent":1160,"skin":1,"hat":null,"fights":0},{"id":18632,"name":"strike","level":300,"talent":1157,"skin":4,"hat":null,"fights":0}]}
+{"opponents":[{"id":43899,"name":"xercia","level":301,"talent":1883,"skin":3,"hat":5,"fights":0},{"id":20254,"name":"MinMax","level":301,"talent":1880,"skin":12,"hat":1,"fights":0},{"id":30789,"name":"shell","level":301,"talent":1887,"skin":13,"hat":2,"fights":0},{"id":90,"name":"SkullGrog","level":301,"talent":1932,"skin":1,"hat":3,"fights":0},{"id":45396,"name":"jgcLeek","level":301,"talent":1867,"skin":12,"hat":5,"fights":0}]}

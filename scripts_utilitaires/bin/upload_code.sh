@@ -8,10 +8,7 @@ echo
 echo -----------
 echo upload du fichier : $1
 echo get ID
-#curl "https://leekwars.com/api/ai/get-farmer-ais" -H "Cookie: ${TOKEN}"  -H "Authorization: Bearer $"
 
-echo ---- 
-echo
 IA_ID=$(curl "https://leekwars.com/api/ai/get-farmer-ais" \
 		-H "Cookie: ${TOKEN}"  \
 		-H "Authorization: Bearer $"\

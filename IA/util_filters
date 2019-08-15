@@ -1,23 +1,28 @@
 include("GlobalVar");
 
 
+// TO BE IMPROVED: The more filters here, the less operation later on. 
+// This is critical to calculate meaningfull trajectories
+// IDEAS:
+
+
 /*************************************************************************/
-//filter used to remove weapon basaed combos with 
-// * useless weapon equipement
-// * weapons that should be equiped but are not 
+//filter used to remove weapon based combos with :
+// * useless weapon equipement (no need to equip a weapon 2 or more times)
+// * weapons that are never equiped (therefore the combo cannot be executed) 
 
 // equipedWeapons = [weaponID1:true, weaponID2:true, weaponID3:true, ...]
 // usedWeapons = [weaponID1, weaponID2, weaponID1, weaponID4, ...]
 
 function weaponFilter(combo){
 
-	var equipedWeapons = [];
-	var usedWeapons = [];
+	var equipedWeapons = []; 	//keep track of all the weapons that are equiped in this combo
+	var usedWeapons = [];		//keep track of all the weapons used during this combo
 	equipedWeapons[getWeapon()] = true;
 
 	for (var skill in combo){
 		if (skill > 1000){
-			// check if the weapon is not already equiped
+			// check if the weapon is not already equiped, if it is, discard the combo
 			if (equipedWeapons[skill - 1000] === true)
 				return false;
 			equipedWeapons[skill - 1000] = true;

@@ -15,6 +15,7 @@ source $BIN_PATH/fight_analysis.sh
 # Parameters of the script  
 
 LEEK_NAME=JeanFile
+#LEEK_NAME=MLBot1
 NBR_FIGHT=$1
 
 
